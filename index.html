@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+<script>
+  document.createElement('player')
+  document.createElement('togglescreen')
+</script>
+
+<player id="player" style="width:800px;height:450;margin:auto;color:white;">
+  <video autoplay width="800" height="450" muted loop>
+    <!-- <source src="/videos/video.mp4" type="video/mp4"> -->
+    <!-- <source src="/videos/video.ogg" type="video/ogg"> -->
+    <!-- <source src="/videos/video.wmv" type="video/wmv"> -->
+    <!-- <source src="/videos/video.webm" type="video/webm"> -->
+    <source src="/videos/video.avi" type="video/avi">
+  </video>
+  <overlayplay role="button" tabindex="1">
+      <svg style="display:none" class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
+      <svg  class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg"><path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><rect /></svg>
+  </overlayplay>
+  <playerbar>
+    <play role="button" tabindex="1">
+      <svg style="display:none" class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
+      <svg  class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg"><path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><rect /></svg>
+    </play>
+    <togglescreen role="button" tabindex="2">
+      <svg fill="none" viewBox="0 0 15 15" width="15" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M2 2.5C2 2.22386 2.22386 2 2.5 2H5.5C5.77614 2 6 2.22386 6 2.5C6 2.77614 5.77614 3 5.5 3H3V5.5C3 5.77614 2.77614 6 2.5 6C2.22386 6 2 5.77614 2 5.5V2.5ZM9 2.5C9 2.22386 9.22386 2 9.5 2H12.5C12.7761 2 13 2.22386 13 2.5V5.5C13 5.77614 12.7761 6 12.5 6C12.2239 6 12 5.77614 12 5.5V3H9.5C9.22386 3 9 2.77614 9 2.5ZM2.5 9C2.77614 9 3 9.22386 3 9.5V12H5.5C5.77614 12 6 12.2239 6 12.5C6 12.7761 5.77614 13 5.5 13H2.5C2.22386 13 2 12.7761 2 12.5V9.5C2 9.22386 2.22386 9 2.5 9ZM12.5 9C12.7761 9 13 9.22386 13 9.5V12.5C13 12.7761 12.7761 13 12.5 13H9.5C9.22386 13 9 12.7761 9 12.5C9 12.2239 9.22386 12 9.5 12H12V9.5C12 9.22386 12.2239 9 12.5 9Z" fill="currentColor" fill-rule="evenodd"/></svg>
+    </togglescreen>
+  </playerbar>
+</player>
+
+<style>
+  player {
+    display: block;
+    position: relative;
+    font-size: 20px;
+  }
+  player video {
+    pointer-events: none;
+    display: block;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  playerbar {
+    z-index: 1;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: linear-gradient(transparent,rgba(0,0,0,0.5));
+    padding: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1em;
+  }
+  play,togglescreen {
+    width: 2em;
+    height: 2em;
+    display: block;
+    cursor: pointer;
+  }
+  player svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    fill: currentColor;
+    pointer-events: none;
+  }
+  overlayplay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+  }
+
+  overlayplay svg {
+    width: 10em;
+    height: 10em;
+    opacity: 0.5;
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+
+<script>
+  const player = document.getElementById('player')
+  const video = player.querySelector('video')
+  const playerbar = player.querySelector('playerbar')
+  const togglescreen = playerbar.querySelector('togglescreen')
+  const play = playerbar.querySelector('play')
+  const overlayplay = player.querySelector('overlayplay')
+  const playIcon = play.querySelector('.play-icon')
+  const pauseIcon = play.querySelector('.pause-icon')
+
+  let fullscreen = false
+  let paused = false
+
+  const clickEvent = new Event('click')
+
+  const videoSrc = 'http://127.0.0.1:5500/videos/video.avi';
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+  }
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = videoSrc;
+  }
+
+  togglescreen.addEventListener('click', (e) => {
+    e.preventDefault()
+    console.log({fullscreen})
+    fullscreen = !fullscreen
+    fullscreen ? player.requestFullscreen() : document.exitFullscreen()
+  })
+
+  togglescreen.addEventListener('keydown', e => {
+    e.preventDefault()
+    const selectedKeys = ['Enter', ' ']
+    selectedKeys.includes(e.key) && togglescreen.dispatchEvent(new Event('click'))
+  })
+
+  play.addEventListener('click', e => {
+    e.preventDefault()
+    paused = !paused
+    paused ? video.pause() : video.play()
+    playIcon.style.display= paused ? "block" : "none"
+    pauseIcon.style.display= paused ? "none" : "block"
+  })
+
+  play.addEventListener('keydown', e => {
+    e.preventDefault()
+    const selectedKeys = ['Enter', ' ']
+    selectedKeys.includes(e.key) && play.dispatchEvent(new Event('click'))
+  })
+
+  overlayplay.addEventListener('click', e=> {
+    play.dispatchEvent(new Event('click'))
+  })
+
+  overlayplay.addEventListener('keydown', e => {
+    e.preventDefault()
+    const selectedKeys = ['Enter', ' ']
+    selectedKeys.includes(e.key) && play.dispatchEvent(new Event('click'))
+  })
+
+</script>
+
+</body>
+</html>
