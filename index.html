@@ -9,8 +9,12 @@
 <body>
 
 <script>
-  document.createElement('player')
-  document.createElement('togglescreen')
+  document.createElement('player');
+  document.createElement('togglescreen');
+  document.createElement('overlayplay');
+  document.createElement('play');
+  document.createElement('playerbar');
+  document.createElement('playerbar');
 </script>
 
 <player id="player" style="width:800px;height:450;margin:auto;color:white;">
@@ -19,7 +23,7 @@
     <!-- <source src="/videos/video.ogg" type="video/ogg"> -->
     <!-- <source src="/videos/video.wmv" type="video/wmv"> -->
     <!-- <source src="/videos/video.webm" type="video/webm"> -->
-    <source src="/videos/video.avi" type="video/avi">
+    <!-- <source src="/videos/video.avi" type="video/avi"> -->
   </video>
   <overlayplay role="button" tabindex="1">
       <svg style="display:none" class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
@@ -41,6 +45,7 @@
     display: block;
     position: relative;
     font-size: 20px;
+    background-color: #111;
   }
   player video {
     pointer-events: none;
@@ -115,7 +120,7 @@
 
   const clickEvent = new Event('click')
 
-  const videoSrc = 'http://127.0.0.1:5500/videos/video.avi';
+  const videoSrc = 'http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8';
   if (Hls.isSupported()) {
     const hls = new Hls();
     hls.loadSource(videoSrc);
