@@ -103,7 +103,9 @@
   }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script> -->
+
+<script src="./dash.js"></script>
 
 <script>
   const player = document.getElementById('player')
@@ -120,15 +122,26 @@
 
   const clickEvent = new Event('click')
 
-  const videoSrc = 'http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8';
-  if (Hls.isSupported()) {
-    const hls = new Hls();
-    hls.loadSource(videoSrc);
-    hls.attachMedia(video);
-  }
-  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = videoSrc;
-  }
+  // const videoSrc = 'http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8';
+  // if (Hls.isSupported()) {
+  //   const hls = new Hls();
+  //   hls.loadSource(videoSrc);
+  //   hls.attachMedia(video);
+  // }
+  // else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+  //   video.src = videoSrc;
+  // }
+
+ 
+  var url = "https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd"
+  var vdo = dashjs.MediaPlayer().create()
+  vdo.initialize(video, url, true)
+
+  player.addEventListener('keydown', function(e) {
+    if(e.key === 'f') {
+      document.fullscreen ? document.exitFullscreen() : player.requestFullscreen()
+    }
+  })
 
   togglescreen.addEventListener('click', (e) => {
     e.preventDefault()
