@@ -241,9 +241,15 @@
   })
 
   player.dataset.toggle = video.autoplay && video.played ? 'played' : 'paused'
+  
+  let startInterval;
 
   video.addEventListener('play', function() {
-    
+    if(!startInterval) {
+      startInterval = setInterval(()=>{
+        timelineProgress.style.width= ((video.currentTime / video.duration) * 100) + '%'
+      },200)
+    }
     overlayplay.classList.add('active')
     setTimeout(()=>{
       overlayplay.classList.remove('active')
@@ -251,19 +257,15 @@
   }) 
 
   video.addEventListener('pause', function() {
-    
+    if(startInterval) {
+      clearInterval(startInterval)
+      startInterval = null
+    }
     overlayplay.classList.add('active')
     setTimeout(()=>{
       overlayplay.classList.remove('active')
     },1e3)
   })
-
-  startTime.textContent = video.startTime + ''
-  
-  let startInterval = setInterval(()=>{
-    timelineProgress.style.width= ((video.currentTime / video.duration) * 100) + '%'
-  },200)
-  
 
 </script>
 
