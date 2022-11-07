@@ -155,10 +155,10 @@
     height: 0.5em;
   }
   player timeline-progressbar timeline-progress {
-    width: 200px;
-    display: inline-block;
+    display: block;
     border-radius: 0.5em;
     background-color: white;
+    height: 100%;
   }
 </style>
 
@@ -173,8 +173,11 @@
   const togglescreen = playerbar.querySelector('togglescreen')
   const play = playerbar.querySelector('play')
   const overlayplay = player.querySelector('overlayplay')
-  const playIcon = play.querySelector('.play-icon')
-  const pauseIcon = play.querySelector('.pause-icon')
+  const timeline = player.querySelector('timeline')
+  const timelineProgressBar = timeline.querySelector('timeline-progressbar')
+  const timelineProgress = timelineProgressBar.querySelector('timeline-progress')
+  const startTime = timeline.querySelector('start')
+  const endTime = timeline.querySelector('end')
 
   let fullscreen = false
   let paused = false
@@ -253,7 +256,14 @@
     setTimeout(()=>{
       overlayplay.classList.remove('active')
     },1e3)
-  }) 
+  })
+
+  startTime.textContent = video.startTime + ''
+  
+  let startInterval = setInterval(()=>{
+    timelineProgress.style.width= ((video.currentTime / video.duration) * 100) + '%'
+  },200)
+  
 
 </script>
 
