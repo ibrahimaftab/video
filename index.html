@@ -26,12 +26,12 @@
     <!-- <source src="/videos/video.avi" type="video/avi"> -->
   </video>
   <overlayplay role="button" tabindex="1">
-      <svg style="display:none" class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
+      <svg class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
       <svg  class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg"><path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><rect /></svg>
   </overlayplay>
   <playerbar>
     <play role="button" tabindex="1">
-      <svg style="display:none" class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
+      <svg class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
       <svg  class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg"><path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"/><rect /></svg>
     </play>
     <togglescreen role="button" tabindex="2">
@@ -67,6 +67,15 @@
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 1em;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 300ms linear, visibility 300ms linear;
+  }
+  player:hover playerbar,
+  player:focus playerbar {
+    transition-delay: 0;
+    opacity: 1;
+    visibility: visible;
   }
   play,togglescreen {
     width: 2em;
@@ -94,18 +103,34 @@
     justify-content: center;
     align-items: center;
     opacity: 0;
+    transition: opacity 300ms linear;
+  }
+  overlayplay.active {
+    opacity: 1;
   }
 
   overlayplay svg {
-    width: 10em;
-    height: 10em;
+    width: 7em;
+    height: 7em;
     opacity: 0.5;
+  }
+ 
+  player:not([data-toggle="paused"]) .play-icon {
+    display: none;
+  }
+ 
+  player:not([data-toggle="played"]) .pause-icon {
+    display: none;
+  }
+  
+  player:not([data-toggle="played"]):not([data-toggle="paused"]) .pause-icon {
+    display: block;
   }
 </style>
 
-<!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
 
-<script src="./dash.js"></script>
+<!-- <script src="./dash.js"></script> -->
 
 <script>
   const player = document.getElementById('player')
@@ -122,20 +147,20 @@
 
   const clickEvent = new Event('click')
 
-  // const videoSrc = 'http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8';
-  // if (Hls.isSupported()) {
-  //   const hls = new Hls();
-  //   hls.loadSource(videoSrc);
-  //   hls.attachMedia(video);
-  // }
-  // else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-  //   video.src = videoSrc;
-  // }
+  const videoSrc = 'http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8';
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(videoSrc);
+    hls.attachMedia(video);
+  }
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = videoSrc;
+  }
 
  
-  var url = "https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd"
-  var vdo = dashjs.MediaPlayer().create()
-  vdo.initialize(video, url, true)
+  // var url = "https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd"
+  // var vdo = dashjs.MediaPlayer().create()
+  // vdo.initialize(video, url, true)
 
   player.addEventListener('keydown', function(e) {
     if(e.key === 'f') {
@@ -145,7 +170,6 @@
 
   togglescreen.addEventListener('click', (e) => {
     e.preventDefault()
-    console.log({fullscreen})
     fullscreen = !fullscreen
     fullscreen ? player.requestFullscreen() : document.exitFullscreen()
   })
@@ -160,8 +184,7 @@
     e.preventDefault()
     paused = !paused
     paused ? video.pause() : video.play()
-    playIcon.style.display= paused ? "block" : "none"
-    pauseIcon.style.display= paused ? "none" : "block"
+    player.dataset.toggle = paused ? 'paused' : 'played'
   })
 
   play.addEventListener('keydown', e => {
@@ -179,6 +202,24 @@
     const selectedKeys = ['Enter', ' ']
     selectedKeys.includes(e.key) && play.dispatchEvent(new Event('click'))
   })
+
+  player.dataset.toggle = video.autoplay && video.played ? 'played' : 'paused'
+
+  video.addEventListener('play', function() {
+    
+    overlayplay.classList.add('active')
+    setTimeout(()=>{
+      overlayplay.classList.remove('active')
+    },1e3)
+  }) 
+
+  video.addEventListener('pause', function() {
+    
+    overlayplay.classList.add('active')
+    setTimeout(()=>{
+      overlayplay.classList.remove('active')
+    },1e3)
+  }) 
 
 </script>
 
