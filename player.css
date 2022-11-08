@@ -4,6 +4,7 @@
     position: relative;
     font-size: 20px;
     background-color: #111;
+    color: white;
   }
   .player video {
     pointer-events: none;
@@ -37,8 +38,8 @@
     visibility: visible;
   }
   .player .play, .player .togglescreen {
-    width: 2em;
-    height: 2em;
+    width: 1.5em;
+    height: 1.5em;
     display: block;
     cursor: pointer;
   }

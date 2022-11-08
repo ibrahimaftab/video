@@ -5,10 +5,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="player.css" />
 </head>
 <body>
 
-<div class="player" id="player" style="width:800px;height:450;margin:auto;color:white;">
+<div class="player" id="player" style="width:800px;height:450;margin:auto;">
   <video autoplay width="800" height="450" muted loop></video>
   <div class="overlayplay" role="button" tabindex="1">
       <svg class="play-icon" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"/></svg>
@@ -31,9 +32,6 @@
     </div>
   </div>
 </div>
-
-<style>
-</style>
 
 <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script> -->
 
@@ -66,7 +64,6 @@
   // else if (video.canPlayType('application/vnd.apple.mpegurl')) {
   //   video.src = videoSrc;
   // }
-
  
   var url = "https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd"
   var vdo = dashjs.MediaPlayer().create()
