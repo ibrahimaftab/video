@@ -1,12 +1,12 @@
 
-  .player {
+  player {
     display: block;
     position: relative;
     font-size: 20px;
     background-color: #111;
     color: white;
   }
-  .player video {
+  player video {
     pointer-events: none;
     display: block;
     object-fit: cover;
@@ -14,7 +14,7 @@
     height: 100%;
     z-index: 0;
   }
-  .playerbar {
+  playerbar {
     z-index: 1;
     position: absolute;
     bottom: 0;
@@ -31,26 +31,26 @@
     visibility: hidden;
     transition: opacity 300ms linear, visibility 300ms linear;
   }
-  .player:hover .playerbar,
-  .player:focus .playerbar {
+  player:hover playerbar,
+  player:focus playerbar {
     transition-delay: 0;
     opacity: 1;
     visibility: visible;
   }
-  .player .play, .player .togglescreen {
+  player play, player toggle-screen {
     width: 1.5em;
     height: 1.5em;
     display: block;
     cursor: pointer;
   }
-  .player svg {
+  player svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
     fill: currentColor;
     pointer-events: none;
   }
-  .overlayplay {
+  overlayplay {
     position: absolute;
     left: 0;
     top: 0;
@@ -66,28 +66,28 @@
     transition: opacity 300ms linear;
   }
 
-  .overlayplay.active {
+  overlayplay.active {
     opacity: 1;
   }
 
-  .overlayplay svg {
+  overlayplay svg {
     width: 7em;
     height: 7em;
     opacity: 0.5;
   }
  
-  .player:not([data-toggle="paused"]) .play-icon {
+  player:not([data-toggle="paused"]) .play-icon {
     display: none;
   }
  
-  .player:not([data-toggle="played"]) .pause-icon {
+  player:not([data-toggle="played"]) .pause-icon {
     display: none;
   }
   
-  .player:not([data-toggle="played"]):not([data-toggle="paused"]) .pause-icon {
+  player:not([data-toggle="played"]):not([data-toggle="paused"]) .pause-icon {
     display: block;
   }
-  .player .timeline {
+  player timeline {
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -100,14 +100,14 @@
     color: rgba(255,255,255,0.75)
   }
 
-  .player .timeline-progressbar {
+  player timeline-progressbar {
     flex: 1;
     background-color: rgba(255,255,255,0.2);
     border-radius: 0.35em;
     overflow: hidden;
     height: 0.5em;
   }
-  .player .timeline-progressbar .timeline-progress {
+  player timeline-progressbar timeline-progress {
     display: block;
     border-radius: 0.5em;
     background-color: white;
