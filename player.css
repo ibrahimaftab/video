@@ -85,6 +85,7 @@ player live svg {
   width: 2rem;
   height: 2rem;
   animation: live 2s infinite;
+  color: #fa1130
 }
 overlayplay {
   position: absolute;
