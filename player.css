@@ -4,12 +4,17 @@
   }
 }
 
+div {
+  overflow: hidden;
+}
+
 player {
   display: block;
   position: relative;
   font-size: 20px;
   background-color: #111;
   color: white;
+  overflow: hidden;
 }
 player video {
   pointer-events: none;
@@ -34,11 +39,11 @@ playerbar {
   gap: 0.5em;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 300ms linear, visibility 300ms linear;
+  /* transition: opacity 300ms linear, visibility 300ms linear; */
 }
 player:hover playerbar,
 player:focus playerbar {
-  transition-delay: 0;
+  /* transition-delay: 0; */
   opacity: 1;
   visibility: visible;
 }
@@ -129,6 +134,7 @@ player timeline-progressbar timeline-progress {
   border-radius: 0.5em;
   background-color: white;
   height: 100%;
+  transition: transform 150ms linear;
 }
 player timeline-buffer {
   position: absolute;

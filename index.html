@@ -9,8 +9,8 @@
   </head>
   <body>
 
-    <div id="player"></div>
     <div id="player2"></div>
+    <div id="player"></div>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script> -->
 
@@ -110,24 +110,25 @@
           const selectedKeys = ["Enter", " "];
           selectedKeys.includes(e.key) &&
             play.dispatchEvent(new Event("click"));
-        });
+        });        
 
         let startInterval;
 
         video.addEventListener("play", function () {
-          if (!startInterval) {
-            startInterval = setInterval(() => {
-              timelineProgress.style.width =
-                (video.currentTime / video.duration) * 100 + "%";
-              timelineBuffer.style.width =
-              (video.buffered.end(0) / video.duration) * 100 + "%";
-            }, 200);
-          }
           overlayplay.classList.add("active");
           setTimeout(() => {
             overlayplay.classList.remove("active");
           }, 200);
         });
+
+        video.addEventListener('timeupdate', function() {
+          if (!startInterval) {
+            timelineProgress.style.width =
+              (video.currentTime / video.duration) * 100 + "%";
+            timelineBuffer.style.width =
+            (video.buffered.end(0) / video.duration) * 100 + "%";
+          }
+        })
 
         video.addEventListener("pause", function () {
           if (startInterval) {
@@ -139,6 +140,19 @@
             overlayplay.classList.remove("active");
           }, 200);
         });
+
+        video.id = `videoMania-video-${settings.id}`
+
+        timelineProgressbar.addEventListener('click', e => {
+          // const clientRectLeft = timelineProgressbar.clientLeft
+          const clientRectLeft = timelineProgressbar.getBoundingClientRect().x
+          const clientRectWidth = timelineProgressbar.getBoundingClientRect().width
+          const timelineWidth =  clientRectWidth
+          const timelinePosition = e.clientX - clientRectLeft
+          video.currentTime = (timelinePosition / timelineWidth) * video.duration
+          console.log(timelineWidth)
+          console.log(clientRectWidth)
+        })        
 
         player.classList.add("videoMania");
         player.id = settings.id
@@ -242,7 +256,7 @@
       videoMania({
         selector: "#player2",
         id: "player2",
-        url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
+        url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/t20worldcup/level_0.m3u8",
         hlsjs: "https://cdn.jsdelivr.net/npm/hls.js@1",
         autoplay: true,
         muted: true,
