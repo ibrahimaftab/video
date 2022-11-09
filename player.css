@@ -4,6 +4,15 @@
   }
 }
 
+@keyframes live {
+  50% {
+    opacity: 0.5
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 div {
   overflow: hidden;
 }
@@ -34,16 +43,15 @@ playerbar {
   padding: 1em;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
   align-items: center;
   gap: 0.5em;
   opacity: 0;
   visibility: hidden;
-  /* transition: opacity 300ms linear, visibility 300ms linear; */
+  transition: opacity 300ms linear, visibility 300ms linear;
 }
 player:hover playerbar,
 player:focus playerbar {
-  /* transition-delay: 0; */
+  transition-delay: 0;
   opacity: 1;
   visibility: visible;
 }
@@ -60,6 +68,23 @@ player svg {
   object-fit: contain;
   fill: currentColor;
   pointer-events: none;
+}
+player live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em;
+  text-transform: uppercase;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.7em;
+  font-weight: 700;
+  justify-self: flex-start;
+  flex: 1;
+}
+player live svg {
+  width: 2rem;
+  height: 2rem;
+  animation: live 2s infinite;
 }
 overlayplay {
   position: absolute;

@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="player.css" />
   </head>
   <body>
-
     <div id="player2"></div>
     <div id="player"></div>
 
@@ -18,6 +17,7 @@
       const playPauseIcon =
         '<svg class="play-icon" style="enable-background: new 0 0 512 512" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" > <path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z" /> </svg> <svg class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg" > <path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <rect /> </svg>';
       const fullscreenIcon = `<svg fill="none" viewBox="0 0 15 15" width="15" xmlns="http://www.w3.org/2000/svg" > <path clip-rule="evenodd" d="M2 2.5C2 2.22386 2.22386 2 2.5 2H5.5C5.77614 2 6 2.22386 6 2.5C6 2.77614 5.77614 3 5.5 3H3V5.5C3 5.77614 2.77614 6 2.5 6C2.22386 6 2 5.77614 2 5.5V2.5ZM9 2.5C9 2.22386 9.22386 2 9.5 2H12.5C12.7761 2 13 2.22386 13 2.5V5.5C13 5.77614 12.7761 6 12.5 6C12.2239 6 12 5.77614 12 5.5V3H9.5C9.22386 3 9 2.77614 9 2.5ZM2.5 9C2.77614 9 3 9.22386 3 9.5V12H5.5C5.77614 12 6 12.2239 6 12.5C6 12.7761 5.77614 13 5.5 13H2.5C2.22386 13 2 12.7761 2 12.5V9.5C2 9.22386 2.22386 9 2.5 9ZM12.5 9C12.7761 9 13 9.22386 13 9.5V12.5C13 12.7761 12.7761 13 12.5 13H9.5C9.22386 13 9 12.7761 9 12.5C9 12.2239 9.22386 12 9.5 12H12V9.5C12 9.22386 12.2239 9 12.5 9Z" fill="currentColor" fill-rule="evenodd" /> </svg>`;
+      const liveIcon = `<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.98959 4.92865C6.28249 5.22155 6.28249 5.69642 5.98959 5.98931C2.67014 9.30877 2.67014 14.6907 5.98959 18.0101C6.28249 18.303 6.28249 18.7779 5.98959 19.0708C5.6967 19.3637 5.22183 19.3637 4.92893 19.0708C1.02369 15.1655 1.02369 8.8339 4.92893 4.92865C5.22183 4.63576 5.6967 4.63576 5.98959 4.92865ZM19.0711 4.92865C22.9763 8.8339 22.9763 15.1655 19.0711 19.0708C18.7782 19.3637 18.3033 19.3637 18.0104 19.0708C17.7175 18.7779 17.7175 18.303 18.0104 18.0101C21.3299 14.6907 21.3299 9.30877 18.0104 5.98931C17.7175 5.69642 17.7175 5.22155 18.0104 4.92865C18.3033 4.63576 18.7782 4.63576 19.0711 4.92865ZM8.81802 7.75708C9.11091 8.04997 9.11091 8.52485 8.81802 8.81774C7.06066 10.5751 7.06066 13.4243 8.81802 15.1817C9.11091 15.4746 9.11091 15.9495 8.81802 16.2424C8.52513 16.5353 8.05025 16.5353 7.75736 16.2424C5.41421 13.8992 5.41421 10.1002 7.75736 7.75708C8.05025 7.46419 8.52513 7.46419 8.81802 7.75708ZM16.2426 7.75708C18.5858 10.1002 18.5858 13.8992 16.2426 16.2424C15.9497 16.5353 15.4749 16.5353 15.182 16.2424C14.8891 15.9495 14.8891 15.4746 15.182 15.1817C16.9393 13.4243 16.9393 10.5751 15.182 8.81774C14.8891 8.52485 14.8891 8.04997 15.182 7.75708C15.4749 7.46419 15.9497 7.46419 16.2426 7.75708ZM12 10.4997C12.8284 10.4997 13.5 11.1713 13.5 11.9997C13.5 12.8281 12.8284 13.4997 12 13.4997C11.1716 13.4997 10.5 12.8281 10.5 11.9997C10.5 11.1713 11.1716 10.4997 12 10.4997Z" fill="curre"ntColor/></svg>`
       const initialObj = {
         selector: null,
         width: 800,
@@ -28,7 +28,7 @@
         url: null,
         dashjs: null,
         hlsjs: null,
-        id: null
+        id: null,
       };
       const videoManiaInitEvent = new Event("videoManiaInit");
 
@@ -37,11 +37,17 @@
         script.src = url;
         script.id = `videomania-${id}`;
         document.body.append(script);
-        return script
+        return script;
+      }
+
+      function videoManiaLive() {
+        const live = document.createElement('live')
+        live.innerHTML = liveIcon
+        live.append("Live")
+        return live
       }
 
       function videoMania(obj = initialObj) {
-
         const settings = {
           ...initialObj,
           ...obj,
@@ -59,9 +65,7 @@
         const timelineProgressbar = document.createElement(
           "timeline-progressbar"
         );
-        const timelineBuffer = document.createElement(
-          "timeline-buffer"
-        );
+        const timelineBuffer = document.createElement("timeline-buffer");
         const timelineProgress = document.createElement("timeline-progress");
         let paused = false;
         let fullscreen = false;
@@ -110,7 +114,7 @@
           const selectedKeys = ["Enter", " "];
           selectedKeys.includes(e.key) &&
             play.dispatchEvent(new Event("click"));
-        });        
+        });
 
         let startInterval;
 
@@ -121,14 +125,14 @@
           }, 200);
         });
 
-        video.addEventListener('timeupdate', function() {
+        video.addEventListener("timeupdate", function () {
           if (!startInterval) {
             timelineProgress.style.width =
               (video.currentTime / video.duration) * 100 + "%";
             timelineBuffer.style.width =
-            (video.buffered.end(0) / video.duration) * 100 + "%";
+              (video.buffered.end(0) / video.duration) * 100 + "%";
           }
-        })
+        });
 
         video.addEventListener("pause", function () {
           if (startInterval) {
@@ -141,21 +145,23 @@
           }, 200);
         });
 
-        video.id = `videoMania-video-${settings.id}`
+        video.id = `videoMania-video-${settings.id}`;
 
-        timelineProgressbar.addEventListener('click', e => {
+        timelineProgressbar.addEventListener("click", (e) => {
           // const clientRectLeft = timelineProgressbar.clientLeft
-          const clientRectLeft = timelineProgressbar.getBoundingClientRect().x
-          const clientRectWidth = timelineProgressbar.getBoundingClientRect().width
-          const timelineWidth =  clientRectWidth
-          const timelinePosition = e.clientX - clientRectLeft
-          video.currentTime = (timelinePosition / timelineWidth) * video.duration
-          console.log(timelineWidth)
-          console.log(clientRectWidth)
-        })        
+          const clientRectLeft = timelineProgressbar.getBoundingClientRect().x;
+          const clientRectWidth =
+            timelineProgressbar.getBoundingClientRect().width;
+          const timelineWidth = clientRectWidth;
+          const timelinePosition = e.clientX - clientRectLeft;
+          video.currentTime =
+            (timelinePosition / timelineWidth) * video.duration;
+          console.log(timelineWidth);
+          console.log(clientRectWidth);
+        });
 
         player.classList.add("videoMania");
-        player.id = settings.id
+        player.id = settings.id;
 
         overlayplay.role = "button";
         overlayplay.tabIndex = "1";
@@ -173,7 +179,7 @@
 
         if (settings.url && settings.selector) {
           paused = settings.autoplay;
-          
+
           function videoAppend() {
             timelineProgressbar.append(timelineBuffer);
             timelineProgressbar.append(timelineProgress);
@@ -184,41 +190,60 @@
           }
 
           function videoManiaDashjs() {
-            document.querySelector(settings.selector).dispatchEvent(videoManiaInitEvent);
+            document
+              .querySelector(settings.selector)
+              .dispatchEvent(videoManiaInitEvent);
             const vdo = dashjs.MediaPlayer().create();
-            const appendedVideo = document.querySelector(`${settings.selector} video`);
+            const appendedVideo = document.querySelector(
+              `${settings.selector} video`
+            );
             vdo.initialize(appendedVideo, settings.url, true);
           }
 
           function videoManiaHlsjs() {
-            document.querySelector(settings.selector).dispatchEvent(videoManiaInitEvent);
-            const appendedVideo = document.querySelector(`${settings.selector} video`);
+            document
+              .querySelector(settings.selector)
+              .dispatchEvent(videoManiaInitEvent);
+            const appendedSelector = document.querySelector(settings.selector);
+            const appendedVideo = appendedSelector.querySelector(
+              `${settings.selector} video`
+            );
             const videoSrc = settings.url;
             if (Hls.isSupported()) {
               const hls = new Hls();
               hls.loadSource(videoSrc);
               hls.attachMedia(appendedVideo);
-            } else if (appendedVideo.canPlayType("application/vnd.apple.mpegurl")) {
+              hls.on(Hls.Events.LEVEL_LOADED, async function (name, event) {
+                if(event.details.live && !appendedSelector.querySelector('live')) {
+                  appendedSelector.querySelector('timeline').remove()
+                  const live = videoManiaLive()
+                  appendedSelector.querySelector('play').after(live)
+                  
+                }
+              });
+            } else if (
+              appendedVideo.canPlayType("application/vnd.apple.mpegurl")
+            ) {
               appendedVideo.src = videoSrc;
             }
           }
 
           // Dynamic Adaptive Dash js
           if (settings.dashjs) {
-            if(!document.querySelector("script#videomania-dashjs")) {
-              const script = addScript(settings.dashjs, 'dashjs');
-              script.onload = videoManiaDashjs
+            if (!document.querySelector("script#videomania-dashjs")) {
+              const script = addScript(settings.dashjs, "dashjs");
+              script.onload = videoManiaDashjs;
             } else {
-              videoManiaDashjs()
+              videoManiaDashjs();
             }
           }
           // HTTP Live Steam js
           else if (settings.hlsjs) {
-            if(!document.querySelector("script#videomania-hlsjs")) {
-              const script = addScript(settings.hlsjs, 'hlsjs');
+            if (!document.querySelector("script#videomania-hlsjs")) {
+              const script = addScript(settings.hlsjs, "hlsjs");
               script.onload = videoManiaHlsjs;
             } else {
-              videoManiaHlsjs()
+              videoManiaHlsjs();
             }
           }
 
@@ -234,10 +259,14 @@
             video.autoplay && video.played ? "played" : "paused";
 
           if (!settings.dashjs || !settings.hlsjs) {
-            document.querySelector(settings.selector).dispatchEvent(videoManiaInitEvent);
+            document
+              .querySelector(settings.selector)
+              .dispatchEvent(videoManiaInitEvent);
           }
 
-          document.querySelector(settings.selector).addEventListener("videoManiaInit", videoAppend);
+          document
+            .querySelector(settings.selector)
+            .addEventListener("videoManiaInit", videoAppend);
         }
       }
 
