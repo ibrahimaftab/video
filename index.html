@@ -54,11 +54,13 @@
         const playerbar = document.createElement("playerbar");
         const play = document.createElement("play");
         const timeline = document.createElement("timeline");
-        const start = document.createElement("start");
         const end = document.createElement("end");
         const toggleScreen = document.createElement("toggle-screen");
         const timelineProgressbar = document.createElement(
           "timeline-progressbar"
+        );
+        const timelineBuffer = document.createElement(
+          "timeline-buffer"
         );
         const timelineProgress = document.createElement("timeline-progress");
         let paused = false;
@@ -117,6 +119,8 @@
             startInterval = setInterval(() => {
               timelineProgress.style.width =
                 (video.currentTime / video.duration) * 100 + "%";
+              timelineBuffer.style.width =
+              (video.buffered.end(0) / video.duration) * 100 + "%";
             }, 200);
           }
           overlayplay.classList.add("active");
@@ -147,7 +151,6 @@
         play.tabIndex = "2";
         play.innerHTML = playPauseIcon;
 
-        start.textContent = "0:00";
         end.textContent = "0:00";
 
         toggleScreen.role = "button";
@@ -158,8 +161,9 @@
           paused = settings.autoplay;
           
           function videoAppend() {
+            timelineProgressbar.append(timelineBuffer);
             timelineProgressbar.append(timelineProgress);
-            timeline.append(start, timelineProgressbar, end);
+            timeline.append(timelineProgressbar, end);
             playerbar.append(play, timeline, toggleScreen);
             player.append(video, overlayplay, playerbar);
             document.querySelector(settings.selector).append(player);
