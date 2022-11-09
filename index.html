@@ -8,211 +8,16 @@
     <link rel="stylesheet" href="player.css" />
   </head>
   <body>
-    <!-- <div
-      class="player"
-      id="player"
-      style="width: 800px; height: 450; margin: auto"
-    >
-      <video autoplay width="800" height="450" muted loop></video>
-      <div class="overlayplay" role="button" tabindex="1">
-        <svg
-          class="play-icon"
-          style="enable-background: new 0 0 512 512"
-          version="1.1"
-          viewBox="0 0 512 512"
-          width="512px"
-          xml:space="preserve"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlns:xlink="http://www.w3.org/1999/xlink"
-        >
-          <path
-            d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"
-          />
-        </svg>
-        <svg
-          class="pause-icon"
-          viewBox="0 0 32 32"
-          width="32"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"
-          />
-          <path
-            d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"
-          />
-          <rect />
-        </svg>
-      </div>
-      <div class="playerbar">
-        <div class="play" role="button" tabindex="1">
-          <svg
-            class="play-icon"
-            style="enable-background: new 0 0 512 512"
-            version="1.1"
-            viewBox="0 0 512 512"
-            width="512px"
-            xml:space="preserve"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-          >
-            <path
-              d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z"
-            />
-          </svg>
-          <svg
-            class="pause-icon"
-            viewBox="0 0 32 32"
-            width="32"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"
-            />
-            <path
-              d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z"
-            />
-            <rect />
-          </svg>
-        </div>
-        <div class="timeline">
-          <div class="start">0:00</div>
-          <div class="timeline-progressbar">
-            <div class="timeline-progress"></div>
-          </div>
-          <div class="end">0:00</div>
-        </div>
-        <div class="togglescreen" role="button" tabindex="2">
-          <svg
-            fill="none"
-            viewBox="0 0 15 15"
-            width="15"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              clip-rule="evenodd"
-              d="M2 2.5C2 2.22386 2.22386 2 2.5 2H5.5C5.77614 2 6 2.22386 6 2.5C6 2.77614 5.77614 3 5.5 3H3V5.5C3 5.77614 2.77614 6 2.5 6C2.22386 6 2 5.77614 2 5.5V2.5ZM9 2.5C9 2.22386 9.22386 2 9.5 2H12.5C12.7761 2 13 2.22386 13 2.5V5.5C13 5.77614 12.7761 6 12.5 6C12.2239 6 12 5.77614 12 5.5V3H9.5C9.22386 3 9 2.77614 9 2.5ZM2.5 9C2.77614 9 3 9.22386 3 9.5V12H5.5C5.77614 12 6 12.2239 6 12.5C6 12.7761 5.77614 13 5.5 13H2.5C2.22386 13 2 12.7761 2 12.5V9.5C2 9.22386 2.22386 9 2.5 9ZM12.5 9C12.7761 9 13 9.22386 13 9.5V12.5C13 12.7761 12.7761 13 12.5 13H9.5C9.22386 13 9 12.7761 9 12.5C9 12.2239 9.22386 12 9.5 12H12V9.5C12 9.22386 12.2239 9 12.5 9Z"
-              fill="currentColor"
-              fill-rule="evenodd"
-            />
-          </svg>
-        </div>
-      </div>
-    </div> -->
 
     <div id="player"></div>
+    <div id="player2"></div>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script> -->
 
     <script>
-      const player = document.createElement("player");
-      const video = document.createElement("video");
-      const width = 800;
-      const height = 450;
-      const overlayplay = document.createElement("overlayplay");
-      const playerbar = document.createElement("playerbar");
-      const play = document.createElement("play");
       const playPauseIcon =
         '<svg class="play-icon" style="enable-background: new 0 0 512 512" version="1.1" viewBox="0 0 512 512" width="512px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" > <path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z" /> </svg> <svg class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg" > <path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <rect /> </svg>';
       const fullscreenIcon = `<svg fill="none" viewBox="0 0 15 15" width="15" xmlns="http://www.w3.org/2000/svg" > <path clip-rule="evenodd" d="M2 2.5C2 2.22386 2.22386 2 2.5 2H5.5C5.77614 2 6 2.22386 6 2.5C6 2.77614 5.77614 3 5.5 3H3V5.5C3 5.77614 2.77614 6 2.5 6C2.22386 6 2 5.77614 2 5.5V2.5ZM9 2.5C9 2.22386 9.22386 2 9.5 2H12.5C12.7761 2 13 2.22386 13 2.5V5.5C13 5.77614 12.7761 6 12.5 6C12.2239 6 12 5.77614 12 5.5V3H9.5C9.22386 3 9 2.77614 9 2.5ZM2.5 9C2.77614 9 3 9.22386 3 9.5V12H5.5C5.77614 12 6 12.2239 6 12.5C6 12.7761 5.77614 13 5.5 13H2.5C2.22386 13 2 12.7761 2 12.5V9.5C2 9.22386 2.22386 9 2.5 9ZM12.5 9C12.7761 9 13 9.22386 13 9.5V12.5C13 12.7761 12.7761 13 12.5 13H9.5C9.22386 13 9 12.7761 9 12.5C9 12.2239 9.22386 12 9.5 12H12V9.5C12 9.22386 12.2239 9 12.5 9Z" fill="currentColor" fill-rule="evenodd" /> </svg>`;
-      const timeline = document.createElement("timeline");
-      const start = document.createElement("start");
-      const end = document.createElement("end");
-      const toggleScreen = document.createElement("toggle-screen");
-      const timelineProgressbar = document.createElement(
-        "timeline-progressbar"
-      );
-      const timelineProgress = document.createElement("timeline-progress");
-      let paused = false;
-      let fullscreen = false;
-
-      player.addEventListener("keydown", function (e) {
-        if (e.key === "f") {
-          document.fullscreen
-            ? document.exitFullscreen()
-            : player.requestFullscreen();
-        }
-      });
-
-      toggleScreen.addEventListener("click", (e) => {
-        e.preventDefault();
-        fullscreen = !fullscreen;
-        fullscreen ? player.requestFullscreen() : document.exitFullscreen();
-      });
-
-      toggleScreen.addEventListener("keydown", (e) => {
-        e.preventDefault();
-        const selectedKeys = ["Enter", " "];
-        selectedKeys.includes(e.key) &&
-          toggleScreen.dispatchEvent(new Event("click"));
-      });
-
-      play.addEventListener("click", (e) => {
-        e.preventDefault();
-        paused = !paused;
-        paused ? video.pause() : video.play();
-        player.dataset.toggle = paused ? "paused" : "played";
-      });
-
-      play.addEventListener("keydown", (e) => {
-        e.preventDefault();
-        const selectedKeys = ["Enter", " "];
-        selectedKeys.includes(e.key) && play.dispatchEvent(new Event("click"));
-      });
-
-      overlayplay.addEventListener("click", (e) => {
-        play.dispatchEvent(new Event("click"));
-      });
-
-      overlayplay.addEventListener("keydown", (e) => {
-        e.preventDefault();
-        const selectedKeys = ["Enter", " "];
-        selectedKeys.includes(e.key) && play.dispatchEvent(new Event("click"));
-      });
-
-      let startInterval;
-
-      video.addEventListener("play", function () {
-        if (!startInterval) {
-          startInterval = setInterval(() => {
-            timelineProgress.style.width =
-              (video.currentTime / video.duration) * 100 + "%";
-          }, 200);
-        }
-        overlayplay.classList.add("active");
-        setTimeout(() => {
-          overlayplay.classList.remove("active");
-        }, 1e3);
-      });
-
-      video.addEventListener("pause", function () {
-        if (startInterval) {
-          clearInterval(startInterval);
-          startInterval = null;
-        }
-        overlayplay.classList.add("active");
-        setTimeout(() => {
-          overlayplay.classList.remove("active");
-        }, 1e3);
-      });
-
-      player.classList.add("player");
-
-      overlayplay.role = "button";
-      overlayplay.tabIndex = "1";
-      overlayplay.innerHTML = playPauseIcon;
-
-      play.role = "button";
-      play.tabIndex = "2";
-      play.innerHTML = playPauseIcon;
-
-      start.textContent = "0:00";
-      end.textContent = "0:00";
-
-      toggleScreen.role = "button";
-      toggleScreen.tabIndex = "3";
-      toggleScreen.innerHTML = fullscreenIcon;
-
       const initialObj = {
         selector: null,
         width: 800,
@@ -223,62 +28,186 @@
         url: null,
         dashjs: null,
         hlsjs: null,
+        id: null
       };
+      const videoManiaInitEvent = new Event("videoManiaInit");
+
+      function addScript(url, id) {
+        const script = document.createElement("script");
+        script.src = url;
+        script.id = `videomania-${id}`;
+        document.body.append(script);
+        return script
+      }
 
       function videoMania(obj = initialObj) {
+
         const settings = {
           ...initialObj,
           ...obj,
         };
+        const player = document.createElement("player");
+        const video = document.createElement("video");
+        const width = 800;
+        const height = 450;
+        const overlayplay = document.createElement("overlayplay");
+        const playerbar = document.createElement("playerbar");
+        const play = document.createElement("play");
+        const timeline = document.createElement("timeline");
+        const start = document.createElement("start");
+        const end = document.createElement("end");
+        const toggleScreen = document.createElement("toggle-screen");
+        const timelineProgressbar = document.createElement(
+          "timeline-progressbar"
+        );
+        const timelineProgress = document.createElement("timeline-progress");
+        let paused = false;
+        let fullscreen = false;
+
+        player.addEventListener("keydown", function (e) {
+          if (e.key === "f") {
+            document.fullscreen
+              ? document.exitFullscreen()
+              : player.requestFullscreen();
+          }
+        });
+
+        toggleScreen.addEventListener("click", (e) => {
+          e.preventDefault();
+          fullscreen = !fullscreen;
+          fullscreen ? player.requestFullscreen() : document.exitFullscreen();
+        });
+
+        toggleScreen.addEventListener("keydown", (e) => {
+          e.preventDefault();
+          const selectedKeys = ["Enter", " "];
+          selectedKeys.includes(e.key) &&
+            toggleScreen.dispatchEvent(new Event("click"));
+        });
+
+        play.addEventListener("click", (e) => {
+          e.preventDefault();
+          paused = !paused;
+          paused ? video.pause() : video.play();
+          player.dataset.toggle = paused ? "paused" : "played";
+        });
+
+        play.addEventListener("keydown", (e) => {
+          e.preventDefault();
+          const selectedKeys = ["Enter", " "];
+          selectedKeys.includes(e.key) &&
+            play.dispatchEvent(new Event("click"));
+        });
+
+        overlayplay.addEventListener("click", (e) => {
+          play.dispatchEvent(new Event("click"));
+        });
+
+        overlayplay.addEventListener("keydown", (e) => {
+          e.preventDefault();
+          const selectedKeys = ["Enter", " "];
+          selectedKeys.includes(e.key) &&
+            play.dispatchEvent(new Event("click"));
+        });
+
+        let startInterval;
+
+        video.addEventListener("play", function () {
+          if (!startInterval) {
+            startInterval = setInterval(() => {
+              timelineProgress.style.width =
+                (video.currentTime / video.duration) * 100 + "%";
+            }, 200);
+          }
+          overlayplay.classList.add("active");
+          setTimeout(() => {
+            overlayplay.classList.remove("active");
+          }, 200);
+        });
+
+        video.addEventListener("pause", function () {
+          if (startInterval) {
+            clearInterval(startInterval);
+            startInterval = null;
+          }
+          overlayplay.classList.add("active");
+          setTimeout(() => {
+            overlayplay.classList.remove("active");
+          }, 200);
+        });
+
+        player.classList.add("videoMania");
+        player.id = settings.id
+
+        overlayplay.role = "button";
+        overlayplay.tabIndex = "1";
+        overlayplay.innerHTML = playPauseIcon;
+
+        play.role = "button";
+        play.tabIndex = "2";
+        play.innerHTML = playPauseIcon;
+
+        start.textContent = "0:00";
+        end.textContent = "0:00";
+
+        toggleScreen.role = "button";
+        toggleScreen.tabIndex = "3";
+        toggleScreen.innerHTML = fullscreenIcon;
 
         if (settings.url && settings.selector) {
-          paused = settings.autoplay
+          paused = settings.autoplay;
+          
           function videoAppend() {
             timelineProgressbar.append(timelineProgress);
             timeline.append(start, timelineProgressbar, end);
             playerbar.append(play, timeline, toggleScreen);
             player.append(video, overlayplay, playerbar);
-            document.querySelector(settings.selector).append(player)
+            document.querySelector(settings.selector).append(player);
           }
 
-          const videoMainiaInitEvent = new Event("videoMainaiInit");
+          function videoManiaDashjs() {
+            document.querySelector(settings.selector).dispatchEvent(videoManiaInitEvent);
+            const vdo = dashjs.MediaPlayer().create();
+            const appendedVideo = document.querySelector(`${settings.selector} video`);
+            vdo.initialize(appendedVideo, settings.url, true);
+          }
+
+          function videoManiaHlsjs() {
+            document.querySelector(settings.selector).dispatchEvent(videoManiaInitEvent);
+            const appendedVideo = document.querySelector(`${settings.selector} video`);
+            const videoSrc = settings.url;
+            if (Hls.isSupported()) {
+              const hls = new Hls();
+              hls.loadSource(videoSrc);
+              hls.attachMedia(appendedVideo);
+            } else if (appendedVideo.canPlayType("application/vnd.apple.mpegurl")) {
+              appendedVideo.src = videoSrc;
+            }
+          }
 
           // Dynamic Adaptive Dash js
           if (settings.dashjs) {
-            const script = document.createElement("script");
-            script.src = settings.dashjs;
-            document.body.append(script);
-            script.onload = function () {
-              console.log(settings.url)
-              document.dispatchEvent(videoMainiaInitEvent);
-              const vdo = dashjs.MediaPlayer().create();
-              const appendedVideo = document.querySelector('player video')
-              vdo.initialize(appendedVideo, settings.url, true);
-            };
+            if(!document.querySelector("script#videomania-dashjs")) {
+              const script = addScript(settings.dashjs, 'dashjs');
+              script.onload = videoManiaDashjs
+            } else {
+              videoManiaDashjs()
+            }
           }
           // HTTP Live Steam js
           else if (settings.hlsjs) {
-            const script = document.createElement("script");
-            script.src = settings.hlsjs;
-            document.body.append(script);
-            script.onload(function () {
-              const videoSrc = settings.url;
-              if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(videoSrc);
-                hls.attachMedia(video);
-              } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-                video.src = videoSrc;
-              }
-
-              document.dispatchEvent(videoMainiaInitEvent);
-            });
+            if(!document.querySelector("script#videomania-hlsjs")) {
+              const script = addScript(settings.hlsjs, 'hlsjs');
+              script.onload = videoManiaHlsjs;
+            } else {
+              videoManiaHlsjs()
+            }
           }
 
           player.style = `width: ${settings.width}px; height: ${settings.height}px; margin: auto`;
 
-          video.width = settings.width + "px";
-          video.height = settings.height + "px";
+          video.width = settings.width;
+          video.height = settings.height;
           video.autoplay = settings.autoplay;
           video.muted = settings.muted;
           video.loop = settings.loop;
@@ -287,18 +216,34 @@
             video.autoplay && video.played ? "played" : "paused";
 
           if (!settings.dashjs || !settings.hlsjs) {
-            document.dispatchEvent(videoMainiaInitEvent);
+            document.querySelector(settings.selector).dispatchEvent(videoManiaInitEvent);
           }
-          
-          document.addEventListener("videoMainaiInit", videoAppend);
+
+          document.querySelector(settings.selector).addEventListener("videoManiaInit", videoAppend);
         }
       }
 
       videoMania({
         selector: "#player",
+        id: "player",
         url: "https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd",
         dashjs:
           "https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js",
+        autoplay: true,
+        muted: true,
+        width: 800,
+        height: 480,
+      });
+
+      videoMania({
+        selector: "#player2",
+        id: "player2",
+        url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
+        hlsjs: "https://cdn.jsdelivr.net/npm/hls.js@1",
+        autoplay: true,
+        muted: true,
+        width: 800,
+        height: 480,
       });
     </script>
   </body>

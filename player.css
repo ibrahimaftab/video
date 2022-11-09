@@ -1,115 +1,130 @@
+@keyframes scaleButton {
+  from {
+    transform: scale(0.5)
+  }
+}
 
-  player {
-    display: block;
-    position: relative;
-    font-size: 20px;
-    background-color: #111;
-    color: white;
-  }
-  player video {
-    pointer-events: none;
-    display: block;
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
-  playerbar {
-    z-index: 1;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-image: linear-gradient(transparent,rgba(0,0,0,0.5));
-    padding: 1em;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5em;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 300ms linear, visibility 300ms linear;
-  }
-  player:hover playerbar,
-  player:focus playerbar {
-    transition-delay: 0;
-    opacity: 1;
-    visibility: visible;
-  }
-  player play, player toggle-screen {
-    width: 1.5em;
-    height: 1.5em;
-    display: block;
-    cursor: pointer;
-  }
-  player svg {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    fill: currentColor;
-    pointer-events: none;
-  }
-  overlayplay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.2);
-    z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 300ms linear;
-  }
+player {
+  display: block;
+  position: relative;
+  font-size: 20px;
+  background-color: #111;
+  color: white;
+}
+player video {
+  pointer-events: none;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+playerbar {
+  z-index: 1;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  padding: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5em;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms linear, visibility 300ms linear;
+}
+player:hover playerbar,
+player:focus playerbar {
+  transition-delay: 0;
+  opacity: 1;
+  visibility: visible;
+}
+player play,
+player toggle-screen {
+  width: 1.5em;
+  height: 1.5em;
+  display: block;
+  cursor: pointer;
+}
+player svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  fill: currentColor;
+  pointer-events: none;
+}
+overlayplay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 200ms;
+  transition-timing-function: linear;
+}
 
-  overlayplay.active {
-    opacity: 1;
-  }
+overlayplay.active {
+  opacity: 1;
+}
 
-  overlayplay svg {
-    width: 7em;
-    height: 7em;
-    opacity: 0.5;
-  }
- 
-  player:not([data-toggle="paused"]) .play-icon {
-    display: none;
-  }
- 
-  player:not([data-toggle="played"]) .pause-icon {
-    display: none;
-  }
-  
-  player:not([data-toggle="played"]):not([data-toggle="paused"]) .pause-icon {
-    display: block;
-  }
-  player timeline {
-    flex: 1;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-    font-family: Arial, sans-serif;
-    font-size: 0.8em;
-    gap: 1rem;
-    color: rgba(255,255,255,0.75)
-  }
+overlayplay svg {
+  width: 7em;
+  height: 7em;
+  opacity: 0.5;
+  transition-property: transform;
+  transition-duration: 200ms;
+  transition-timing-function: linear;
+}
 
-  player timeline-progressbar {
-    flex: 1;
-    background-color: rgba(255,255,255,0.2);
-    border-radius: 0.35em;
-    overflow: hidden;
-    height: 0.5em;
-  }
-  player timeline-progressbar timeline-progress {
-    display: block;
-    border-radius: 0.5em;
-    background-color: white;
-    height: 100%;
-  }
+overlayplay.active svg {
+  animation: scaleButton 200ms linear;
+}
+
+player:not([data-toggle="paused"]) .play-icon {
+  display: none;
+}
+
+player:not([data-toggle="played"]) .pause-icon {
+  display: none;
+}
+
+player:not([data-toggle="played"]):not([data-toggle="paused"]) .pause-icon {
+  display: block;
+}
+player timeline {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  font-size: 0.8em;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+player timeline-progressbar {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 0.35em;
+  overflow: hidden;
+  height: 0.5em;
+}
+player timeline-progressbar timeline-progress {
+  display: block;
+  border-radius: 0.5em;
+  background-color: white;
+  height: 100%;
+}
