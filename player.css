@@ -24,6 +24,11 @@ player {
   background-color: #111;
   color: white;
   overflow: hidden;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+}
+player * {
+  outline: none
 }
 player video {
   pointer-events: none;
@@ -39,7 +44,7 @@ playerbar {
   bottom: 0;
   left: 0;
   right: 0;
-  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
   padding: 1em;
   display: flex;
   flex-wrap: wrap;
@@ -48,6 +53,11 @@ playerbar {
   opacity: 0;
   visibility: hidden;
   transition: opacity 300ms linear, visibility 300ms linear;
+  will-change: opacity, visibility;
+}
+playerbar end {
+  cursor: pointer;
+  user-select: none;
 }
 player:hover playerbar,
 player:focus playerbar {
@@ -56,11 +66,31 @@ player:focus playerbar {
   visibility: visible;
 }
 player play,
-player toggle-screen {
+player toggle-screen,
+player audio-icon,
+player setting {
   width: 1.5em;
   height: 1.5em;
   display: block;
   cursor: pointer;
+  position: relative;
+}
+player setting svg {
+  transform: scale(0.8)
+}
+player audio-icon,
+player setting {
+  position: relative;
+}
+player audio-icon:hover dropdown,
+player setting:hover dropdown {
+  display: block;
+}
+player audio-icon span,
+player setting span {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 player svg {
   width: 100%;
@@ -68,6 +98,9 @@ player svg {
   object-fit: contain;
   fill: currentColor;
   pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,0.4));
+  display: block;
 }
 player live {
   display: flex;
@@ -75,7 +108,6 @@ player live {
   align-items: center;
   gap: 0.5em;
   text-transform: uppercase;
-  font-family: Arial, Helvetica, sans-serif;
   font-size: 0.7em;
   font-weight: 700;
   justify-self: flex-start;
@@ -103,6 +135,7 @@ overlayplay {
   transition-property: opacity;
   transition-duration: 200ms;
   transition-timing-function: linear;
+  will-change: opacity;
 }
 
 overlayplay.active {
@@ -116,10 +149,12 @@ overlayplay svg {
   transition-property: transform;
   transition-duration: 200ms;
   transition-timing-function: linear;
+  will-change: transform;
 }
 
 overlayplay.active svg {
   animation: scaleButton 200ms linear;
+  will-change: transform;
 }
 
 player:not([data-toggle="paused"]) .play-icon {
@@ -140,7 +175,6 @@ player timeline {
   justify-content: space-between;
   align-items: center;
   font-weight: 700;
-  font-family: Arial, sans-serif;
   font-size: 0.8em;
   gap: 1rem;
   color: rgba(255, 255, 255, 0.75);
@@ -154,13 +188,17 @@ player timeline-progressbar {
   height: 0.5em;
   position: relative;
   cursor: pointer;
+  overflow: hidden;
 }
 player timeline-progressbar timeline-progress {
   display: block;
   border-radius: 0.5em;
   background-color: white;
   height: 100%;
-  transition: transform 150ms linear;
+  transition: transform 50ms linear;
+  transform-origin: left;
+  will-change: transform;
+  overflow: hidden;
 }
 player timeline-buffer {
   position: absolute;
@@ -170,4 +208,77 @@ player timeline-buffer {
   bottom: 0;
   border-radius: 0.5em;
   background-color: rgba(255,255,255,0.3);
+  transition: transform 50ms linear;
+  transform-origin: left;
+  will-change: transform;
+  overflow: hidden;
+}
+
+player loader,
+player forward-rewind {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+player loader svg,
+player forward-rewind svg {
+  width: 5em;
+  height: 5em;
+  will-change: transform;
+}
+
+player forward-rewind svg {
+  opacity: 0.5;
+  animation: scaleButton 100ms linear;
+}
+
+dropdown {
+  background-color: rgba(10,10,10,0.8);
+  border-radius: 0.75rem;
+  padding-block: 0.5em;
+  backdrop-filter: blur(20px);
+  position: absolute;
+  bottom: 1.5em;
+  right: 0;
+  width: 10em;
+  display: none;
+}
+
+dropdown nav {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+dropdown button {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding: 0.35em 1em;
+  cursor: pointer;
+}
+
+dropdown button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 0;
+}
+
+dropdown nav + nav {
+  display: none;
 }
