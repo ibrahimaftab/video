@@ -73,8 +73,14 @@ player setting {
   width: 1.5em;
   height: 1.5em;
   display: block;
-  cursor: pointer;
   position: relative;
+}
+player play,
+player toggle-screen,
+player audio-icon span,
+player setting span {
+  cursor: pointer;
+
 }
 player setting svg {
   transform: scale(0.8)
@@ -255,10 +261,11 @@ dropdown {
   visibility: hidden;
   display: flex;
   overflow: hidden;
-  height: 6em;
+  /* height: 6em; */
   transition-property: opacity, visibility, height;
-  transition-duration: 150ms, 150ms, 300ms;
+  transition-duration: 150ms, 150ms, 150ms;
   transition-timing-function: linear;
+  align-items: flex-end;
 }
 
 dropdown nav {
@@ -285,8 +292,13 @@ dropdown button {
   transition: background-color 150ms linear;
 }
 
-dropdown button:hover {
+dropdown button:hover,
+dropdown button.active {
   background-color: rgba(255,255,255,0.055);
+}
+
+dropdown button.active:before {
+  content: '\2713'
 }
 
 dropdown button svg {
@@ -327,6 +339,10 @@ dropdown nav#playback-list {
   height: 14em;
 }
 
+dropdown nav#quality-list {
+  transform: translateX(-100%)
+}
+
 dropdown.show-playback {
   height: 14em;
 }
@@ -337,12 +353,23 @@ dropdown.dropdown-active nav:first-child {
   visibility: hidden;
 }
 
-dropdown.show-playback:not(.dropdown-active) nav + nav  {
+dropdown.show-playback:not(.dropdown-active) nav + nav,
+dropdown.show-quality:not(.dropdown-active) nav + nav {
     display: none;
 }
 
-dropdown.show-playback.dropdown-active nav#playback-list {
-  transform: translateX(-100%);
+dropdown.show-playback.dropdown-active nav#playback-list,
+dropdown.show-quality.dropdown-active nav#quality-list {
   opacity: 1;
   visibility: visible;
+}
+
+
+dropdown.show-playback.dropdown-active nav#playback-list {
+  transform: translateX(-100%);
+}
+
+dropdown.show-quality.dropdown-active nav#quality-list {
+  transform: translateX(-200%);
+
 }
