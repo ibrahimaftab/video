@@ -1,0 +1,23 @@
+{
+  "name": "videomania",
+  "version": "1.0.0",
+  "description": "Custom Video Player",
+  "main": "dash.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibrahimaftab/video.git"
+  },
+  "keywords": [
+    "custom-video-player",
+    "video-player"
+  ],
+  "author": "Ibrahim Aftab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ibrahimaftab/video/issues"
+  },
+  "homepage": "https://github.com/ibrahimaftab/video#readme"
+}
