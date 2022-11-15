@@ -29,7 +29,12 @@ player {
   border-radius: 0.25em;
 }
 player * {
-  outline: none
+  outline: none;
+}
+player *,
+player *:before,
+player *:after {
+  box-sizing: border-box;
 }
 player video {
   pointer-events: none;
@@ -192,21 +197,37 @@ player timeline-progressbar {
   flex: 1;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 0.35em;
-  overflow: hidden;
   height: 0.5em;
   position: relative;
   cursor: pointer;
-  overflow: hidden;
 }
 player timeline-progressbar timeline-progress {
   display: block;
   border-radius: 0.5em;
   background-color: white;
   height: 100%;
-  transition: transform 50ms linear;
+  transition: width 50ms linear;
   transform-origin: left;
-  will-change: transform;
-  overflow: hidden;
+  will-change: width;
+  position: relative;
+  pointer-events: none;
+  user-select: none;
+}
+player timeline-progressbar timeline-progress:first-of-type:after {
+  content: "";
+  position: absolute;
+  width: 1.25em;
+  height: 1.25em;
+  border-radius: 1.25em;
+  right: -0.675em;
+  top: -0.4em;
+  background-color: white;
+}
+player timeline-progressbar .hover-timeline {
+  margin-top: -0.5em;
+  transition: none;
+  width: 0px;
+  background-color: rgba(255,255,255,0.5);
 }
 player timeline-buffer {
   position: absolute;
@@ -344,7 +365,7 @@ dropdown nav#quality-list {
 }
 
 dropdown.show-playback {
-  height: 14em;
+  height: 14.5em !important;
 }
 
 dropdown.dropdown-active nav:first-child {

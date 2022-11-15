@@ -36,6 +36,125 @@
       const playbackHtml = `<nav id="setting-dropdown"><button id="playback-btn"><svg enable-background="new 0 0 64 64" version="1.1" viewBox="0 0 64 64" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.371,31.879c0,2.19,1.777,3.966,3.966,3.966c1.538,0,2.856-0.884,3.514-2.163l0.011,0.01l7.24-13.062l-12.71,7.794   l0.012,0.012C29.197,29.117,28.371,30.395,28.371,31.879z"/><path d="M48.315,12.981C44.251,9.429,39,7.161,33,6.822v6.027c5,0.318,7.946,1.906,10.904,4.384L48.315,12.981z"/><path d="M51.146,30h6.02c-0.404-6-2.751-10.93-6.395-14.97l-4.259,4.233C49.078,22.203,50.766,26,51.146,30z"/><path d="M51.174,33c-0.637,10-8.922,17.931-19.042,17.931c-10.535,0-19.421-8.544-19.421-19.078C12.711,21.825,21,13.62,30,12.85   V6.823C17,7.602,6.711,18.54,6.711,31.879c0,13.843,11.42,25.052,25.263,25.052C45.406,56.931,56.564,46,57.205,33H51.174z"/></svg> Playback Speed </button><button id="subtitle-btn"><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect height="2" width="6" x="19" y="17"/><rect height="2" width="6" x="11" y="17"/><rect height="2" width="3" x="6" y="17"/><rect height="2" width="4" x="22" y="13"/><rect height="2" width="7" x="13" y="13"/><rect height="2" width="5" x="6" y="13"/><path d="M17.7358,30,16,29l4-7h6a1.9966,1.9966,0,0,0,2-2V8a1.9966,1.9966,0,0,0-2-2H6A1.9966,1.9966,0,0,0,4,8V20a1.9966,1.9966,0,0,0,2,2h9v2H6a3.9993,3.9993,0,0,1-4-4V8A3.9988,3.9988,0,0,1,6,4H26a3.9988,3.9988,0,0,1,4,4V20a3.9993,3.9993,0,0,1-4,4H21.1646Z"/><rect fill="none" height="32" width="32"/></svg> Subtitle </button></nav><nav id="playback-list"><button class="dropdown-back">Playback Speed</button><button>0.25</button><button>0.5</button><button>0.75</button><button>Normal</button><button>1.25</button><button>1.5</button><button>1.75</button><button>2</button></nav>`;
       const qualityBtn = `<button id="quality-btn"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h48v48h-48z" fill="none"/><path d="M6 34v4h12v-4h-12zm0-24v4h20v-4h-20zm20 32v-4h16v-4h-16v-4h-4v12h4zm-12-24v4h-8v4h8v4h4v-12h-4zm28 8v-4h-20v4h20zm-12-8h4v-4h8v-4h-8v-4h-4v12z"/></svg> Quality </button>`;
       const qualityList = `<nav id="quality-list"><button class="dropdown-back">Quality</button></nav>`;
+      const supportedVideoFormat = ["mp4", "webm", "ogg"];
+
+      function videoManiaDashjs(selector, url) {
+        document.querySelector(selector).dispatchEvent(videoManiaInitEvent);
+        const vdo = dashjs.MediaPlayer().create();
+        const appendedSelector = document.querySelector(selector);
+        const appendedVideo = appendedSelector.querySelector(`video`);
+        vdo.initialize(appendedVideo, url, true);
+        vdo.on(
+          dashjs.MediaPlayer.events.BUFFER_LEVEL_STATE_CHANGED,
+          function () {
+            addLoader(appendedSelector);
+          }
+        );
+        vdo.on(dashjs.MediaPlayer.events.BUFFER_LOADED, function () {
+          removeLoader(appendedSelector);
+        });
+        vdo.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (e) {
+          const bitrates = vdo.getBitrateInfoListFor("video");
+          console.log(bitrates);
+          const minQuality = bitrates[0].qualityIndex;
+          if (e.streamInfo.manifestInfo.isDynamic) {
+            videoManiaLive(appendedSelector);
+          }
+          // set max quality
+          vdo.setQualityFor("video", -1);
+
+          if (bitrates.length > 1) {
+            appendedSelector
+              .querySelector("#setting-dropdown")
+              .insertAdjacentHTML("beforeend", qualityBtn);
+            setDropdownSettingHeight(selector);
+            appendedSelector
+              .querySelector("dropdown")
+              .insertAdjacentHTML("beforeend", qualityList);
+            appendedSelector
+              .querySelector(`#quality-btn`)
+              ?.addEventListener("click", () => {
+                const dropdown = appendedSelector.querySelector("dropdown");
+                dropdown.classList.add("show-quality");
+                dropdown.classList.add("dropdown-active");
+              });
+            bitrates.forEach((bitrate, index) => {
+              appendedSelector
+                .querySelector("dropdown #quality-list")
+                .insertAdjacentHTML(
+                  "beforeend",
+                  `<button data-index="${bitrate.qualityIndex}">${bitrate.height}</button>`
+                );
+            });
+            appendedSelector
+              .querySelector("dropdown #quality-list")
+              .insertAdjacentHTML(
+                "beforeend",
+                '<button class="active" data-index="-1">Auto</button>'
+              );
+            videoManiaQualityListHeight(selector);
+            appendedSelector
+              .querySelector(`#quality-list .dropdown-back`)
+              ?.addEventListener("click", () => {
+                const dropdown = appendedSelector.querySelector("dropdown");
+                if (dropdown.classList.contains("dropdown-active")) {
+                  dropdown.classList.remove("dropdown-active");
+                  setTimeout(() => {
+                    dropdown.classList = [];
+                  }, 150);
+                }
+              });
+            appendedSelector
+              .querySelectorAll(`#quality-list button:not(.dropdown-back)`)
+              .forEach(function (elm) {
+                elm.addEventListener("click", (e) => {
+                  const btn = e.target;
+                  if (!elm.classList.contains("active")) {
+                    const { index } = btn.dataset;
+                    appendedSelector
+                      .querySelector(`#quality-list button.active`)
+                      .classList.remove("active");
+                    btn.classList.add("active");
+                    vdo.setQualityFor("video", index);
+                    console.log(index);
+                  }
+                });
+              });
+          }
+        });
+      }
+
+      function videoManiaHlsjs(selector, url) {
+        document.querySelector(selector).dispatchEvent(videoManiaInitEvent);
+        const appendedSelector = document.querySelector(selector);
+        const appendedVideo = appendedSelector.querySelector(
+          `${selector} video`
+        );
+        const videoSrc = url;
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(videoSrc);
+          hls.attachMedia(appendedVideo);
+          hls.on(Hls.Events.LEVEL_LOADED, async function (name, event) {
+            if (event.details.live && !appendedSelector.querySelector("live")) {
+              videoManiaLive(appendedSelector);
+            }
+          });
+        } else if (appendedVideo.canPlayType("application/vnd.apple.mpegurl")) {
+          appendedVideo.src = videoSrc;
+        }
+      }
+
+      const hlsDashjs = (selector, url) => ({
+        m3u8: {
+          url: `https://cdn.jsdelivr.net/npm/hls.js@1`,
+          init: () => videoManiaHlsjs(selector, url),
+        },
+        mpd: {
+          url: `https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js`,
+          init: () => videoManiaDashjs(selector, url),
+        },
+      });
       const initialObj = {
         selector: null,
         width: 800,
@@ -85,6 +204,7 @@
       }
 
       function removeLoader(selector) {
+        console.log(selector.querySelector("loader"));
         if (selector.querySelector("loader")) {
           selector.querySelector("#videoManiaLoader").remove();
         }
@@ -103,13 +223,46 @@
         const seconds = subtract
           ? video.duration - video.currentTime
           : video.duration;
-        date.setSeconds(seconds);
-        const formatDuration = date.toISOString().substr(11, 8);
-        if (formatDuration.split(":")[0] != "00") {
-          return (subtract ? "-" : "") + formatDuration;
+        if (seconds != Infinity) {
+          date.setSeconds(seconds);
+          const formatDuration = date.toISOString().substr(11, 8);
+          if (formatDuration.split(":")[0] != "00") {
+            return (subtract ? "-" : "") + formatDuration;
+          }
+          const splitHMS = formatDuration.split(":");
+          return `${subtract ? "-" : ""}${splitHMS[1]}:${splitHMS[2]}`;
         }
-        const splitHMS = formatDuration.split(":");
-        return `${subtract ? "-" : ""}${splitHMS[1]}:${splitHMS[2]}`;
+      }
+
+      function videoManiaQualityListHeight(selector) {
+        const selectorElement = document.querySelector(`${selector} dropdown`);
+        const selectorComputed = getComputedStyle(selectorElement);
+        const { paddingTop, paddingBottom } = selectorComputed;
+        const { offsetHeight } = document.querySelector(
+          `${selector} #quality-list`
+        );
+        const style = `${selector} dropdown.show-quality{height: ${
+          offsetHeight + parseInt(paddingTop) + parseInt(paddingBottom)
+        }px}`;
+        document
+          .querySelector("#videomania-style")
+          .insertAdjacentHTML("beforeend", style);
+      }
+
+      function setDropdownSettingHeight(selector) {
+        const selectorElementList = document.querySelector(
+          `${selector} #setting-dropdown`
+        );
+        const selectorElement = document.querySelector(`${selector} dropdown`);
+        const { offsetHeight } = selectorElementList;
+        const selectorComputed = getComputedStyle(selectorElement);
+        const { paddingTop, paddingBottom } = selectorComputed;
+        const totalHeight =
+          offsetHeight + parseInt(paddingTop) + parseInt(paddingBottom);
+        const style = `${selector} dropdown{height: ${totalHeight}px}`;
+        document
+          .querySelector("#videomania-style")
+          .insertAdjacentHTML("beforeend", style);
       }
 
       function videoMania(obj = initialObj) {
@@ -300,12 +453,14 @@
 
         video.addEventListener("timeupdate", function () {
           const getEndSubsctract = endSubtract;
-          timelineProgress.style.transform = `scaleX(${
-            video.currentTime / video.duration
-          })`;
+          timelineProgress.style.width =
+            (video.currentTime / video.duration) *
+              timelineProgressbar.clientWidth +
+            "px";
           if (currentUrl == video.src) {
             timelineBuffer.style.transform = `scaleX(${
-              (video.buffered?.end(0) ?? 0) / video.duration
+              (video.buffered?.end(video.buffered.length - 1) ?? 0) /
+              video.duration
             })`;
             currentUrl = video.src;
           }
@@ -327,6 +482,7 @@
         });
 
         video.addEventListener("seeked", function () {
+          console.log("seeked");
           removeLoader(document.querySelector(settings.selector));
         });
 
@@ -338,6 +494,23 @@
             (audioIconSpan.innerHTML = video.muted ? muteIcon : audioIcon);
         });
 
+        timelineProgressbar.addEventListener("mousemove", (e) => {
+          const hoverTimeline = document.querySelector(
+            `${settings.selector} .hover-timeline`
+          );
+          const calcPosition =
+            (e.layerX / e.target.clientWidth) *
+              timelineProgressbar.clientWidth +
+            "px";
+          hoverTimeline.style.width = calcPosition;
+        });
+
+        timelineProgressbar.addEventListener("mouseleave", (e) => {
+          document.querySelector(
+            `${settings.selector} .hover-timeline`
+          ).style.width = `0px`;
+        });
+
         timelineProgressbar.addEventListener("click", (e) => {
           const clientRectLeft = timelineProgressbar.getBoundingClientRect().x;
           const clientRectWidth =
@@ -346,6 +519,10 @@
           const timelinePosition = e.clientX - clientRectLeft;
           video.currentTime =
             (timelinePosition / timelineWidth) * video.duration;
+          timelineProgress.style.width =
+            (video.currentTime / video.duration) *
+              timelineProgressbar.clientWidth +
+            "px";
         });
 
         overlayplay.innerHTML = playPauseIcon;
@@ -375,8 +552,13 @@
           paused = !settings.autoplay && !settings.muted;
 
           function videoAppend() {
-            timelineProgressbar.append(timelineBuffer);
-            timelineProgressbar.append(timelineProgress);
+            const hoverTimelineProgress = timelineProgress.cloneNode();
+            hoverTimelineProgress.classList.add("hover-timeline");
+            timelineProgressbar.append(
+              timelineBuffer,
+              timelineProgress,
+              hoverTimelineProgress
+            );
             timeline.append(timelineProgressbar, end);
             playerbar.append(
               play,
@@ -386,162 +568,110 @@
               toggleScreen
             );
             player.append(video, overlayplay, playerbar);
-            document.querySelector(settings.selector).append(player);
-            addLoader(document.querySelector(settings.selector));
-            const style = `dropdown{height: ${
-              document.querySelector(`${settings.selector} #setting-dropdown`)
-                .offsetHeight
-            }px}`;
-            document
-              .querySelector("#videomania-style")
-              .insertAdjacentHTML("beforeend", style);
+            const selector = document.querySelector(settings.selector);
+            selector.append(player);
+            addLoader(selector);
+            setDropdownSettingHeight(settings.selector);
           }
 
-          function videoManiaDashjs() {
-            document
-              .querySelector(settings.selector)
-              .dispatchEvent(videoManiaInitEvent);
-            const vdo =  dashjs.MediaPlayer().create();
-            const appendedSelector = document.querySelector(settings.selector);
-            const appendedVideo = appendedSelector.querySelector(`video`);
-            vdo.initialize(appendedVideo, settings.url, true);
-            vdo.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (e) {
-              const bitrates = vdo.getBitrateInfoListFor("video")
-              console.log(e)
-              if (e.streamInfo.manifestInfo.isDynamic) {
-                videoManiaLive(appendedSelector);
+          const urlSplit = settings.url.split(".");
+
+          if (urlSplit.length > 1) {
+            const format = urlSplit[urlSplit.length - 1].toLowerCase();
+            const checkHlsDash = hlsDashjs(settings.selector, settings.url);
+
+            // Dynamic Adaptive Dash / HTTP Live Steam
+            if (checkHlsDash[format]) {
+              const obj = checkHlsDash[format];
+              if (!document.querySelector(`script#videomania-${format}`)) {
+                const script = addScript(obj.url, format);
+                script.onload = obj.init;
+              } else {
+                obj.init();
               }
-              console.log(bitrates)
-            });
-          }
-
-          function videoManiaHlsjs() {
-            document
-              .querySelector(settings.selector)
-              .dispatchEvent(videoManiaInitEvent);
-            const appendedSelector = document.querySelector(settings.selector);
-            const appendedVideo = appendedSelector.querySelector(
-              `${settings.selector} video`
-            );
-            const videoSrc = settings.url;
-            if (Hls.isSupported()) {
-              const hls = new Hls();
-              hls.loadSource(videoSrc);
-              hls.attachMedia(appendedVideo);
-              hls.on(Hls.Events.LEVEL_LOADED, async function (name, event) {
-                if (
-                  event.details.live &&
-                  !appendedSelector.querySelector("live")
-                ) {
-                  videoManiaLive(appendedSelector);
-                }
-              });
-            } else if (
-              appendedVideo.canPlayType("application/vnd.apple.mpegurl")
-            ) {
-              appendedVideo.src = videoSrc;
             }
-          }
-
-          // Dynamic Adaptive Dash js
-          if (settings.dashjs) {
-            if (!document.querySelector("script#videomania-dashjs")) {
-              const script = addScript(settings.dashjs, "dashjs");
-              script.onload = videoManiaDashjs;
-            } else {
-              videoManiaDashjs();
-            }
-          }
-          // HTTP Live Steam js
-          else if (settings.hlsjs) {
-            if (!document.querySelector("script#videomania-hlsjs")) {
-              const script = addScript(settings.hlsjs, "hlsjs");
-              script.onload = videoManiaHlsjs;
-            } else {
-              videoManiaHlsjs();
-            }
-          } else {
-            if (settings.qualities.length) {
-              dropdown
-                .querySelector("#setting-dropdown")
-                .insertAdjacentHTML("beforeend", qualityBtn);
-              video.src = settings.url;
-              dropdown.insertAdjacentHTML("beforeend", qualityList);
-              settings.qualities.forEach((quality) => {
+            // Supported HTML 5 Video Format
+            else if (supportedVideoFormat.includes(format)) {
+              if (settings.qualities.length) {
+                dropdown
+                  .querySelector("#setting-dropdown")
+                  .insertAdjacentHTML("beforeend", qualityBtn);
+                video.src = settings.url;
+                dropdown.insertAdjacentHTML("beforeend", qualityList);
+                settings.qualities.forEach((quality) => {
+                  dropdown
+                    .querySelector("#quality-list")
+                    .insertAdjacentHTML(
+                      "beforeend",
+                      `<button>${quality.size}</button>`
+                    );
+                });
                 dropdown
                   .querySelector("#quality-list")
                   .insertAdjacentHTML(
                     "beforeend",
-                    `<button>${quality.size}</button>`
+                    '<button class="active">Auto</button>'
                   );
-              });
-              dropdown
-                .querySelector("#quality-list")
-                .insertAdjacentHTML(
-                  "beforeend",
-                  '<button class="active">Auto</button>'
-                );
-            } else {
-              video.src = settings.url;
-            }
-            videoAppend();
-            const style = `dropdown.show-quality{height: ${
-              document.querySelector(`${settings.selector} #quality-list`)
-                .offsetHeight
-            }px}`;
-            document
-              .querySelector("#videomania-style")
-              .insertAdjacentHTML("beforeend", style);
+              } else {
+                video.src = settings.url;
+              }
+              videoAppend();
+              videoManiaQualityListHeight(settings.selector);
 
-            document
-              .querySelector(`${settings.selector} #quality-btn`)
-              ?.addEventListener("click", () => {
-                dropdown.classList.add("show-quality");
-                dropdown.classList.add("dropdown-active");
-              });
+              document
+                .querySelector(`${settings.selector} #quality-btn`)
+                ?.addEventListener("click", () => {
+                  dropdown.classList.add("show-quality");
+                  dropdown.classList.add("dropdown-active");
+                });
 
-            document
-              .querySelector(
-                `${settings.selector} #quality-list .dropdown-back`
-              )
-              ?.addEventListener("click", () => {
-                dropdown.classList.remove("dropdown-active");
-                setTimeout(() => {
-                  dropdown.classList = [];
-                }, 150);
-              });
-            document
-              .querySelectorAll(
-                `${settings.selector} #quality-list button:not(.dropdown-back)`
-              )
-              .forEach(function (elm) {
-                elm.addEventListener("click", (e) => {
-                  const btn = e.target;
-                  if (!elm.classList.contains("active")) {
-                    const size = elm.textContent;
-                    if (size != "Auto") {
-                      const src = settings.qualities.find(
-                        (q) => q.size == size
-                      )?.src;
-                      if (src) {
+              document
+                .querySelector(
+                  `${settings.selector} #quality-list .dropdown-back`
+                )
+                ?.addEventListener("click", () => {
+                  dropdown.classList.remove("dropdown-active");
+                  setTimeout(() => {
+                    dropdown.classList = [];
+                  }, 150);
+                });
+              document
+                .querySelectorAll(
+                  `${settings.selector} #quality-list button:not(.dropdown-back)`
+                )
+                .forEach(function (elm) {
+                  elm.addEventListener("click", (e) => {
+                    const btn = e.target;
+                    if (!elm.classList.contains("active")) {
+                      const size = elm.textContent;
+                      if (size != "Auto") {
+                        const src = settings.qualities.find(
+                          (q) => q.size == size
+                        )?.src;
+                        if (src) {
+                          const { currentTime } = video;
+                          video.src = src;
+                          video.currentTime = currentTime;
+                        }
+                      } else {
                         const { currentTime } = video;
-                        video.src = src;
+                        video.src = settings.url;
                         video.currentTime = currentTime;
                       }
-                    } else {
-                      const { currentTime } = video;
-                      video.src = settings.url;
-                      video.currentTime = currentTime;
+                      document
+                        .querySelector(
+                          `${settings.selector} #quality-list button.active`
+                        )
+                        .classList.remove("active");
+                      btn.classList.add("active");
                     }
-                    document
-                      .querySelector(
-                        `${settings.selector} #quality-list button.active`
-                      )
-                      .classList.remove("active");
-                    btn.classList.add("active");
-                  }
+                  });
                 });
-              });
+            } else {
+              document
+                .querySelector(settings.selector)
+                .append("Please add a valid video url");
+            }
           }
 
           document
@@ -550,31 +680,30 @@
         }
       }
 
-      // videoMania({
-      //   selector: "#player2",
-      //   id: "player2",
-      //   // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
-      //   // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-      //   url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
-      //   hlsjs: "https://cdn.jsdelivr.net/npm/hls.js@1",
-      //   autoplay: true,
-      //   muted: true,
-      //   width: 1024,
-      //   height: 600,
-      // });
-
       videoMania({
-        selector: "#player",
-        id: "player",
-        url: "https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd",
-        // url: "https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd",
-        dashjs:
-          "https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js",
+        selector: "#player2",
+        id: "player2",
+        // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
+        // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
+        url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
         autoplay: true,
         muted: true,
         width: 1024,
-        height: 480,
+        height: 600,
       });
+
+      // videoMania({
+      //   selector: "#player",
+      //   id: "player",
+      //   // url: "https://dash.akamaized.net/dash264/TestCasesIOP33/adapatationSetSwitching/5/manifest.mpd",
+      //   // url: "https://livesim.dashif.org/livesim/chunkdur_1/ato_7/testpic4_8s/Manifest.mpd",
+      //   // url: "https://dash.akamaized.net/dash264/TestCases/2c/qualcomm/1/MultiResMPEG2.mpd",
+      //   url: "https://dash.akamaized.net/dash264/TestCases/1b/qualcomm/1/MultiRatePatched.mpd",
+      //   autoplay: true,
+      //   muted: true,
+      //   width: 1024,
+      //   height: 480,
+      // });
 
       // videoMania({
       //   selector: "#player2",
