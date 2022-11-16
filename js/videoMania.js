@@ -210,6 +210,7 @@ async function videoMania(obj = initialObj) {
   video.loop = settings.loop;
 
   video.addEventListener("play", function () {
+    console.log('play')
     overlayplay.classList.add("active");
     if (end.textContent == "0:00") {
       const formatDuration = videoDurationFormat(video, endSubtract);
