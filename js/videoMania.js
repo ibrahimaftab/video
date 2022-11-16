@@ -42,6 +42,7 @@ async function videoMania(obj = initialObj) {
     initialObj,
     videoDurationFormat,
     setDropdownSettingHeight,
+    volumeIcon,
   } = await import("./utils.js");
   const settings = {
     ...initialObj,
@@ -64,6 +65,7 @@ async function videoMania(obj = initialObj) {
   const timelineProgress = document.createElement("timeline-progress");
   const audioIconButton = document.createElement("audio-icon");
   const audioSpan = document.createElement("span");
+  let toggleSubtitle = settings.toggleSubtitle
 
   const dropdown = document.createElement("dropdown");
   dropdown.innerHTML = playbackHtml;
@@ -115,9 +117,10 @@ async function videoMania(obj = initialObj) {
   settingButton.append(dropdown);
   settingButton.append(settingButtonSpan);
 
-  settingButtonSpan.addEventListener("click", () =>
+  settingButtonSpan.addEventListener("click", () => {
     settingButton.classList.toggle("show-dropdown")
-  );
+    dropdown.classList = []
+  });
 
   let paused = false;
   let fullscreen = false;
@@ -143,6 +146,10 @@ async function videoMania(obj = initialObj) {
       case "ArrowRight":
         video.currentTime = video.currentTime + 10;
         forwardRewindIcon(player, "ArrowRight");
+        break;
+      case "m":
+        video.muted = !video.muted;
+        volumeIcon(player, "m")
         break;
     }
   });
@@ -222,8 +229,8 @@ async function videoMania(obj = initialObj) {
   video.addEventListener("timeupdate", function () {
     const getEndSubsctract = endSubtract;
     timelineProgress.style.width =
-      (video.currentTime / video.duration) * timelineProgressbar.clientWidth +
-      "px";
+      (video.currentTime / video.duration) * 100 +
+      "%";
     if (currentUrl == video.src) {
       timelineBuffer.style.transform = `scaleX(${
         (video.buffered?.end(video.buffered.length - 1) ?? 0) / video.duration
@@ -248,7 +255,6 @@ async function videoMania(obj = initialObj) {
   });
 
   video.addEventListener("seeked", function () {
-    console.log("seeked");
     removeLoader(document.querySelector(settings.selector));
   });
 
@@ -260,13 +266,17 @@ async function videoMania(obj = initialObj) {
       (audioIconSpan.innerHTML = video.muted ? muteIcon : audioIcon);
   });
 
+  video.addEventListener("ended", function() {
+    player.dataset.toggle = 'paused'
+  })
+
   timelineProgressbar.addEventListener("mousemove", (e) => {
     const hoverTimeline = document.querySelector(
       `${settings.selector} .hover-timeline`
     );
     const calcPosition =
-      (e.layerX / e.target.clientWidth) * timelineProgressbar.clientWidth +
-      "px";
+      (e.layerX / e.target.clientWidth) * 100 +
+      "%";
     hoverTimeline.style.width = calcPosition;
   });
 
@@ -309,6 +319,35 @@ async function videoMania(obj = initialObj) {
 
   timelineProgressbar.role = "button";
   timelineProgressbar.tabIndex = "2";
+
+  if (settings.subtitles.length) {
+    const subtitleBtnElement = document.createElement('button')
+    subtitleBtnElement.id = 'subtitle-btn'
+    dropdown
+      .querySelector("#setting-dropdown")
+      .append(subtitleBtnElement);
+    const { subtitleBtn } = await import("./defaultsHtml.js");
+    subtitleBtnElement.innerHTML = subtitleBtn
+    const { onCueChange } = await import("./utils.js");
+
+    settings.subtitles.forEach((subtitle) => {
+      const track = document.createElement("track");
+      track.src = subtitle.url;
+      track.srclang = subtitle.lang;
+      track.kind = "captions";
+      track.default = true;
+      video.append(track);
+      video.addEventListener("timeupdate", (event) =>
+        onCueChange(event, toggleSubtitle)
+      );
+    });
+    const subtitleBtnSpan = subtitleBtnElement.querySelector("span");
+    subtitleBtnSpan.textContent = toggleSubtitle ? "On" : "Off";
+    subtitleBtnElement.addEventListener("click", function () {
+      toggleSubtitle = !toggleSubtitle;
+      subtitleBtnSpan.textContent = toggleSubtitle ? "On" : "Off";
+    });
+  }
 
   if (settings.url && settings.selector) {
     paused = !settings.autoplay && !settings.muted;
@@ -379,8 +418,11 @@ async function videoMania(obj = initialObj) {
           video.src = settings.url;
         }
         videoAppend();
-        const { qualityListHeight } = await import("./utils.js");
-        qualityListHeight(settings.selector);
+
+        if(document.querySelector(`${settings.selector} #quality-list`)) {
+          const { qualityListHeight } = await import("./utils.js");
+          qualityListHeight(settings.selector);
+        }
 
         document
           .querySelector(`${settings.selector} #quality-btn`)

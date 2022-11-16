@@ -1,5 +1,5 @@
 export default async function (selector, url) {
-  const { addLoader, removeLoader } = await import('./loader.js')
+  const { addLoader, removeLoader } = await import("./loader.js");
   const { qualityBtn, qualityList } = await import("./defaultsHtml.js");
   const { qualityListHeight, videoManiaInitEvent, setDropdownSettingHeight } =
     await import("./utils.js");
@@ -7,6 +7,7 @@ export default async function (selector, url) {
   const vdo = dashjs.MediaPlayer().create();
   const appendedSelector = document.querySelector(selector);
   const appendedVideo = appendedSelector.querySelector(`video`);
+  let defaultQuality = NaN;
   vdo.initialize(appendedVideo, url, true);
   vdo.on(dashjs.MediaPlayer.events.BUFFER_LEVEL_STATE_CHANGED, function () {
     addLoader(appendedSelector);
@@ -14,8 +15,10 @@ export default async function (selector, url) {
   vdo.on(dashjs.MediaPlayer.events.BUFFER_LOADED, function () {
     removeLoader(appendedSelector);
   });
-  vdo.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, function (e) {
+  vdo.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, async function (e) {
+    const { videoManiaLive } = await import("./utils.js");
     const bitrates = vdo.getBitrateInfoListFor("video");
+    defaultQuality = bitrates[0].qualityIndex
     if (e.streamInfo.manifestInfo.isDynamic) {
       videoManiaLive(appendedSelector);
     }
@@ -49,7 +52,7 @@ export default async function (selector, url) {
         .querySelector("dropdown #quality-list")
         .insertAdjacentHTML(
           "beforeend",
-          '<button class="active" data-index="-1">Auto</button>'
+          `<button class="active" data-index="-1">Auto <span class="quality-auto">${bitrates[0].height}</span></button>`
         );
       qualityListHeight(selector);
       appendedSelector
@@ -70,15 +73,21 @@ export default async function (selector, url) {
             const btn = e.target;
             if (!elm.classList.contains("active")) {
               const { index } = btn.dataset;
+              console.log({ index });
               appendedSelector
                 .querySelector(`#quality-list button.active`)
                 .classList.remove("active");
               btn.classList.add("active");
-              vdo.setQualityFor("video", index);
-              console.log(index);
+              appendedSelector.querySelector(".quality-auto").textContent =
+                btn.textContent;
+              defaultQuality = Number(index)
+              vdo.setQualityFor("video", defaultQuality);
             }
           });
         });
+      appendedSelector.querySelector("timeline-progressbar").addEventListener('click', function() {
+        vdo.setQualityFor("video", defaultQuality);
+      });
     }
   });
 }

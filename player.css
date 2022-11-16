@@ -341,7 +341,7 @@ dropdown .dropdown-back:before {
   display: inline-block;
 }
 
-dropdown nav span {
+dropdown nav > span {
   padding: 0.2em 0.6em;
   font-size: 0.8em;
 }
@@ -366,7 +366,7 @@ dropdown nav#quality-list {
 
 dropdown.show-playback {
   height: 14.5em !important;
-}
+} 
 
 dropdown.dropdown-active nav:first-child {
   transform: translateX(-100%);
@@ -393,4 +393,30 @@ dropdown.show-playback.dropdown-active nav#playback-list {
 dropdown.show-quality.dropdown-active nav#quality-list {
   transform: translateX(-200%);
 
+}
+
+dropdown .quality-auto,
+dropdown #subtitle-btn span {
+  font-weight: 700;
+  font-size: 0.85em;
+}
+
+dropdown .quality-auto:before,
+dropdown #subtitle-btn span:before {
+  content: '(';
+}
+
+dropdown .quality-auto:after,
+dropdown #subtitle-btn span:after {
+  content: ')';
+}
+
+player video::cue {
+  background-color: rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+  color: white;
+  border-radius: 0.5em;
+  font-size: 1em;
+  font-family: "Arial", sans-serif;
+  transform: translateY(-100px)
 }

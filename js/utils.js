@@ -8,6 +8,7 @@ export function addScript(url, id) {
 
 export function qualityListHeight(selector) {
   const selectorElement = document.querySelector(`${selector} dropdown`);
+  console.log({ selectorElement });
   const selectorComputed = getComputedStyle(selectorElement);
   const { paddingTop, paddingBottom } = selectorComputed;
   const { offsetHeight } = document.querySelector(`${selector} #quality-list`);
@@ -20,10 +21,24 @@ export function qualityListHeight(selector) {
 }
 
 export async function forwardRewindIcon(player, key) {
-  const { rewindIcon, forwardIcon } = await import('./icons.js')
+  const { rewindIcon, forwardIcon } = await import("./icons.js");
   if (key === "ArrowLeft" || key === "ArrowRight") {
     const forwardRewind = document.createElement("forward-rewind");
     forwardRewind.innerHTML = key === "ArrowLeft" ? rewindIcon : forwardIcon;
+    forwardRewind.id = "forward-rewind";
+    player.append(forwardRewind);
+    setTimeout(() => {
+      player.querySelector("#forward-rewind").remove();
+    }, 300);
+  }
+}
+
+export async function volumeIcon(player, key) {
+  const { muteIcon, audioIcon } = await import("./icons.js");
+  if (key === "m") {
+    const forwardRewind = document.createElement("forward-rewind");
+    const video = player.querySelector("video");
+    forwardRewind.innerHTML = video.muted ? muteIcon : audioIcon;
     forwardRewind.id = "forward-rewind";
     player.append(forwardRewind);
     setTimeout(() => {
@@ -42,11 +57,14 @@ export const initialObj = {
   url: null,
   id: null,
   qualities: [],
+  subtitles: [],
+  toggleSubtitle: false
 };
 
 export const videoManiaInitEvent = new Event("videoManiaInit");
 
-export function videoManiaLive(selector) {
+export async function videoManiaLive(selector) {
+  const { liveIcon } = await import('./icons.js')
   const live = document.createElement("live");
   live.innerHTML = liveIcon;
   live.append("Live");
@@ -84,4 +102,13 @@ export function setDropdownSettingHeight(selector) {
   document
     .querySelector("#videomania-style")
     .insertAdjacentHTML("beforeend", style);
+}
+
+export function onCueChange(event, toggleSubtitle) {
+  for (let j = 0; j < event.target.textTracks.length; j++) {
+    event.target.textTracks[j].mode = toggleSubtitle ? "showing" : "hidden";
+    for (let i = 0; i < event.target.textTracks[j].cues.length; i++) {
+      event.target.textTracks[j].cues[i].line = -2.5;
+    }
+  }
 }
