@@ -43,6 +43,7 @@ async function videoMania(obj = initialObj) {
     videoDurationFormat,
     setDropdownSettingHeight,
     volumeIcon,
+    replayIconBtn,
   } = await import("./utils.js");
   const settings = {
     ...initialObj,
@@ -66,6 +67,9 @@ async function videoMania(obj = initialObj) {
   const audioIconButton = document.createElement("audio-icon");
   const audioSpan = document.createElement("span");
   let toggleSubtitle = settings.toggleSubtitle
+
+  timelineBuffer.style.width = "0px"
+  timelineProgress.style.width = "0px";
 
   const dropdown = document.createElement("dropdown");
   dropdown.innerHTML = playbackHtml;
@@ -122,15 +126,50 @@ async function videoMania(obj = initialObj) {
     dropdown.classList = []
   });
 
-  let paused = false;
+  let paused = !settings.autoplay;
   let fullscreen = false;
   let endSubtract = false;
 
-  let currentUrl = settings.url;
+  let unactivePlayer
 
   player.classList.add("videoMania");
   player.id = settings.id;
   player.style = `width: ${settings.width}px; height: ${settings.height}px; margin: auto`;
+  player.dataset.toggle = settings.autoplay ? 'played' : 'paused'
+  
+  function videoAppend() {
+    const hoverTimelineProgress = timelineProgress.cloneNode();
+    hoverTimelineProgress.classList.add("hover-timeline");
+    timelineProgressbar.append(
+      timelineBuffer,
+      timelineProgress,
+      hoverTimelineProgress
+    );
+    timeline.append(timelineProgressbar, end);
+    playerbar.append(
+      play,
+      timeline,
+      audioIconButton,
+      settingButton,
+      toggleScreen
+    );
+    player.append(video, overlayplay, playerbar);
+    const selector = document.querySelector(settings.selector);
+    selector.append(player);
+    addLoader(selector);
+    setDropdownSettingHeight(settings.selector);
+  }
+
+  function togglePlayer() {
+    unactivePlayer && clearTimeout(unactivePlayer);
+    player.classList.add("active");
+    unactivePlayer = setTimeout(() => {
+      player.classList.remove("active");
+    }, 5e3);
+  }
+
+  player.addEventListener("mouseenter", togglePlayer);
+  player.addEventListener("mousemove", togglePlayer);
 
   player.addEventListener("keydown", function (e) {
     switch (e.key) {
@@ -210,7 +249,6 @@ async function videoMania(obj = initialObj) {
   video.loop = settings.loop;
 
   video.addEventListener("play", function () {
-    console.log('play')
     overlayplay.classList.add("active");
     if (end.textContent == "0:00") {
       const formatDuration = videoDurationFormat(video, endSubtract);
@@ -227,17 +265,20 @@ async function videoMania(obj = initialObj) {
       video.autoplay && video.played ? "played" : "paused";
   });
 
+  video.addEventListener('loadeddata', function () {
+    const formatDuration = videoDurationFormat(video, endSubtract);
+      end.textContent = formatDuration;
+  })
+
   video.addEventListener("timeupdate", function () {
     const getEndSubsctract = endSubtract;
     timelineProgress.style.width =
       (video.currentTime / video.duration) * 100 +
       "%";
-    if (currentUrl == video.src) {
-      timelineBuffer.style.transform = `scaleX(${
-        (video.buffered?.end(video.buffered.length - 1) ?? 0) / video.duration
-      })`;
+    // if (currentUrl == video.src) {
+      timelineBuffer.style.width = (video.buffered?.end(video.buffered.length - 1) ?? 0) / video.duration * 100 + "%";
       currentUrl = video.src;
-    }
+    // }
     if (endSubtract) {
       const formatDuration = videoDurationFormat(video, getEndSubsctract);
       end.textContent = formatDuration;
@@ -269,7 +310,12 @@ async function videoMania(obj = initialObj) {
 
   video.addEventListener("ended", function() {
     player.dataset.toggle = 'paused'
+    replayIconBtn(player);
   })
+
+  video.onerror = () => {
+    console.error(`Error ${video.error.code}; details: ${video.error.message}`);
+  }
 
   timelineProgressbar.addEventListener("mousemove", (e) => {
     const hoverTimeline = document.querySelector(
@@ -351,30 +397,6 @@ async function videoMania(obj = initialObj) {
   }
 
   if (settings.url && settings.selector) {
-    paused = !settings.autoplay && !settings.muted;
-
-    function videoAppend() {
-      const hoverTimelineProgress = timelineProgress.cloneNode();
-      hoverTimelineProgress.classList.add("hover-timeline");
-      timelineProgressbar.append(
-        timelineBuffer,
-        timelineProgress,
-        hoverTimelineProgress
-      );
-      timeline.append(timelineProgressbar, end);
-      playerbar.append(
-        play,
-        timeline,
-        audioIconButton,
-        settingButton,
-        toggleScreen
-      );
-      player.append(video, overlayplay, playerbar);
-      const selector = document.querySelector(settings.selector);
-      selector.append(player);
-      addLoader(selector);
-      setDropdownSettingHeight(settings.selector);
-    }
 
     const urlSplit = settings.url.split(".");
 
@@ -395,6 +417,8 @@ async function videoMania(obj = initialObj) {
       }
       // Supported HTML 5 Video Format
       else if (supportedVideoFormat.includes(format)) {
+        const { checkVideoBuffer } = await import("./utils.js");
+        checkVideoBuffer(video, settings.selector);
         if (settings.qualities.length) {
           dropdown
             .querySelector("#setting-dropdown")
@@ -475,7 +499,7 @@ async function videoMania(obj = initialObj) {
       } else {
         document
           .querySelector(settings.selector)
-          .append("Please add a valid video url");
+          .insertAdjacentHTML("beforeend", `<div class="player-error" style="width: ${settings.width}px; height: ${settings.height}px"><?xml version="1.0" ?><svg id="Layer_1" style="enable-background:new 0 0 612 792;" version="1.1" viewBox="0 0 612 792" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon class="st0" points="382.2,396.4 560.8,217.8 484,141 305.4,319.6 126.8,141 50,217.8 228.6,396.4 50,575 126.8,651.8    305.4,473.2 484,651.8 560.8,575 382.2,396.4  "/></g></svg>Please add a valid video url</div>`);
       }
     }
 

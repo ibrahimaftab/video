@@ -9,7 +9,7 @@ export default async function (selector, url) {
   const appendedVideo = appendedSelector.querySelector(`video`);
   let defaultQuality = NaN;
   vdo.initialize(appendedVideo, url, true);
-  vdo.on(dashjs.MediaPlayer.events.BUFFER_LEVEL_STATE_CHANGED, function () {
+  vdo.on(dashjs.MediaPlayer.events.BUFFER_EMPTY, function () {
     addLoader(appendedSelector);
   });
   vdo.on(dashjs.MediaPlayer.events.BUFFER_LOADED, function () {
@@ -73,7 +73,6 @@ export default async function (selector, url) {
             const btn = e.target;
             if (!elm.classList.contains("active")) {
               const { index } = btn.dataset;
-              console.log({ index });
               appendedSelector
                 .querySelector(`#quality-list button.active`)
                 .classList.remove("active");

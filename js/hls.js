@@ -24,7 +24,7 @@ export default async function (selector, url) {
       removeLoader(appendedSelector);
       if (
         hls.currentLevel > 0 ||
-        appendedSelector.querySelector("#quality-list.active").textContent == 'Auto'
+        appendedSelector.querySelector("#quality-list.active")?.textContent == 'Auto'
       ) {
         appendedSelector.querySelector(".quality-auto").textContent =
           hls.levels.find((level, i) => i === hls.currentLevel).height;
@@ -91,17 +91,8 @@ export default async function (selector, url) {
               }
             });
           });
-          setInterval(()=> {
-                console.log(hls.currentLevel);
-
-          }, 1e3)
       }
     });
-    document
-      .querySelector(`${selector} video`)
-      .addEventListener("loadedVideoData", function () {
-        console.log(hls.levels);
-      });
   } else if (appendedVideo.canPlayType("application/vnd.apple.mpegurl")) {
     appendedVideo.src = videoSrc;
   } else {

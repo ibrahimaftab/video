@@ -8,13 +8,12 @@ export function addScript(url, id) {
 
 export function qualityListHeight(selector) {
   const selectorElement = document.querySelector(`${selector} dropdown`);
-  console.log({ selectorElement });
   const selectorComputed = getComputedStyle(selectorElement);
   const { paddingTop, paddingBottom } = selectorComputed;
   const { offsetHeight } = document.querySelector(`${selector} #quality-list`);
-  const style = `${selector} dropdown.show-quality{height: ${
+  const style = `@layer settings {${selector} dropdown.show-quality{height: ${
     offsetHeight + parseInt(paddingTop) + parseInt(paddingBottom)
-  }px}`;
+  }px}}`;
   document
     .querySelector("#videomania-style")
     .insertAdjacentHTML("beforeend", style);
@@ -39,12 +38,26 @@ export async function volumeIcon(player, key) {
     const forwardRewind = document.createElement("forward-rewind");
     const video = player.querySelector("video");
     forwardRewind.innerHTML = video.muted ? muteIcon : audioIcon;
-    forwardRewind.id = "forward-rewind";
+    forwardRewind.id = "volume-change";
     player.append(forwardRewind);
     setTimeout(() => {
-      player.querySelector("#forward-rewind").remove();
+      player.querySelector("#volume-change").remove();
     }, 300);
   }
+}
+
+export async function replayIconBtn(player) {
+  const { replayIcon } = await import("./icons.js");
+  const replay = document.createElement("replay");
+  const video = player.querySelector("video");
+  replay.innerHTML = replayIcon;
+  player.append(replay);
+  replay.addEventListener("click", function (e) {4
+    e.preventDefault()
+    replay.remove()
+    video.play()
+    player.dataset.toggle = 'played'
+  });
 }
 
 export const initialObj = {
@@ -98,7 +111,7 @@ export function setDropdownSettingHeight(selector) {
   const { paddingTop, paddingBottom } = selectorComputed;
   const totalHeight =
     offsetHeight + parseInt(paddingTop) + parseInt(paddingBottom);
-  const style = `${selector} dropdown{height: ${totalHeight}px}`;
+  const style = `@layer settings {${selector} dropdown{height: ${totalHeight}px}}`;
   document
     .querySelector("#videomania-style")
     .insertAdjacentHTML("beforeend", style);
@@ -111,4 +124,49 @@ export function onCueChange(event, toggleSubtitle) {
       event.target.textTracks[j].cues[i].line = -2.5;
     }
   }
+}
+
+export async function checkVideoBuffer(video, selector) {
+  let checkInterval = 50.0; // check every 50 ms (do not use lower values)
+  let lastPlayPos = 0;
+  let currentPlayPos = 0;
+  let bufferingDetected = false;
+
+  const element = document.querySelector(selector)
+
+  const { addLoader, removeLoader } = await import('./loader.js')
+
+  setInterval(checkBuffering, checkInterval);
+  function checkBuffering() {
+    currentPlayPos = video.currentTime;
+
+    // checking offset should be at most the check interval
+    // but allow for some margin
+    const offset = (checkInterval - 20) / 1000;
+
+    // if no buffering is currently detected,
+    // and the position does not seem to increase
+    // and the player isn't manually paused...
+    if (
+      !bufferingDetected &&
+      currentPlayPos < lastPlayPos + offset &&
+      !video.paused
+    ) {
+      bufferingDetected = true;
+    }
+
+    // if we were buffering but the player has advanced,
+    // then there is no buffering
+    if (
+      bufferingDetected &&
+      currentPlayPos > lastPlayPos + offset &&
+      !video.paused
+    ) {
+      bufferingDetected = false;
+    }
+    lastPlayPos = currentPlayPos;
+    bufferingDetected ? addLoader(element) : removeLoader(element);
+  }
+
+
 }
