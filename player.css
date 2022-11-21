@@ -296,7 +296,7 @@
     visibility: hidden;
     display: flex;
     overflow: hidden;
-    /* height: 6em; */
+    height: 2.5em;
     transition-property: opacity, visibility, height;
     will-change: opacity, visibility, height;
     transition-duration: 150ms, 150ms, 150ms;

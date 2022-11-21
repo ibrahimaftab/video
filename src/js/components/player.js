@@ -35,6 +35,10 @@ export default class Player extends HTMLElement {
     }, 5e3);
   }
 
+  qaulitiesList() {
+    return this.#settings.qualities
+  }
+
   async initiatePlayer(e) {
     e.preventDefault();
     this.video.autoplay = this.#settings.autoplay;
@@ -76,7 +80,6 @@ export default class Player extends HTMLElement {
       this.dataset.toggle = "played";
       this.video.play();
       this.overlayplay.classList.add("active");
-      console.log('before play default fired')
       setTimeout(() => {
         this.overlayplay.classList.remove("active");
       }, 200);
@@ -108,7 +111,7 @@ export default class Player extends HTMLElement {
       triggerEvent(toggleEvent, this);
     });
 
-    // Player End EventsetDropdownSettingHeight
+    // Player End Event
     this.addEventListener(evts.end, (e) => {
       e.preventDefault();
       this.dataset.toggle = "paused";
@@ -144,7 +147,9 @@ export default class Player extends HTMLElement {
     // Toggle Fullscreen
     this.addEventListener(evts.toggleFullScreen, (e) => {
       e.preventDefault();
-      const toggle = document.fullscreen ? "exitFullscreen" : "fullscreen";
+      const toggle = document.fullscreenElement
+        ? "exitFullscreen"
+        : "fullscreen";
       triggerEvent(toggle, this);
     });
 

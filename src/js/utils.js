@@ -110,7 +110,6 @@ export function setDropdownSettingHeight(selector) {
   const { offsetHeight } = selectorElementList;
   const selectorComputed = getComputedStyle(selectorElement);
   const { paddingTop, paddingBottom } = selectorComputed;
-  console.log({ paddingTop, paddingBottom } );
   const totalHeight =
     offsetHeight + parseInt(paddingTop) + parseInt(paddingBottom);
   const style = `@layer settings ${player.dataset.selector} dropdown{height: ${totalHeight}px}}`;
