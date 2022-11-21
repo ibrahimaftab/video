@@ -12,6 +12,11 @@ const events = {
   toggleMute: "toggleMute",
   mute: "mute",
   unmute: "unmute",
+  live: "live",
+  playable: "playable",
+  loading: "loading",
+  loaded: "loaded",
+  beforePlay: "beforePlay"
 };
 
 export default events

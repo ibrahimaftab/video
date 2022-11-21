@@ -49,7 +49,7 @@ export async function volumeIcon(player, key) {
 export async function replayIconBtn(player) {
   const { replayIcon } = await import("./icons.js");
   const replay = document.createElement("replay");
-  const video = player.querySelector("video");
+  const { video } = player;
   replay.innerHTML = replayIcon;
   player.append(replay);
   replay.addEventListener("click", function (e) {4
@@ -104,18 +104,18 @@ export function videoDurationFormat(video, subtract = false) {
 }
 
 export function setDropdownSettingHeight(selector) {
-  const selectorElementList = document.querySelector(
-    `${selector} #setting-dropdown`
-  );
-  const selectorElement = document.querySelector(`${selector} dropdown`);
+  const selectorElementList = selector.setting.querySelector('#setting-dropdown')
+  const selectorElement = selector.dropdown;
+  const player = selector.parentElement
   const { offsetHeight } = selectorElementList;
   const selectorComputed = getComputedStyle(selectorElement);
   const { paddingTop, paddingBottom } = selectorComputed;
+  console.log({ paddingTop, paddingBottom } );
   const totalHeight =
     offsetHeight + parseInt(paddingTop) + parseInt(paddingBottom);
-  const style = `@layer settings {${selector} dropdown{height: ${totalHeight}px}}`;
+  const style = `@layer settings ${player.dataset.selector} dropdown{height: ${totalHeight}px}}`;
   document
-    .querySelector("#videomania-style")
+    .querySelector("#videomania-style") 
     .insertAdjacentHTML("beforeend", style);
 }
 
@@ -128,17 +128,17 @@ export function onCueChange(event, toggleSubtitle) {
   }
 }
 
-export async function checkVideoBuffer(video, selector) {
+export async function checkVideoBuffer(element) {
   let checkInterval = 50.0; // check every 50 ms (do not use lower values)
   let lastPlayPos = 0;
   let currentPlayPos = 0;
   let bufferingDetected = false;
+  const evts = await import('./events.js')
 
-  const element = document.querySelector(selector)
-
-  const { addLoader, removeLoader } = await import('./loader.js')
+  const { video } = element
 
   setInterval(checkBuffering, checkInterval);
+
   function checkBuffering() {
     currentPlayPos = video.currentTime;
 
@@ -152,7 +152,7 @@ export async function checkVideoBuffer(video, selector) {
     if (
       !bufferingDetected &&
       currentPlayPos < lastPlayPos + offset &&
-      !video.paused
+      !video.paused && video.playable >= 1
     ) {
       bufferingDetected = true;
     }
@@ -167,7 +167,9 @@ export async function checkVideoBuffer(video, selector) {
       bufferingDetected = false;
     }
     lastPlayPos = currentPlayPos;
-    bufferingDetected ? addLoader(element) : removeLoader(element);
+    
+    const event = bufferingDetected ? evts.default.loading : evts.default.loaded;
+    triggerEvent(event, element);
   }
 }
 

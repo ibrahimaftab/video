@@ -1,9 +1,14 @@
+import { triggerEvent } from "../utils.js";
+
 export default class Player extends HTMLElement {
   static unactivePlayer;
   #settings;
   #unactivePlayer = null;
   video = document.createElement("video");
   playerbar = null;
+  loader = null
+  overlayplay = document.createElement('overlayplay')
+  beforePlay = null
 
   constructor() {
     super();
@@ -17,8 +22,9 @@ export default class Player extends HTMLElement {
         }
       }
     </style>`;
-
     document.head.insertAdjacentHTML("beforeend", style);
+    this.overlayplay.innerHTML =
+      '<svg class="play-icon" style="enable-background: new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" > <path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z" /> </svg> <svg class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg" > <path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <rect /> </svg>';
   }
 
   togglePlayer() {
@@ -39,13 +45,13 @@ export default class Player extends HTMLElement {
 
     const playerbar = await import("./playerbar.js");
     customElements.define("vm-playerbar", playerbar.default);
-    this.append(this.video);
+    this.append(this.video, this.overlayplay);
     this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
   }
 
   // connect component
   async connectedCallback() {
-    const { retrieveFormat } = await import("../utils.js");
+    const { retrieveFormat, replayIconBtn } = await import("../utils.js");
     const format = retrieveFormat(this.#settings.url);
     const { dynamicFormats } = await import("../functions/dynamic.js");
     const { triggerEvent } = await import("../utils.js");
@@ -64,11 +70,23 @@ export default class Player extends HTMLElement {
     // Player Ready Event
     this.addEventListener(evts.playerReady, this.initiatePlayer);
 
-    // Player Play Event
-    this.addEventListener(evts.play, (e) => {
+    // Player Before Play Event
+    this.addEventListener(evts.beforePlay, (e) => {
       e.preventDefault();
       this.dataset.toggle = "played";
       this.video.play();
+      this.overlayplay.classList.add("active");
+      console.log('before play default fired')
+      setTimeout(() => {
+        this.overlayplay.classList.remove("active");
+      }, 200);
+    })
+
+    this.beforePlay = (func) => this.addEventListener(evts.beforePlay, func, true);
+
+    // Player Play Event
+    this.addEventListener(evts.play, () => {
+      triggerEvent(evts.beforePlay, this)
     });
 
     // Player Pause Event
@@ -76,28 +94,33 @@ export default class Player extends HTMLElement {
       e.preventDefault();
       this.dataset.toggle = "paused";
       this.video.pause();
+      this.overlayplay.classList.add("active");
+      setTimeout(() => {
+        this.overlayplay.classList.remove("active");
+      }, 200);
     });
 
     // Player Play/Pause Event
     this.addEventListener(evts.playPause, (e) => {
       e.preventDefault();
       const paused = this.video.paused;
-      this.dataset.toggle = paused ? "played" : "paused";
-      paused ? this.video.play() : this.video.pause();
+      const toggleEvent = paused ? evts.play : evts.pause;
+      triggerEvent(toggleEvent, this);
     });
 
-    // Player End Event
+    // Player End EventsetDropdownSettingHeight
     this.addEventListener(evts.end, (e) => {
       e.preventDefault();
       this.dataset.toggle = "paused";
       this.video.currentTime = 0;
       this.video.pause();
+      replayIconBtn(this);
+      triggerEvent(evts.loaded, this)
     });
 
     // Forward
     this.addEventListener(evts.forward, (e) => {
       e.preventDefault();
-      console.log(this.#settings);
       this.video.currentTime = this.video.currentTime + this.#settings.forward;
     });
 
@@ -144,6 +167,35 @@ export default class Player extends HTMLElement {
       triggerEvent(toggle, this)
     });
 
+    // Loading
+    this.addEventListener(evts.loading, async function () {
+      if(!this.loader) {
+        const loaderElement = document.createElement("loader");
+        const { loaderAnimatedIcon } = await import("../icons.js");
+        loaderElement.innerHTML = loaderAnimatedIcon;
+        loaderElement.id = "videoManiaLoader";
+        this.loader = loaderElement;
+        this.append(this.loader);
+      }
+    });
+
+    // Loaded
+    this.addEventListener(evts.loaded, async function () {
+      if (this.loader) {
+        const loaderElement = document.querySelector('#'+this.loader.id);
+        loaderElement.remove()
+        this.loader = null
+      }
+    });
+
+    const self = this
+    // Video Ended
+    this.video.addEventListener('ended', function() {
+      triggerEvent(evts.end, self);
+    })
+
+    // Player Ended
+
     // Keypress Event
     this.addEventListener("keydown", async (e) => {
       e.preventDefault();
@@ -152,6 +204,11 @@ export default class Player extends HTMLElement {
       if(existKeys.includes(e.key)) {
         triggerEvent(keyTrigger[e.key], this);
       }
+    });
+
+    // Overlay Play Event
+    this.overlayplay.addEventListener('click', function() {
+      triggerEvent(evts.playPause, this.parentElement);
     });
 
     // Dynamic Video
@@ -167,7 +224,7 @@ export default class Player extends HTMLElement {
         const script = addScript(dynamicObj.url, format);
         script.onload = dynamicObj.init;
       } else {
-        dynamicObj.init();
+        dynamicObj.init(this);
       }
       const { triggerEvent } = await import("../utils.js");
       triggerEvent("playerReady", this);
@@ -177,7 +234,7 @@ export default class Player extends HTMLElement {
 
       // Check if Supported Video Format
       if (html5Video.supportedVideoFormat.includes(format)) {
-        html5Video.default(this.#settings);
+        html5Video.default(this);
         triggerEvent("playerReady", this);
         this.video.src = this.#settings.url;
       }
