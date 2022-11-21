@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="player-old.css" />
     <link rel="stylesheet" href="player.css" />
 
   </head>
@@ -20,22 +21,22 @@
       background-color: #000;
     "
   >
-    <div id="player2"></div>
-    <div id="player"></div>
+    <div id="player2" style="max-width:100%"></div>
+    <div id="player" style="max-width:100%"></div>
 
-    <script src="./js/videoMania.js"></script>
+    <script src="./src/js/videoMania.js"></script>
     <script>
-      videoMania({
-        selector: "#player2",
-        id: "player2",
-        // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
-        // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-        url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
-        autoplay: true,
-        muted: true,
-        width: 1024,
-        height: 600,
-      });
+      // videoMania({
+      //   selector: "#player2",
+      //   id: "player2",
+      //   // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
+      //   // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
+      //   url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
+      //   autoplay: true,
+      //   muted: true,
+      //   width: 1024,
+      //   height: 600,
+      // });
 
       // videoMania({
       //   selector: "#player",
@@ -50,26 +51,26 @@
       //   height: 480,
       // });
 
-      // videoMania({
-      //   selector: "#player2",
-      //   id: "player2",
-      //   // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
-      //   // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-      //   // url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
-      //   url: "/videos/transcript-video.mp4",
-      //   url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      //   subtitles: [
-      //     {
-      //       url: "/captions/captions.vtt",
-      //       lang: "en-us"
-      //     }
-      //   ],
-      //   toggleSubtitle: true,
-      //   autoplay: false,
-      //   muted: true,
-      //   width: 1024,
-      //   height: 600,
-      // });
+      videoMania({
+        selector: "#player2",
+        id: "player2",
+        // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
+        // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
+        // url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
+        url: "./testing/videos/transcript-video.mp4",
+        // url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        subtitles: [
+          {
+            url: "./testing/captions/captions.vtt",
+            lang: "en-us"
+          }
+        ],
+        toggleSubtitle: true,
+        autoplay: false,
+        muted: true,
+        width: 1024,
+        height: 600,
+      });
     </script>
   </body>
 </html>

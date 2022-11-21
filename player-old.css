@@ -16,6 +16,7 @@
 @layer base, played, paused, settings, dropdown;
 
 @layer base {
+  player,
   vm-player {
     display: block;
     position: relative;
@@ -29,26 +30,33 @@
     max-width: 100%;
     box-sizing: border-box;
   }
+  player div,
   vm-player div {
     overflow: hidden;
   }
+  player *,
   vm-player * {
     outline: none;
   }
+  player *,
+  player *:before,
+  player *:after,
+  
   vm-player *,
   vm-player *:before,
   vm-player *:after {
     box-sizing: border-box;
   }
+  player video,
   vm-player video {
     pointer-events: none;
     display: block;
-    object-fit: contain;
+    object-fit: cover;
     width: 100%;
     height: 100%;
     z-index: 0;
   }
-  vm-playerbar {
+  playerbar {
     z-index: 3;
     position: absolute;
     bottom: 0;
@@ -65,55 +73,55 @@
     transition: opacity 300ms linear, visibility 300ms linear;
     will-change: opacity, visibility;
   }
-  vm-playerbar end {
+  playerbar end {
     cursor: pointer;
     user-select: none;
   }
-  vm-player.active vm-playerbar,
-  vm-player.active vm-playerbar {
+  player.active playerbar,
+  player.active playerbar {
     transition-delay: 0;
     opacity: 1;
     visibility: visible;
   }
-  vm-player:not(.active) {
+  player:not(.active) {
     cursor: none;
   }
-  vm-player play,
-  vm-player toggle-screen,
-  vm-player audio-icon,
-  vm-player setting,
-  vm-player miniplayer-btn {
+  player play,
+  player toggle-screen,
+  player audio-icon,
+  player setting,
+  player miniplayer-btn {
     width: 1.5em;
     height: 1.5em;
     display: block;
     position: relative;
   }
-  vm-player play,
-  vm-player toggle-screen,
-  vm-player audio-icon span,
-  vm-player setting span,
-  vm-player miniplayer-btn {
+  player play,
+  player toggle-screen,
+  player audio-icon span,
+  player setting span,
+  player miniplayer-btn {
     cursor: pointer;
   }
-  vm-player setting svg {
+  player setting svg {
     transform: scale(0.8);
   }
-  vm-player audio-icon,
-  vm-player setting {
+  player audio-icon,
+  player setting {
     position: relative;
   }
-  vm-player audio-icon.show-dropdown dropdown,
-  vm-player setting.show-dropdown dropdown {
+  player audio-icon.show-dropdown dropdown,
+  player setting.show-dropdown dropdown {
     opacity: 1;
     visibility: visible;
   }
-  vm-player audio-icon > span,
-  vm-player setting > span {
+  player audio-icon > span,
+  player setting > span {
     display: block;
     width: 100%;
     height: 100%;
   }
-  vm-player svg {
+  player svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -123,7 +131,7 @@
     filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4));
     display: block;
   }
-  vm-player live {
+  player live {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -134,13 +142,13 @@
     justify-self: flex-start;
     flex: 1;
   }
-  vm-player live svg {
+  player live svg {
     width: 2rem;
     height: 2rem;
     animation: live 2s infinite;
     color: #fa1130;
   }
-  vm-overlayplay {
+  overlayplay {
     position: absolute;
     left: 0;
     top: 0;
@@ -159,11 +167,11 @@
     will-change: opacity;
   }
 
-  vm-overlayplay.active {
+  overlayplay.active {
     opacity: 1;
   }
 
-  vm-overlayplay svg {
+  overlayplay svg {
     width: 7em;
     height: 7em;
     opacity: 0.5;
@@ -173,23 +181,23 @@
     will-change: transform;
   }
 
-  vm-overlayplay.active svg {
+  overlayplay.active svg {
     animation: scaleButton 200ms linear;
     will-change: transform;
   }
 
-  vm-player:not([data-toggle="paused"]) .play-icon {
+  player:not([data-toggle="paused"]) .play-icon {
     display: none;
   }
 
-  vm-player:not([data-toggle="played"]) .pause-icon {
+  player:not([data-toggle="played"]) .pause-icon {
     display: none;
   }
 
-  vm-player:not([data-toggle="played"]):not([data-toggle="paused"]) .play-icon {
+  player:not([data-toggle="played"]):not([data-toggle="paused"]) .pause-icon {
     display: block;
   }
-  vm-player timeline {
+  player timeline {
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -201,7 +209,7 @@
     color: rgba(255, 255, 255, 0.75);
   }
 
-  vm-player timeline-progressbar {
+  player timeline-progressbar {
     flex: 1;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 0.35em;
@@ -209,7 +217,7 @@
     position: relative;
     cursor: pointer;
   }
-  vm-player timeline-progressbar timeline-progress {
+  player timeline-progressbar timeline-progress {
     display: block;
     border-radius: 0.5em;
     background-color: white;
@@ -220,7 +228,7 @@
     pointer-events: none;
     user-select: none;
   }
-  vm-player timeline-progressbar timeline-progress:first-of-type:after {
+  player timeline-progressbar timeline-progress:first-of-type:after {
     content: "";
     position: absolute;
     width: 1.25em;
@@ -230,13 +238,13 @@
     top: -0.4em;
     background-color: white;
   }
-  vm-player timeline-progressbar .hover-timeline {
+  player timeline-progressbar .hover-timeline {
     margin-top: -0.5em;
     transition: none;
     width: 0px;
     background-color: rgba(255, 255, 255, 0.5);
   }
-  vm-player timeline-buffer {
+  player timeline-buffer {
     position: absolute;
     left: 0;
     right: 0;
@@ -251,9 +259,9 @@
     pointer-events: none;
   }
 
-  vm-player loader,
-  vm-player forward-rewind,
-  vm-player replay {
+  player loader,
+  player forward-rewind,
+  player replay {
     position: absolute;
     left: 0;
     top: 0;
@@ -268,21 +276,21 @@
     z-index: 1;
   }
 
-  vm-player loader svg,
-  vm-player forward-rewind svg,
-  vm-player replay svg {
+  player loader svg,
+  player forward-rewind svg,
+  player replay svg {
     width: 5em;
     height: 5em;
     will-change: transform;
   }
 
-  vm-player forward-rewind svg,
-  vm-player replay svg {
+  player forward-rewind svg,
+  player replay svg {
     opacity: 0.5;
     animation: scaleButton 100ms linear;
   }
 
-  vm-dropdown {
+  player dropdown {
     background-color: rgba(28, 28, 28, 0.98);
     border-radius: 0.75rem;
     padding-block: 0.25em;
@@ -302,7 +310,7 @@
     align-items: flex-end;
   }
 
-  vm-dropdown nav {
+  player dropdown nav {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -314,7 +322,7 @@
     will-change: transform, opacity, visibility;
   }
 
-  vm-dropdown button {
+  player dropdown button {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -326,16 +334,16 @@
     cursor: pointer;
   }
 
-  vm-dropdown button:hover,
-  vm-dropdown button.active {
+  player dropdown button:hover,
+  player dropdown button.active {
     background-color: rgba(255, 255, 255, 0.055);
   }
 
-  vm-dropdown button.active:before {
+  player dropdown button.active:before {
     content: "\2713";
   }
 
-  vm-dropdown button svg {
+  player dropdown button svg {
     width: 1.5rem;
     height: 1.5rem;
     fill: currentColor;
@@ -343,7 +351,7 @@
     stroke-width: 0;
   }
 
-  vm-dropdown .dropdown-back:before {
+  player dropdown .dropdown-back:before {
     content: "";
     width: 0.5em;
     height: 0.5em;
@@ -355,71 +363,71 @@
     will-change: transform;
   }
 
-  vm-dropdown nav > span {
+  player dropdown nav > span {
     padding: 0.2em 0.6em;
     font-size: 0.8em;
   }
 
-  vm-dropdown nav + nav {
+  player dropdown nav + nav {
     opacity: 0;
     visibility: hidden;
     transition-delay: 150ms;
   }
 
-  vm-dropdown nav + nav button {
+  player dropdown nav + nav button {
     padding-inline: 1em;
   }
 
-  vm-dropdown nav#playback-list {
+  player dropdown nav#playback-list {
     height: 14em;
   }
 
-  vm-dropdown nav#quality-list {
+  player dropdown nav#quality-list {
     transform: translateX(-100%);
   }
 
-  vm-dropdown.dropdown-active nav:first-child {
+  player dropdown.dropdown-active nav:first-child {
     transform: translateX(-100%);
     opacity: 0;
     visibility: hidden;
   }
 
-  vm-dropdown.show-playback:not(.dropdown-active) nav + nav,
-  vm-dropdown.show-quality:not(.dropdown-active) nav + nav {
+  player dropdown.show-playback:not(.dropdown-active) nav + nav,
+  player dropdown.show-quality:not(.dropdown-active) nav + nav {
     display: none;
   }
 
-  vm-dropdown.show-playback.dropdown-active nav#playback-list,
-  vm-dropdown.show-quality.dropdown-active nav#quality-list {
+  player dropdown.show-playback.dropdown-active nav#playback-list,
+  player dropdown.show-quality.dropdown-active nav#quality-list {
     opacity: 1;
     visibility: visible;
   }
 
-  vm-dropdown.show-playback.dropdown-active nav#playback-list {
+  player dropdown.show-playback.dropdown-active nav#playback-list {
     transform: translateX(-100%);
   }
 
-  vm-dropdown.show-quality.dropdown-active nav#quality-list {
+  player dropdown.show-quality.dropdown-active nav#quality-list {
     transform: translateX(-200%);
   }
 
-  vm-dropdown .quality-auto,
-  vm-dropdown #subtitle-btn span {
+  player dropdown .quality-auto,
+  player dropdown #subtitle-btn span {
     font-weight: 700;
     font-size: 0.85em;
   }
 
-  vm-dropdown .quality-auto:before,
-  vm-dropdown #subtitle-btn span:before {
+  player dropdown .quality-auto:before,
+  player dropdown #subtitle-btn span:before {
     content: "(";
   }
 
-  vm-dropdown .quality-auto:after,
-  vm-dropdown #subtitle-btn span:after {
+  player dropdown .quality-auto:after,
+  player dropdown #subtitle-btn span:after {
     content: ")";
   }
 
-  vm-player video::cue {
+  player video::cue {
     background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(5px);
     color: white;
@@ -457,7 +465,7 @@
 }
 
 @layer dropdown {
-  vm-dropdown.show-playback {
+  player dropdown.show-playback {
     height: 14.5em;
   }
 }

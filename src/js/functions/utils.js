@@ -126,13 +126,14 @@ export function onCueChange(event, toggleSubtitle) {
   }
 }
 
-export async function checkVideoBuffer(video, selector) {
+export async function checkVideoBuffer(selector) {
   let checkInterval = 50.0; // check every 50 ms (do not use lower values)
   let lastPlayPos = 0;
   let currentPlayPos = 0;
   let bufferingDetected = false;
 
   const element = document.querySelector(selector)
+  const video = element.querySelector('video');
 
   const { addLoader, removeLoader } = await import('./loader.js')
 
@@ -167,6 +168,4 @@ export async function checkVideoBuffer(video, selector) {
     lastPlayPos = currentPlayPos;
     bufferingDetected ? addLoader(element) : removeLoader(element);
   }
-
-
 }

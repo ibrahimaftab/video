@@ -25,14 +25,11 @@ const hlsDashjs = (selector, url) => ({
   },
 });
 
-async function videoMania(obj = initialObj) {
-  const {
-    playPauseIcon,
-    fullscreenIcon,
-    audioIcon,
-    muteIcon,
-    settingIcon,
-  } = await import("./icons.js");
+async function videoMania(obj) {
+  const initiate = await import("./functions/initiate.js");
+  initiate.default(obj);
+  const { playPauseIcon, fullscreenIcon, audioIcon, muteIcon, settingIcon } =
+    await import("./icons.js");
   const { addLoader, removeLoader } = await import("./loader.js");
   const { playbackHtml, qualityBtn, qualityList } = await import(
     "./defaultsHtml.js"
@@ -66,9 +63,9 @@ async function videoMania(obj = initialObj) {
   const timelineProgress = document.createElement("timeline-progress");
   const audioIconButton = document.createElement("audio-icon");
   const audioSpan = document.createElement("span");
-  let toggleSubtitle = settings.toggleSubtitle
+  let toggleSubtitle = settings.toggleSubtitle;
 
-  timelineBuffer.style.width = "0px"
+  timelineBuffer.style.width = "0px";
   timelineProgress.style.width = "0px";
 
   const dropdown = document.createElement("dropdown");
@@ -122,22 +119,22 @@ async function videoMania(obj = initialObj) {
   settingButton.append(settingButtonSpan);
 
   settingButtonSpan.addEventListener("click", () => {
-    settingButton.classList.toggle("show-dropdown")
-    dropdown.classList = []
+    settingButton.classList.toggle("show-dropdown");
+    dropdown.classList = [];
   });
 
   let paused = !settings.autoplay;
   let fullscreen = false;
   let endSubtract = false;
 
-  let unactivePlayer
+  let unactivePlayer;
 
   player.classList.add("videoMania");
   player.id = settings.id;
   player.style = `width: ${settings.width}px; height: ${settings.height}px; margin: auto`;
-  player.dataset.toggle = settings.autoplay ? 'played' : 'paused'
-  
-  function videoAppend() {
+  player.dataset.toggle = settings.autoplay ? "played" : "paused";
+
+  async function videoAppend() {
     const hoverTimelineProgress = timelineProgress.cloneNode();
     hoverTimelineProgress.classList.add("hover-timeline");
     timelineProgressbar.append(
@@ -150,10 +147,27 @@ async function videoMania(obj = initialObj) {
       play,
       timeline,
       audioIconButton,
-      settingButton,
-      toggleScreen
+      settingButton
     );
+
+    // Picture in picture mode
+    if ("pictureInPictureEnabled" in document) {
+      const miniplayerBtn = document.createElement('miniplayer-btn')
+      const { picInPicIcon } = await import('./icons.js')
+      miniplayerBtn.innerHTML = picInPicIcon;
+      miniplayerBtn.addEventListener('click', function() {
+        try {
+          video.requestPictureInPicture()
+        } catch (error) {
+          console.log(error)
+        }
+      })
+      playerbar.append(miniplayerBtn);
+    }
+
+    playerbar.append(toggleScreen)
     player.append(video, overlayplay, playerbar);
+
     const selector = document.querySelector(settings.selector);
     selector.append(player);
     addLoader(selector);
@@ -188,7 +202,7 @@ async function videoMania(obj = initialObj) {
         break;
       case "m":
         video.muted = !video.muted;
-        volumeIcon(player, "m")
+        volumeIcon(player, "m");
         break;
     }
   });
@@ -265,20 +279,20 @@ async function videoMania(obj = initialObj) {
       video.autoplay && video.played ? "played" : "paused";
   });
 
-  video.addEventListener('loadeddata', function () {
+  video.addEventListener("loadeddata", function () {
     const formatDuration = videoDurationFormat(video, endSubtract);
-      end.textContent = formatDuration;
-  })
+    end.textContent = formatDuration;
+  });
 
   video.addEventListener("timeupdate", function () {
     const getEndSubsctract = endSubtract;
     timelineProgress.style.width =
-      (video.currentTime / video.duration) * 100 +
+      (video.currentTime / video.duration) * 100 + "%";
+    timelineBuffer.style.width =
+      ((video.buffered?.end(video.buffered.length - 1) ?? 0) / video.duration) *
+        100 +
       "%";
-    // if (currentUrl == video.src) {
-      timelineBuffer.style.width = (video.buffered?.end(video.buffered.length - 1) ?? 0) / video.duration * 100 + "%";
-      currentUrl = video.src;
-    // }
+    currentUrl = video.src;
     if (endSubtract) {
       const formatDuration = videoDurationFormat(video, getEndSubsctract);
       end.textContent = formatDuration;
@@ -308,22 +322,24 @@ async function videoMania(obj = initialObj) {
       (audioIconSpan.innerHTML = video.muted ? muteIcon : audioIcon);
   });
 
-  video.addEventListener("ended", function() {
-    player.dataset.toggle = 'paused'
+  video.addEventListener("ended", function () {
+    player.dataset.toggle = "paused";
     replayIconBtn(player);
-  })
+  });
 
   video.onerror = () => {
     console.error(`Error ${video.error.code}; details: ${video.error.message}`);
-  }
+  };
+
+  video.addEventListener("error", function () {
+    console.log("error");
+  });
 
   timelineProgressbar.addEventListener("mousemove", (e) => {
     const hoverTimeline = document.querySelector(
       `${settings.selector} .hover-timeline`
     );
-    const calcPosition =
-      (e.layerX / e.target.clientWidth) * 100 +
-      "%";
+    const calcPosition = (e.layerX / e.target.clientWidth) * 100 + "%";
     hoverTimeline.style.width = calcPosition;
   });
 
@@ -368,13 +384,11 @@ async function videoMania(obj = initialObj) {
   timelineProgressbar.tabIndex = "2";
 
   if (settings.subtitles.length) {
-    const subtitleBtnElement = document.createElement('button')
-    subtitleBtnElement.id = 'subtitle-btn'
-    dropdown
-      .querySelector("#setting-dropdown")
-      .append(subtitleBtnElement);
+    const subtitleBtnElement = document.createElement("button");
+    subtitleBtnElement.id = "subtitle-btn";
+    dropdown.querySelector("#setting-dropdown").append(subtitleBtnElement);
     const { subtitleBtn } = await import("./defaultsHtml.js");
-    subtitleBtnElement.innerHTML = subtitleBtn
+    subtitleBtnElement.innerHTML = subtitleBtn;
     const { onCueChange } = await import("./utils.js");
 
     settings.subtitles.forEach((subtitle) => {
@@ -397,7 +411,6 @@ async function videoMania(obj = initialObj) {
   }
 
   if (settings.url && settings.selector) {
-
     const urlSplit = settings.url.split(".");
 
     if (urlSplit.length > 1) {
@@ -444,7 +457,7 @@ async function videoMania(obj = initialObj) {
         }
         videoAppend();
 
-        if(document.querySelector(`${settings.selector} #quality-list`)) {
+        if (document.querySelector(`${settings.selector} #quality-list`)) {
           const { qualityListHeight } = await import("./utils.js");
           qualityListHeight(settings.selector);
         }
@@ -499,7 +512,10 @@ async function videoMania(obj = initialObj) {
       } else {
         document
           .querySelector(settings.selector)
-          .insertAdjacentHTML("beforeend", `<div class="player-error" style="width: ${settings.width}px; height: ${settings.height}px"><?xml version="1.0" ?><svg id="Layer_1" style="enable-background:new 0 0 612 792;" version="1.1" viewBox="0 0 612 792" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon class="st0" points="382.2,396.4 560.8,217.8 484,141 305.4,319.6 126.8,141 50,217.8 228.6,396.4 50,575 126.8,651.8    305.4,473.2 484,651.8 560.8,575 382.2,396.4  "/></g></svg>Please add a valid video url</div>`);
+          .insertAdjacentHTML(
+            "beforeend",
+            `<div class="player-error" style="width: ${settings.width}px; height: ${settings.height}px"><?xml version="1.0" ?><svg id="Layer_1" style="enable-background:new 0 0 612 792;" version="1.1" viewBox="0 0 612 792" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon class="st0" points="382.2,396.4 560.8,217.8 484,141 305.4,319.6 126.8,141 50,217.8 228.6,396.4 50,575 126.8,651.8    305.4,473.2 484,651.8 560.8,575 382.2,396.4  "/></g></svg>Please add a valid video url</div>`
+          );
       }
     }
 
