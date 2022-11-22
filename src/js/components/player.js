@@ -1,5 +1,3 @@
-import { triggerEvent } from "../utils.js";
-
 export default class Player extends HTMLElement {
   static unactivePlayer;
   #settings;
@@ -194,12 +192,11 @@ export default class Player extends HTMLElement {
     });
 
     const self = this
+    
     // Video Ended
     this.video.addEventListener('ended', function() {
       triggerEvent(evts.end, self);
     })
-
-    // Player Ended
 
     // Keypress Event
     this.addEventListener("keydown", async (e) => {

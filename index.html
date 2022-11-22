@@ -54,11 +54,7 @@
       videoMania({
         selector: "#player2",
         id: "player2",
-        // url: "https://awstapmadstreaming.akamaized.net/hls/live/2095955/worldcupt/master.m3u8",
-        // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-        // url: "http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
         url: "./testing/videos/transcript-video.mp4",
-        // url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         subtitles: [
           {
             url: "./testing/captions/captions.vtt",
@@ -70,6 +66,12 @@
         muted: true,
         width: 1024,
         height: 600,
+        qualities: [
+          {
+            size: 480,
+            src: './testing/videos/video.mp4'
+          }
+        ]
       });
     </script>
   </body>
