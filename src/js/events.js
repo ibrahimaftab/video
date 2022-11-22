@@ -22,6 +22,11 @@ const events = {
   pictureInPicture: "pictureInPicture",
   exitPictureInPicture: "exitPictureInPicture",
   resizePictureInPicture: "resizePictureInPicture",
+  toggleSubtitle: "toggleSubtitle",
+  showSubtitle: "showSubtitle",
+  hideSubtitle: "hideSubtitle",
+  playerActive: "playerActive",
+  playerUnActive: "playerUnActive"
 };
 
 export default events
@@ -32,4 +37,5 @@ export const keyTriggerEvent = {
   'ArrowRight': events.forward,
   'm': events.toggleMute,
   'f': events.toggleFullScreen,
+  't': events.toggleSubtitle
 }

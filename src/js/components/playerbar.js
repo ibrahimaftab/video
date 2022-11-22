@@ -1,3 +1,6 @@
+import events from '../events.js';
+import { triggerEvent } from '../utils.js';
+
 class PlayerBar extends HTMLElement {
   play = document.createElement("play");
   setting = document.createElement("setting");
@@ -113,7 +116,12 @@ class PlayerBar extends HTMLElement {
         player.toggleSubtitle(!subtitles.toggleSubtitle);
         subtitles.toggleSubtitle = !subtitles.toggleSubtitle;
         subtitleBtnSpan.textContent = subtitles.toggleSubtitle ? "On" : "Off";
+        const event = subtitles.toggleSubtitle ? events.showSubtitle : events.hideSubtitle
+        triggerEvent(event, player)
       });
+      player.addEventListener(events.toggleSubtitle, function() {
+        triggerEvent("click", subtitleBtnElement);
+      })
     }
   }
 
@@ -229,7 +237,7 @@ class PlayerBar extends HTMLElement {
 
     
     player.addEventListener(evts.default.initiated, async function () {
-      this.subtitleList();
+      self.subtitleList();
       setDropdownSettingHeight(self);
       self.pictureInPictureMode()
       // Audio Button
@@ -257,6 +265,19 @@ class PlayerBar extends HTMLElement {
         });
       }
     });
+
+    player.addEventListener(evts.default.playerUnActive, function() {
+      const settingDropdown = self.dropdown.querySelector("#setting-dropdown");
+      if (self.setting.classList.contains("show-dropdown")) {
+        self.setting.classList.remove("show-dropdown");
+        if(!settingDropdown.classList.contains("active")) {
+          self.dropdown.classList = []
+          self.dropdown.querySelector("nav.active").classList.remove('active')
+          settingDropdown.classList.add("active");
+          self.dropdownHeightAdjust()
+        }
+      }
+    })
   }
 }
 
