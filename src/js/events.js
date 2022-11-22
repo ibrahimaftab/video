@@ -16,7 +16,9 @@ const events = {
   playable: "playable",
   loading: "loading",
   loaded: "loaded",
-  beforePlay: "beforePlay"
+  beforePlay: "beforePlay",
+  initiated: "initiated",
+  volumechange: "volumechange"
 };
 
 export default events

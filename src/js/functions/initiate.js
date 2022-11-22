@@ -25,22 +25,21 @@ export default async function initiate(config, placement = 'beforeend') {
   if(document.querySelector(config?.selector)) {
 
     if (config.url.split(".").length > 1) {
-      window.videoManiaConfig = {
-        [config.selector]: {
-          width: 800, // default width
-          height: 450, // default height
-          autoplay: false,
-          muted: false,
-          loop: false,
-          url: null,
-          id: null,
-          qualities: [],
-          subtitles: [],
-          toggleSubtitle: false,
-          forward: 10, // 10 second by default
-          backward: 10, // 10 second by default
-          ...config,
-        },
+      document.querySelector(config?.selector).videoManiaConfig = {
+        width: 800, // default width
+        height: 450, // default height
+        autoplay: false,
+        muted: false,
+        loop: false,
+        url: null,
+        id: null,
+        qualities: [],
+        subtitles: [],
+        toggleSubtitle: false,
+        forward: 10, // 10 second by default
+        backward: 10, // 10 second by default
+        controls: true,
+        ...config,
       };
     } else {
       // handling error if invalid url

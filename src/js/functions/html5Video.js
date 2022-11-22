@@ -43,59 +43,45 @@ export const playableInitiate = async function (element) {
 
   // Dropdown Qualities List
   if (qualitiesList.length) {
-    const { qualityBtn, qualityList } = await import("../defaultsHtml.js");
-    const settingDropdown = self.dropdown.querySelector("#setting-dropdown");
-    settingDropdown.insertAdjacentHTML("beforeend", qualityBtn);
-    self.dropdownHeightAdjust();
-    self.dropdown.insertAdjacentHTML("beforeend", qualityList);
-    const qualityDropdown = self.dropdown.querySelector("#quality-list");
+    self.createQualityDropdown(function () {
+      const qualityDropdown = self.dropdown.querySelector("#quality-list");
 
-    // Qualities List Foreach
-    qualitiesList.forEach((quality, index) => {
-      qualityDropdown.insertAdjacentHTML(
-        "beforeend",
-        `<button class="vm-quality-btn" data-size="${quality.size}">${quality.size}</button>`
-      );
+      // Qualities List Foreach
+      qualitiesList.forEach((quality, index) => {
+        qualityDropdown.insertAdjacentHTML(
+          "beforeend",
+          `<button class="vm-quality-btn" data-size="${quality.size}">${quality.size}</button>`
+        );
 
-      // Change Quality Button Click Event
-      const btn = self.dropdown.querySelector(
-        `.vm-quality-btn[data-size="${quality.size}"]`
-      );
-      btn.addEventListener("click", function () {
-        if (!btn.classList.contains("active")) {
-          const url = qualitiesList.find(
-            (quality) => quality.size == btn.dataset.size
-          ).src;
-          if (url) {
-            const video = self.parentElement.video;
-            btn.parentElement
-              .querySelector(".active")
-              ?.classList.remove("active");
-            btn.classList.add("active");
-            const paused = video.paused;
-            const currentTime = video.currentTime
-            video.src = url;
-            video.currentTime = currentTime
-            if(paused) {
-              video.pause()
-            } else {
-              video.play()
+        // Change Quality Button Click Event
+        const btn = self.dropdown.querySelector(
+          `.vm-quality-btn[data-size="${quality.size}"]`
+        );
+        btn.addEventListener("click", function () {
+          if (!btn.classList.contains("active")) {
+            const url = qualitiesList.find(
+              (quality) => quality.size == btn.dataset.size
+            ).src;
+            if (url) {
+              const video = self.parentElement.video;
+              btn.parentElement
+                .querySelector(".active")
+                ?.classList.remove("active");
+              btn.classList.add("active");
+              const paused = video.paused;
+              const currentTime = video.currentTime;
+              video.src = url;
+              video.currentTime = currentTime;
+              if (paused) {
+                video.pause();
+              } else {
+                video.play();
+              }
             }
           }
-        }
+        });
       });
     });
-
-    // Quality Button Click Event
-    settingDropdown
-      .querySelector("#quality-btn")
-      .addEventListener("click", function () {
-        self.dropdown.classList.add("show-quality");
-        self.dropdown.classList.add("dropdown-active");
-        self.dropdown.querySelector(".active").classList.remove("active");
-        self.dropdown.querySelector("#quality-list").classList.add("active");
-        self.dropdownHeightAdjust();
-      });
   }
 
   // End Duration Click

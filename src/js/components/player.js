@@ -10,7 +10,7 @@ export default class Player extends HTMLElement {
 
   constructor() {
     super();
-    this.#settings = window.videoManiaConfig[this.dataset.selector];
+    this.#settings = this.parentElement.videoManiaConfig;
 
     const style = `<style id='videomania-style'>
       @layer base {
@@ -37,6 +37,17 @@ export default class Player extends HTMLElement {
     return this.#settings.qualities
   }
 
+  subtitleList() {
+    return {
+      list: this.#settings.subtitles,
+      toggleSubtitle: this.#settings.toggleSubtitle
+    }
+  }
+
+  toggleSubtitle(booleanVal) {
+    this.#settings.toggleSubtitle = booleanVal; 
+  }
+
   async initiatePlayer(e) {
     e.preventDefault();
     this.video.autoplay = this.#settings.autoplay;
@@ -49,6 +60,15 @@ export default class Player extends HTMLElement {
     customElements.define("vm-playerbar", playerbar.default);
     this.append(this.video, this.overlayplay);
     this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
+  }
+
+  checkIfVideoContainsAudio() {
+    if (typeof this.video.webkitAudioDecodedByteCount !== "undefined") {
+      return this.video.webkitAudioDecodedByteCount > 0;
+    } else if (typeof this.video.mozHasAudio !== "undefined") {
+      return this.video.mozHasAudio;
+    } 
+    return false
   }
 
   // connect component
@@ -211,6 +231,11 @@ export default class Player extends HTMLElement {
     // Overlay Play Event
     this.overlayplay.addEventListener('click', function() {
       triggerEvent(evts.playPause, this.parentElement);
+    });
+
+    // Volume Change Event
+    this.video.addEventListener("volumechange", function() {
+      triggerEvent(evts.volumechange, this.parentElement);
     });
 
     // Dynamic Video
