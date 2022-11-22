@@ -28,6 +28,40 @@ class PlayerBar extends HTMLElement {
     this.dropdown.style.height = heightTotal + "px";
   }
 
+  async pictureInPictureMode() {
+     // Picture in picture mode
+    if ("pictureInPictureEnabled" in document) {
+      const miniplayerBtn = document.createElement('miniplayer-btn')
+      const { picInPicIcon } = await import('../icons.js')
+      const { triggerEvent } = await import(
+        "../utils.js"
+      );
+      const events = await import('../events.js')
+      miniplayerBtn.innerHTML = picInPicIcon;
+      const player = this.parentElement
+      miniplayerBtn.addEventListener('click', function() {
+        const { video } = player;
+        try {
+          video.requestPictureInPicture().then((pictureInPictureWindow) => {
+            triggerEvent(events.default.pictureInPicture, player);
+            player.changePictureInPicture({
+              width: pictureInPictureWindow.width,
+              height: pictureInPictureWindow.height,
+            });
+            pictureInPictureWindow.addEventListener('resize', function(evt) {
+              player.changePictureInPicture({width: evt.target.width, height: evt.target.height});
+              triggerEvent(events.default.resizePictureInPicture, player);
+            })
+
+          });
+        } catch (error) {
+          console.log(error)
+        }
+      })
+      this.setting.after(miniplayerBtn);
+    }
+  }
+
   async createQualityDropdown(func) {
     const { qualityBtn, qualityList } = await import("../defaultsHtml.js");
     const dropdownHtml = this.dropdown;
@@ -193,10 +227,11 @@ class PlayerBar extends HTMLElement {
       }
     });
 
-    setDropdownSettingHeight(this);
-    this.subtitleList();
-
+    
     player.addEventListener(evts.default.initiated, async function () {
+      this.subtitleList();
+      setDropdownSettingHeight(self);
+      self.pictureInPictureMode()
       // Audio Button
       const checkAudio = player.checkIfVideoContainsAudio();
       if (checkAudio) {

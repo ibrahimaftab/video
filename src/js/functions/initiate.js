@@ -39,6 +39,7 @@ export default async function initiate(config, placement = 'beforeend') {
         forward: 10, // 10 second by default
         backward: 10, // 10 second by default
         controls: true,
+        rounded: true,
         ...config,
       };
     } else {

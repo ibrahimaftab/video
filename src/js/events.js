@@ -18,7 +18,10 @@ const events = {
   loaded: "loaded",
   beforePlay: "beforePlay",
   initiated: "initiated",
-  volumechange: "volumechange"
+  volumechange: "volumechange",
+  pictureInPicture: "pictureInPicture",
+  exitPictureInPicture: "exitPictureInPicture",
+  resizePictureInPicture: "resizePictureInPicture",
 };
 
 export default events

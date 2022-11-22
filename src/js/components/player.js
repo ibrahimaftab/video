@@ -7,6 +7,7 @@ export default class Player extends HTMLElement {
   loader = null
   overlayplay = document.createElement('overlayplay')
   beforePlay = null
+  pictureInPicture = null
 
   constructor() {
     super();
@@ -55,11 +56,16 @@ export default class Player extends HTMLElement {
     this.video.width = this.#settings.width;
     this.video.height = this.#settings.height;
     this.video.loop = this.#settings.loop;
-
-    const playerbar = await import("./playerbar.js");
-    customElements.define("vm-playerbar", playerbar.default);
     this.append(this.video, this.overlayplay);
-    this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
+
+    const roundedClass = this.#settings.rounded ? 'rounded' : '' 
+    this.classList.add(roundedClass)
+
+    if(this.#settings.controls) {
+      const playerbar = await import("./playerbar.js");
+      customElements.define("vm-playerbar", playerbar.default);
+      this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
+    }
   }
 
   checkIfVideoContainsAudio() {
@@ -69,6 +75,13 @@ export default class Player extends HTMLElement {
       return this.video.mozHasAudio;
     } 
     return false
+  }
+
+  changePictureInPicture(obj) {
+    this.pictureInPicture = {
+      width: obj.width,
+      height: obj.height,
+    };
   }
 
   // connect component
@@ -153,7 +166,8 @@ export default class Player extends HTMLElement {
 
     // Fullscreen
     this.addEventListener(evts.fullscreen, (e) => {
-      e.preventDefault(), this.requestFullscreen();
+      e.preventDefault()
+      this.requestFullscreen();
     });
 
     // Exit Fullscreen
@@ -266,5 +280,18 @@ export default class Player extends HTMLElement {
         this.video.src = this.#settings.url;
       }
     }
+    if(document.pictureInPictureEnabled) {
+      this.video.addEventListener("enterpictureinpicture", function () {
+        triggerEvent(evts.pictureInPicture, self);
+      });
+      this.video.addEventListener("leavepictureinpicture", function () {
+        triggerEvent(evts.exitPictureInPicture, self);
+        self.pictureInPicture = false;
+      });
+    }
+    this.addEventListener(evts.initiated, function() {
+      const playState = this.#settings.autoplay && this.#settings.muted ? "played" : "paused"
+      this.dataset.toggle = playState;
+    })
   }
 }
