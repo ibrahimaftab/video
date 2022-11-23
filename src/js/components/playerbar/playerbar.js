@@ -1,6 +1,3 @@
-import events from '../events.js';
-import { triggerEvent } from '../utils.js';
-
 class PlayerBar extends HTMLElement {
   play = document.createElement("play");
   setting = document.createElement("setting");
@@ -35,11 +32,11 @@ class PlayerBar extends HTMLElement {
      // Picture in picture mode
     if ("pictureInPictureEnabled" in document) {
       const miniplayerBtn = document.createElement('miniplayer-btn')
-      const { picInPicIcon } = await import('../icons.js')
+      const { picInPicIcon } = await import('../../icons.js')
       const { triggerEvent } = await import(
-        "../utils.js"
+        "../../utils.js"
       );
-      const events = await import('../events.js')
+      const events = await import('../../events.js')
       miniplayerBtn.innerHTML = picInPicIcon;
       const player = this.parentElement
       miniplayerBtn.addEventListener('click', function() {
@@ -66,7 +63,7 @@ class PlayerBar extends HTMLElement {
   }
 
   async createQualityDropdown(func) {
-    const { qualityBtn, qualityList } = await import("../defaultsHtml.js");
+    const { qualityBtn, qualityList } = await import("../../defaultsHtml.js");
     const dropdownHtml = this.dropdown;
     const self = this;
     const settingDropdown = dropdownHtml.querySelector("#setting-dropdown");
@@ -95,9 +92,9 @@ class PlayerBar extends HTMLElement {
         .querySelector("#setting-dropdown")
         .append(subtitleBtnElement);
       this.dropdownHeightAdjust();
-      const { subtitleBtn } = await import("../defaultsHtml.js");
+      const { subtitleBtn } = await import("../../defaultsHtml.js");
       subtitleBtnElement.innerHTML = subtitleBtn;
-      const { onCueChange } = await import("../utils.js");
+      const { onCueChange } = await import("../../utils.js");
 
       subtitles.list.forEach((subtitle) => {
         const track = document.createElement("track");
@@ -125,12 +122,91 @@ class PlayerBar extends HTMLElement {
     }
   }
 
+  async videoManiaLive() {
+    const { liveIcon } = await import('../../icons.js')
+    const live = document.createElement("live");
+    live.innerHTML = liveIcon;
+    live.append("Live");
+    this.play.after(live);
+  }
+
+  async initiate(showTimeline = true) {
+    const player = this.parentElement;
+    const self = this
+    const { videoDurationFormat } = await import("../../utils.js");
+    const end = document.createElement("end");
+    end.tabIndex = "4";
+    end.role = "button";
+    end.textContent = videoDurationFormat(player.video, self.durationSubstract);
+    self.append(self.play, self.setting, self.toggleFullscreen);
+
+    // Duration Substract
+    let durationSubstract = false;
+
+    // End Duration Click
+    end.addEventListener("click", function (e) {
+      e.preventDefault();
+      durationSubstract = !durationSubstract;
+      end.textContent = videoDurationFormat(player.video, durationSubstract);
+    });
+
+    // Video
+    const { video } = player;
+
+
+    if (showTimeline) {
+      const timeline = document.createElement("timeline");
+      const timelineProgressbar = document.createElement(
+        "timeline-progressbar"
+      );
+      const timelineBuffer = document.createElement("timeline-buffer");
+      const timelineProgress = document.createElement("timeline-progress");
+      
+      const clonedTimelineProgress = timelineProgress.cloneNode();
+      clonedTimelineProgress.classList.add("hover-timeline");
+        
+      timelineProgressbar.append(
+        timelineBuffer,
+        timelineProgress,
+        clonedTimelineProgress
+      );
+      timeline.append(timelineProgressbar, end);
+      timelineProgressbar.role = "button";
+      timelineProgressbar.tabIndex = "3";
+      timelineBuffer.style.width = "0px";
+      timelineProgress.style.width = "0px";
+      // Timeline Progress Bar Mouse Move
+      timelineProgressbar.addEventListener("mousemove", (e) => {
+        const calcPosition = (e.layerX / e.target.clientWidth) * 100 + "%";
+        clonedTimelineProgress.style.width = calcPosition;
+      });
+
+      // Timeline Progress Bar Mouse leave
+      timelineProgressbar.addEventListener("mouseleave", (e) => {
+        e.preventDefault();
+        clonedTimelineProgress.style.width = `0px`;
+      });
+
+      // Timeline Progress Bar Click
+      timelineProgressbar.addEventListener("click", function (e) {
+        e.preventDefault();
+        const calcPosition = e.layerX / e.target.clientWidth;
+        timelineProgress.style.width = calcPosition * 100 + "%";
+        video.currentTime = video.duration * calcPosition;
+      });
+      self.play.after(timeline)
+    } else {
+      this.videoManiaLive()
+    }
+  }
+
   async connectedCallback() {
+    this.parentElement.playerbar = this;
     const self = this;
     const player = self.parentElement;
-    const evts = await import("../events.js");
+    const evts = await import("../../events.js");
     const { triggerEvent, setDropdownSettingHeight } = await import(
-      "../utils.js"
+      "../../utils.js"
     );
 
     // Play Button Click Event
@@ -147,11 +223,30 @@ class PlayerBar extends HTMLElement {
     this.parentElement.addEventListener(
       evts.default.playable,
       async function () {
-        const { playableInitiate } = await import("../functions/html5Video.js");
+        const { playableInitiate } = await import("../../functions/html5Video.js");
+        self.initiate()
         playableInitiate(this);
         triggerEvent(evts.default.initiated, player);
       },
       true
+    );
+
+    // Dynamic Dash Js Event
+    this.parentElement.addEventListener(
+      evts.default.dynamicDashJs,
+      async function() {
+        const dashjs = await import('../../functions/dash.js')
+        dashjs.default(player)
+      }
+    )
+
+    // Dynamic HLS Js Event
+    this.parentElement.addEventListener(
+      evts.default.dynamicHlsJs,
+      async function () {
+        const hlsjs = await import("./hls.js");
+        hlsjs.default(player);
+      }
     );
 
     // Setting Plackback Button Click Event
@@ -217,7 +312,7 @@ class PlayerBar extends HTMLElement {
 
     // Video Time Update Event
     this.parentElement.video.addEventListener("timeupdate", async function () {
-      const { videoDurationFormat } = await import("../utils.js");
+      const { videoDurationFormat } = await import("../../utils.js");
       const timelineProgress = self.querySelector("timeline-progress");
       const timelineBuffer = self.querySelector("timeline-buffer");
       if (timelineProgress && timelineBuffer) {
@@ -235,7 +330,7 @@ class PlayerBar extends HTMLElement {
       }
     });
 
-    
+    // Player Initiated Event
     player.addEventListener(evts.default.initiated, async function () {
       self.subtitleList();
       setDropdownSettingHeight(self);
@@ -243,7 +338,7 @@ class PlayerBar extends HTMLElement {
       // Audio Button
       const checkAudio = player.checkIfVideoContainsAudio();
       if (checkAudio) {
-        const { muteIcon, audioIcon } = await import("../icons.js");
+        const { muteIcon, audioIcon } = await import("../../icons.js");
         const audioIconButton = document.createElement("audio-icon");
         const audioSpan = document.createElement("span");
         audioSpan.role = "button";
@@ -266,6 +361,7 @@ class PlayerBar extends HTMLElement {
       }
     });
 
+    // Player Unactive Event
     player.addEventListener(evts.default.playerUnActive, function() {
       const settingDropdown = self.dropdown.querySelector("#setting-dropdown");
       if (self.setting.classList.contains("show-dropdown")) {

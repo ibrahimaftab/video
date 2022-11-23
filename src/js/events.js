@@ -26,7 +26,9 @@ const events = {
   showSubtitle: "showSubtitle",
   hideSubtitle: "hideSubtitle",
   playerActive: "playerActive",
-  playerUnActive: "playerUnActive"
+  playerUnActive: "playerUnActive",
+  dynamicDashJs: "dynamicDashJs",
+  dynamicHlsJs: "dynamicHlsJs",
 };
 
 export default events

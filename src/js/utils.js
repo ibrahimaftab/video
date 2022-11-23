@@ -88,18 +88,20 @@ export async function videoManiaLive(selector) {
 }
 
 export function videoDurationFormat(video, subtract = false) {
-  const date = new Date(null);
-  const seconds = subtract
-    ? video.duration - video.currentTime
-    : video.duration;
-  if (seconds != Infinity) {
-    date.setSeconds(seconds);
-    const formatDuration = date.toISOString().substr(11, 8);
-    if (formatDuration.split(":")[0] != "00") {
-      return (subtract ? "-" : "") + formatDuration;
+  if(video.duration) {
+    const date = new Date(null);
+    const seconds = subtract
+      ? video.duration - video.currentTime
+      : video.duration;
+    if (seconds != Infinity) {
+      date.setSeconds(seconds);
+      const formatDuration = date?.toISOString().substr(11, 8);
+      if (formatDuration && formatDuration?.split(":")[0] != "00") {
+        return (subtract ? "-" : "") + formatDuration;
+      }
+      const splitHMS = formatDuration.split(":");
+      return `${subtract ? "-" : ""}${splitHMS[1]}:${splitHMS[2]}`;
     }
-    const splitHMS = formatDuration.split(":");
-    return `${subtract ? "-" : ""}${splitHMS[1]}:${splitHMS[2]}`;
   }
 }
 

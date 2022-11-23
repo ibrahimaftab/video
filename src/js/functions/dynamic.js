@@ -6,7 +6,7 @@ const initDynamic = (selector, url) => ({
     url: `https://cdn.jsdelivr.net/npm/hls.js@1`,
     init: async () => {
       if (!videoManiaHlsjs) {
-        const file = await import("./hls.js");
+        const file = await import("../hls.js");
         videoManiaHlsjs = file.default;
       }
       videoManiaHlsjs(selector, url);
@@ -18,7 +18,7 @@ const initDynamic = (selector, url) => ({
     url: `https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js`,
     init: async () => {
       if (!videoManiaDashjs) {
-        const file = await import("./dash.js");
+        const file = await import("../dash.js");
         videoManiaDashjs = file.default;
       }
       videoManiaDashjs(selector, url);
