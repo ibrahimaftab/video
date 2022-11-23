@@ -150,7 +150,8 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
     z-index: 1;
     display: flex;
     flex-wrap: wrap;

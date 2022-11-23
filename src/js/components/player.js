@@ -158,15 +158,37 @@ export default class Player extends HTMLElement {
     });
 
     // Forward Event
-    this.addEventListener(evts.forward, (e) => {
+    this.addEventListener(evts.forward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime + this.#settings.forward;
+      const { forwardIcon } = await import('../icons.js')
+      const cloned = this.overlayplay.cloneNode()
+      cloned.innerHTML = forwardIcon;
+      this.append(cloned)
+      cloned.classList.add("active");
+      setTimeout(() => {
+        cloned.classList.remove("active");
+        setTimeout(() => {
+          cloned.remove()
+        }, 200)
+      }, 200);
     });
 
     // Backward Event
-    this.addEventListener(evts.backward, (e) => {
+    this.addEventListener(evts.backward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime - this.#settings.backward;
+      const { rewindIcon } = await import('../icons.js')
+      const cloned = this.overlayplay.cloneNode()
+      cloned.innerHTML = rewindIcon;
+      this.append(cloned)
+      cloned.classList.add("active");
+      setTimeout(() => {
+        cloned.classList.remove("active");
+        setTimeout(() => {
+          cloned.remove()
+        }, 200)
+      }, 200);
     });
 
     // Fullscreen Event
