@@ -451,6 +451,12 @@
     flex-direction: column;
     gap: 1rem;
   }
+  .player-error p {
+    margin-block: 0
+  }
+  .player-error strong {
+    display: inline;
+  }
   .player-error svg {
     width: 3em;
     height: 3em;

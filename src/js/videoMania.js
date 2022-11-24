@@ -1,13 +1,19 @@
 ~include("./events.js");
 ~include("./components/player.js");
 
+const allSupportedFormat = ["mp4", "webm", "ogg", "m3u8", "mpd"];
+
 function videoMania(config, placement = "beforeend") {
-  if(!customElements.get('vm-player')) {
-    customElements.define("vm-player", Player);
-  }
-  if (document.querySelector(config?.selector)) {
-    if (config.url.split(".").length > 1) {
-      document.querySelector(config?.selector).videoManiaConfig = {
+  const element = document.querySelector(config?.selector);
+  
+  if (element) {
+    const splitUrl = config.url.split(".");
+    const extension = splitUrl[splitUrl.length - 1];
+    if (!customElements.get("vm-player")) {
+      customElements.define("vm-player", Player);
+    }
+    if (allSupportedFormat.includes(extension)) {
+      element.videoManiaConfig = {
         width: 800, // default width
         height: 450, // default height
         autoplay: false,
@@ -24,31 +30,31 @@ function videoMania(config, placement = "beforeend") {
         rounded: true,
         ...config,
       };
+
+      element.insertAdjacentHTML(
+        placement,
+        `<vm-player data-selector="${config.selector}" />`
+      );
+      const player = element.querySelector("vm-player");
+      return player;
     } else {
       // handling error if invalid url
+      element.insertAdjacentHTML(
+        "beforeend",
+        `<div class="player-error" style="width: ${config.width}px; height: ${config.height}px"><?xml version="1.0" ?><svg id="Layer_1" style="enable-background:new 0 0 612 792;" version="1.1" viewBox="0 0 612 792" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon class="st0" points="382.2,396.4 560.8,217.8 484,141 305.4,319.6 126.8,141 50,217.8 228.6,396.4 50,575 126.8,651.8    305.4,473.2 484,651.8 560.8,575 382.2,396.4  "/></g></svg><p>Incorrect <strong>{video url}</strong></p></div>`
+      );
+      throw new Error("Incorrect {video url}");
     }
-    const element = document.querySelector(config.selector);
-
-    element.insertAdjacentHTML(
-      placement,
-      `<vm-player data-selector="${config.selector}" />`
-    );
-    const player = element.querySelector('vm-player')
-    
-    // player.on = function (eventName, func) {
-    //   const event = events[eventName];
-    //   if (event) {
-    //     player.addEventlistener(event, func, false);
-    //   } else {
-    //     player.addEventlistener(eventName, func, false);
-    //   }
-    // };
-
-    return player
-    
   } else {
+    const msg = config.selector
+      ? `Could not find element {${config.selector}}`
+      : "Please add selector {selector: (class or id)}"; 
     // handling error if selector is invalid
+    throw new Error(msg)
   }
+  return {
+    addEventListener: ()=>{}
+  };
 }
 
 // console.log(videoMania.prototype.on)

@@ -94,7 +94,7 @@ class Player extends HTMLElement {
     const { dynamicFormats } = await import("./functions/dynamic.js");
     const { triggerEvent } = await import("./utils.js");
     const evts = events;
-    const keyTrigger = events.keyTriggerEvent;
+    const keyTrigger = keyTriggerEvent;
 
     this.tabIndex = 1;
 
