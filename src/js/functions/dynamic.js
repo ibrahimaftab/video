@@ -5,11 +5,11 @@ const initDynamic = (selector, url) => ({
   m3u8: {
     url: `https://cdn.jsdelivr.net/npm/hls.js@1`,
     init: async () => {
-      if (!videoManiaHlsjs) {
+      if (!window.videoManiaHlsjs) {
         const file = await import("../hls.js");
-        videoManiaHlsjs = file.default;
+        window.videoManiaHlsjs = file.default;
       }
-      videoManiaHlsjs(selector, url);
+      window.videoManiaHlsjs(selector, url);
     },
   },
 

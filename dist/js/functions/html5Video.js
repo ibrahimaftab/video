@@ -1,0 +1,1 @@
+const supportedVideoFormat=["mp4","webm","ogg"],html5Video=async t=>{const{triggerEvent:e,checkVideoBuffer:o}=await import("../utils.js"),i=await import("../events.js");o(t),setTimeout(()=>{e(i.default.playable,t)},200)};export default html5Video;export{supportedVideoFormat};

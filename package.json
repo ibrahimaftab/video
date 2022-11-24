@@ -19,5 +19,13 @@
   "bugs": {
     "url": "https://github.com/ibrahimaftab/video/issues"
   },
-  "homepage": "https://github.com/ibrahimaftab/video#readme"
+  "homepage": "https://github.com/ibrahimaftab/video#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-uglify": "^3.0.2",
+    "@babel/core": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-file-include": "^2.3.0"
+  }
 }

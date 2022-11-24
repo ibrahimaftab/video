@@ -31,9 +31,7 @@ const events = {
   dynamicHlsJs: "dynamicHlsJs",
 };
 
-export default events
-
-export const keyTriggerEvent = {
+const keyTriggerEvent = {
   ' ': events.playPause,
   'ArrowLeft': events.backward,
   'ArrowRight': events.forward,

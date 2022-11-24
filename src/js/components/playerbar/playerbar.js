@@ -36,21 +36,20 @@ class PlayerBar extends HTMLElement {
       const { triggerEvent } = await import(
         "../../utils.js"
       );
-      const events = await import('../../events.js')
       miniplayerBtn.innerHTML = picInPicIcon;
       const player = this.parentElement
       miniplayerBtn.addEventListener('click', function() {
         const { video } = player;
         try {
           video.requestPictureInPicture().then((pictureInPictureWindow) => {
-            triggerEvent(events.default.pictureInPicture, player);
+            triggerEvent(events.pictureInPicture, player);
             player.changePictureInPicture({
               width: pictureInPictureWindow.width,
               height: pictureInPictureWindow.height,
             });
             pictureInPictureWindow.addEventListener('resize', function(evt) {
               player.changePictureInPicture({width: evt.target.width, height: evt.target.height});
-              triggerEvent(events.default.resizePictureInPicture, player);
+              triggerEvent(events.resizePictureInPicture, player);
             })
 
           });
@@ -204,36 +203,35 @@ class PlayerBar extends HTMLElement {
     this.parentElement.playerbar = this;
     const self = this;
     const player = self.parentElement;
-    const evts = await import("../../events.js");
     const { triggerEvent, setDropdownSettingHeight } = await import(
       "../../utils.js"
     );
 
     // Play Button Click Event
     this.play.addEventListener("click", function () {
-      triggerEvent(evts.default.playPause, player);
+      triggerEvent(events.playPause, player);
     });
 
     // Toggle Fullscren Click Event
     this.toggleFullscreen.addEventListener("click", function () {
-      triggerEvent(evts.default.toggleFullScreen, player);
+      triggerEvent(events.toggleFullScreen, player);
     });
 
     // Playable Event (for custom html5 supported video)
     this.parentElement.addEventListener(
-      evts.default.playable,
+      events.playable,
       async function () {
         const { playableInitiate } = await import("../../functions/html5Video.js");
         self.initiate()
         playableInitiate(this);
-        triggerEvent(evts.default.initiated, player);
+        triggerEvent(events.initiated, player);
       },
       true
     );
 
     // Dynamic Dash Js Event
     this.parentElement.addEventListener(
-      evts.default.dynamicDashJs,
+      events.dynamicDashJs,
       async function() {
         const dashjs = await import('../../functions/dash.js')
         dashjs.default(player)
@@ -242,7 +240,7 @@ class PlayerBar extends HTMLElement {
 
     // Dynamic HLS Js Event
     this.parentElement.addEventListener(
-      evts.default.dynamicHlsJs,
+      events.dynamicHlsJs,
       async function () {
         const hlsjs = await import("./hls.js");
         hlsjs.default(player);
@@ -331,7 +329,7 @@ class PlayerBar extends HTMLElement {
     });
 
     // Player Initiated Event
-    player.addEventListener(evts.default.initiated, async function () {
+    player.addEventListener(events.initiated, async function () {
       self.subtitleList();
       setDropdownSettingHeight(self);
       self.pictureInPictureMode()
@@ -355,14 +353,14 @@ class PlayerBar extends HTMLElement {
         self.setting.before(audioIconButton);
 
         // Player Video Volume Change Event
-        player.addEventListener(evts.default.volumechange, (e) => {
+        player.addEventListener(events.volumechange, (e) => {
           audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
         });
       }
     });
 
     // Player Unactive Event
-    player.addEventListener(evts.default.playerUnActive, function() {
+    player.addEventListener(events.playerUnActive, function() {
       const settingDropdown = self.dropdown.querySelector("#setting-dropdown");
       if (self.setting.classList.contains("show-dropdown")) {
         self.setting.classList.remove("show-dropdown");

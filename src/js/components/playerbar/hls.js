@@ -2,8 +2,7 @@ export default async function (player) {
   const self = player.playerbar;
   const hls = player.hlsjs;
   const { triggerEvent } = await import("../../utils.js");
-  const evts = await import("../../events.js");
-  triggerEvent(evts.default.initiated, player);
+  triggerEvent(events.initiated, player);
   hls.on(Hls.Events.LEVEL_SWITCHED, async function (name, event) {
     if (
       hls.currentLevel > 0 ||

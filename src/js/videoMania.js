@@ -1,31 +1,54 @@
-const supportedVideoFormat = ["mp4", "webm", "ogg"];
-let videoManiaHlsjs = null;
-let videoManiaDashjs = null;
+~include("./events.js");
+~include("./components/player.js");
 
-const hlsDashjs = (selector, url) => ({
-  m3u8: {
-    url: `https://cdn.jsdelivr.net/npm/hls.js@1`,
-    init: async () => {
-      if (!videoManiaHlsjs) {
-        const file = await import("./hls.js");
-        videoManiaHlsjs = file.default;
-      }
-      videoManiaHlsjs(selector, url);
-    },
-  },
-  mpd: {
-    url: `https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js`,
-    init: async () => {
-      if (!videoManiaDashjs) {
-        const file = await import("./dash.js");
-        videoManiaDashjs = file.default;
-      }
-      videoManiaDashjs(selector, url);
-    },
-  },
-});
+function videoMania(config, placement = "beforeend") {
+  if(!customElements.get('vm-player')) {
+    customElements.define("vm-player", Player);
+  }
+  if (document.querySelector(config?.selector)) {
+    if (config.url.split(".").length > 1) {
+      document.querySelector(config?.selector).videoManiaConfig = {
+        width: 800, // default width
+        height: 450, // default height
+        autoplay: false,
+        muted: false,
+        loop: false,
+        url: null,
+        id: null,
+        qualities: [],
+        subtitles: [],
+        toggleSubtitle: false,
+        forward: 10, // 10 second by default
+        backward: 10, // 10 second by default
+        controls: true,
+        rounded: true,
+        ...config,
+      };
+    } else {
+      // handling error if invalid url
+    }
+    const element = document.querySelector(config.selector);
 
-async function videoMania(obj) {
-  const initiate = await import("./functions/initiate.js");
-  initiate.default(obj);
+    element.insertAdjacentHTML(
+      placement,
+      `<vm-player data-selector="${config.selector}" />`
+    );
+    const player = element.querySelector('vm-player')
+    
+    // player.on = function (eventName, func) {
+    //   const event = events[eventName];
+    //   if (event) {
+    //     player.addEventlistener(event, func, false);
+    //   } else {
+    //     player.addEventlistener(eventName, func, false);
+    //   }
+    // };
+
+    return player
+    
+  } else {
+    // handling error if selector is invalid
+  }
 }
+
+// console.log(videoMania.prototype.on)

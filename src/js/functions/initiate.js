@@ -1,27 +1,4 @@
-const hlsDashjs = (selector, url) => ({
-  m3u8: {
-    url: `https://cdn.jsdelivr.net/npm/hls.js@1`,
-    init: async () => {
-      if (!videoManiaHlsjs) {
-        const file = await import("./hls.js");
-        videoManiaHlsjs = file.default;
-      }
-      videoManiaHlsjs(selector, url);
-    },
-  },
-  mpd: {
-    url: `https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js`,
-    init: async () => {
-      if (!videoManiaDashjs) {
-        const file = await import("./dash.js");
-        videoManiaDashjs = file.default;
-      }
-      videoManiaDashjs(selector, url);
-    },
-  },
-});
-
-export default async function initiate(config, placement = 'beforeend') {
+export default async function initiate(config, func, placement = 'beforeend') {
   if(document.querySelector(config?.selector)) {
 
     if (config.url.split(".").length > 1) {
@@ -49,7 +26,10 @@ export default async function initiate(config, placement = 'beforeend') {
     const player = await import('../components/player.js')
     const element = document.querySelector(config.selector)
     customElements.define("vm-player", player.default);
+    
     element.insertAdjacentHTML(placement, `<vm-player data-selector="${config.selector}" />`)
+    const playerHtml = element.querySelector("vm-player");
+    func(playerHtml)
   } else {
     // handling error if selector is invalid
   }

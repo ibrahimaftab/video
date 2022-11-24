@@ -1,4 +1,4 @@
-export default class Player extends HTMLElement {
+class Player extends HTMLElement {
   static unactivePlayer;
   #settings;
   #unactivePlayer = null;
@@ -27,14 +27,13 @@ export default class Player extends HTMLElement {
   }
 
   async togglePlayer() {
-    const { triggerEvent } = await import('../utils.js')
-    const events = await import("../events.js");
+    const { triggerEvent } = await import('./utils.js')
     this.#unactivePlayer && clearTimeout(this.#unactivePlayer);
     this.classList.add("active");
-    triggerEvent(events.default.playerActive, this)
+    triggerEvent(events.playerActive, this)
     this.#unactivePlayer = setTimeout(() => {
       this.classList.remove("active");
-      triggerEvent(events.default.playerUnActive, this);
+      triggerEvent(events.playerUnActive, this);
     }, 5e3);
   }
 
@@ -66,7 +65,7 @@ export default class Player extends HTMLElement {
     this.classList.add(roundedClass)
 
     if(this.#settings.controls) {
-      const playerbar = await import("./playerbar/playerbar.js");
+      const playerbar = await import("./components/playerbar/playerbar.js");
       customElements.define("vm-playerbar", playerbar.default);
       this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
     }
@@ -90,12 +89,11 @@ export default class Player extends HTMLElement {
 
   // connect component
   async connectedCallback() {
-    const { retrieveFormat, replayIconBtn } = await import("../utils.js");
+    const { retrieveFormat, replayIconBtn } = await import("./utils.js");
     const format = retrieveFormat(this.#settings.url);
-    const { dynamicFormats } = await import("../functions/dynamic.js");
-    const { triggerEvent } = await import("../utils.js");
-    const events = await import("../events.js");
-    const evts = events.default;
+    const { dynamicFormats } = await import("./functions/dynamic.js");
+    const { triggerEvent } = await import("./utils.js");
+    const evts = events;
     const keyTrigger = events.keyTriggerEvent;
 
     this.tabIndex = 1;
@@ -161,7 +159,7 @@ export default class Player extends HTMLElement {
     this.addEventListener(evts.forward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime + this.#settings.forward;
-      const { forwardIcon } = await import('../icons.js')
+      const { forwardIcon } = await import('./icons.js')
       const cloned = this.overlayplay.cloneNode()
       cloned.innerHTML = forwardIcon;
       this.append(cloned)
@@ -178,7 +176,7 @@ export default class Player extends HTMLElement {
     this.addEventListener(evts.backward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime - this.#settings.backward;
-      const { rewindIcon } = await import('../icons.js')
+      const { rewindIcon } = await import('./icons.js')
       const cloned = this.overlayplay.cloneNode()
       cloned.innerHTML = rewindIcon;
       this.append(cloned)
@@ -236,7 +234,7 @@ export default class Player extends HTMLElement {
       if (!this.loader || !this.querySelector("#videoManiaLoader")) {
         const loaderElement = document.createElement("loader");
         this.loader = loaderElement;
-        const { loaderAnimatedIcon } = await import("../icons.js");
+        const { loaderAnimatedIcon } = await import("./icons.js");
         loaderElement.innerHTML = loaderAnimatedIcon;
         loaderElement.id = "videoManiaLoader";
         this.append(this.loader);
@@ -281,21 +279,21 @@ export default class Player extends HTMLElement {
 
     // Dynamic Video
     if (dynamicFormats.includes(format)) {
-      const dynamic = await import("../functions/dynamic.js");
+      const dynamic = await import("./functions/dynamic.js");
       const dynamicObj = dynamic.default(this, this.#settings.url)[format];
       // Check if Script exist then create script and init or just init
       if (!document.querySelector(`script#videomania-${format}`)) {
-        const { addScript } = await import("../utils.js");
+        const { addScript } = await import("./utils.js");
         const script = addScript(dynamicObj.url, format);
         script.onload = dynamicObj.init;
       } else {
         dynamicObj.init(this);
       }
-      const { triggerEvent } = await import("../utils.js");
+      const { triggerEvent } = await import("./utils.js");
       triggerEvent("playerReady", this);
     } else {
       // Custom HTML5 Video
-      const html5Video = await import("../functions/html5Video.js");
+      const html5Video = await import("./functions/html5Video.js");
 
       // Check if Supported Video Format
       if (html5Video.supportedVideoFormat.includes(format)) {
