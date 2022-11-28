@@ -27,6 +27,7 @@ function videoMania(config, placement = "beforeend") {
         backward: 10, // 10 second by default
         controls: true,
         rounded: true,
+        addCss: true,
         ...config,
       };
 
@@ -35,6 +36,13 @@ function videoMania(config, placement = "beforeend") {
         `<vm-player data-selector="${config.selector}" />`
       );
       const playerHtml = element.querySelector("vm-player");
+      if(config.selector.addCss) {
+        const style = document.createElement('style')
+        style.id = "videoMania-style"
+        style.rel = "stylesheet"
+        style.href = "./css/player.css"
+        document.head.append(style)
+      }
       return playerHtml;
     } else {
       // handling error if invalid url
