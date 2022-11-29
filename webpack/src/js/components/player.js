@@ -6,10 +6,11 @@ export default class Player extends HTMLElement {
   #unactivePlayer = null;
   video = document.createElement("video");
   playerbar = null;
-  loader = null
-  overlayplay = document.createElement('overlayplay')
-  beforePlay = null
-  pictureInPicture = null
+  loader = null;
+  overlayplay = document.createElement("overlayplay");
+  beforePlay = null;
+  pictureInPicture = null;  
+  #userTrigger = null;
 
   constructor() {
     super();
@@ -29,47 +30,65 @@ export default class Player extends HTMLElement {
   }
 
   async togglePlayer() {
-    const { triggerEvent } = await import('../utils.js')
+    const { triggerEvent } = await import("../utils.js");
     this.#unactivePlayer && clearTimeout(this.#unactivePlayer);
     this.classList.add("active");
-    triggerEvent(events.playerActive, this)
+    triggerEvent(events.playerActive, this);
     this.#unactivePlayer = setTimeout(() => {
       this.classList.remove("active");
       triggerEvent(events.playerUnActive, this);
     }, 5e3);
   }
 
+  userTrigger(value) {
+    this.#userTrigger = value;
+  }
+
   qaulitiesList() {
-    return this.#settings.qualities
+    return this.#settings.qualities;
   }
 
   subtitleList() {
     return {
       list: this.#settings.subtitles,
-      toggleSubtitle: this.#settings.toggleSubtitle
-    }
+      toggleSubtitle: this.#settings.toggleSubtitle,
+    };
   }
 
   toggleSubtitle(booleanVal) {
-    this.#settings.toggleSubtitle = booleanVal; 
+    this.#settings.toggleSubtitle = booleanVal;
   }
 
   async initiatePlayer(e) {
     e.preventDefault();
-    this.video.autoplay = this.#settings.autoplay;
-    this.video.muted = this.#settings.muted;
-    this.video.width = this.#settings.width;
-    this.video.height = this.#settings.height;
-    this.video.loop = this.#settings.loop;
-    this.append(this.video, this.overlayplay);
 
-    const roundedClass = this.#settings.rounded ? 'rounded' : '' 
-    this.classList.add(roundedClass)
-
-    if(this.#settings.controls) {
+    // Adding Playerbar <start>
+    if (this.#settings.controls) {
       const playerbar = await import("./playerbar/playerbar.js");
       customElements.define("vm-playerbar", playerbar.default);
       this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
+    }
+    // Adding Playerbar <end>
+
+    this.video.autoplay = this.#settings.autoplay;
+    this.video.muted = true;
+    this.video.width = this.#settings.width;
+    this.video.height = this.#settings.height;
+    this.video.loop = this.#settings.loop;
+    this.video.pause()
+    this.append(this.video, this.overlayplay);
+
+    const roundedClass = this.#settings.rounded ? "rounded" : "";
+    this.classList.add(roundedClass);
+
+    if (this.#settings.addStyle && !document.querySelector("#videoMania-css")) {
+      this.style.display = "none";
+      const importCss = await import("../../css/player.css");
+      const style = document.createElement("style");
+      style.id = "videoMania-css";
+      style.innerHTML = importCss.default;
+      document.head.append(style);
+      this.style.display = "block";
     }
   }
 
@@ -78,8 +97,8 @@ export default class Player extends HTMLElement {
       return this.video.webkitAudioDecodedByteCount > 0;
     } else if (typeof this.video.mozHasAudio !== "undefined") {
       return this.video.mozHasAudio;
-    } 
-    return false
+    }
+    return false;
   }
 
   changePictureInPicture(obj) {
@@ -159,16 +178,16 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.forward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime + this.#settings.forward;
-      const { forwardIcon } = await import('../icons.js')
-      const cloned = this.overlayplay.cloneNode()
+      const { forwardIcon } = await import("../icons.js");
+      const cloned = this.overlayplay.cloneNode();
       cloned.innerHTML = forwardIcon;
-      this.append(cloned)
+      this.append(cloned);
       cloned.classList.add("active");
       setTimeout(() => {
         cloned.classList.remove("active");
         setTimeout(() => {
-          cloned.remove()
-        }, 200)
+          cloned.remove();
+        }, 200);
       }, 200);
     });
 
@@ -176,16 +195,16 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.backward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime - this.#settings.backward;
-      const { rewindIcon } = await import('../icons.js')
-      const cloned = this.overlayplay.cloneNode()
+      const { rewindIcon } = await import("../icons.js");
+      const cloned = this.overlayplay.cloneNode();
       cloned.innerHTML = rewindIcon;
-      this.append(cloned)
+      this.append(cloned);
       cloned.classList.add("active");
       setTimeout(() => {
         cloned.classList.remove("active");
         setTimeout(() => {
-          cloned.remove()
-        }, 200)
+          cloned.remove();
+        }, 200);
       }, 200);
     });
 
@@ -260,21 +279,26 @@ export default class Player extends HTMLElement {
     // Keypress Event
     this.addEventListener("keydown", async (e) => {
       e.preventDefault();
-      const existKeys = Object.keys(keyTrigger);
+      const existKeys = Object.keys(keyTriggerEvent);
 
       if (existKeys.includes(e.key)) {
-        triggerEvent(keyTrigger[e.key], this);
+        triggerEvent(keyTriggerEvent[e.key], this);
+
+        if(['play','pause'].includes(keyTriggerEvent[e.key])) {
+          this.#userTrigger = [keyTriggerEvent[e.key]];
+        }
       }
     });
 
     // Overlay Play Event
     this.overlayplay.addEventListener("click", function () {
-      triggerEvent(events.playPause, this.parentElement);
+      self.userTrigger(self.video.paused ? 'play' : 'pause')
+      triggerEvent(events.playPause, self);
     });
 
     // Volume Change Event
     this.video.addEventListener("volumechange", function () {
-      triggerEvent(events.volumechange, this.parentElement);
+      triggerEvent(events.volumechange, self);
     });
 
     // Dynamic Video
@@ -311,10 +335,27 @@ export default class Player extends HTMLElement {
         self.pictureInPicture = false;
       });
     }
-    this.addEventListener(events.initiated, function () {
-      const playState =
-        this.#settings.autoplay && this.#settings.muted ? "played" : "paused";
-      this.dataset.toggle = playState;
+   
+    this.addEventListener(events.initiated, function () { 
+      if(document.visibilityState === 'visible' && this.#settings.autoplay) {
+        this.dataset.toggle = "played";
+        this.video.play()
+      }
+      else {
+        this.dataset.toggle = "paused";
+      }
+    });
+    
+    document.addEventListener("visibilitychange", function (event) {
+      const checkPlayState = self.#userTrigger !== "pause";
+      document.hidden
+        ? triggerEvent(events.pause, self)
+        : checkPlayState && triggerEvent(events.play, self);
+    });
+    
+    window.addEventListener('load', ()=> {
+      const checkPlayState = self.#userTrigger !== "pause";
+      checkPlayState && triggerEvent(events.play, self);
     });
   }
 }

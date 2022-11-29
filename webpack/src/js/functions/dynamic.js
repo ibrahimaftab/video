@@ -17,11 +17,11 @@ const initDynamic = (selector, url) => ({
   mpd: {
     url: `https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js`,
     init: async () => {
-      if (!videoManiaDashjs) {
+      if (!window.videoManiaDashjs) {
         const file = await import("../dash.js");
-        videoManiaDashjs = file.default;
+        window.videoManiaDashjs = file.default;
       }
-      videoManiaDashjs(selector, url);
+      window.videoManiaDashjs(selector, url);
     },
   },
 });

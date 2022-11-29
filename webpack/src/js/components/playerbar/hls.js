@@ -1,3 +1,5 @@
+import events, { keyTriggerEvent } from "../../events";
+
 export default async function (player) {
   const self = player.playerbar;
   const hls = player.hlsjs;
@@ -52,11 +54,11 @@ export default async function (player) {
       });
     }
   });
-  let initiate = false
+  let initiate = false;
   hls.on(Hls.Events.LEVEL_UPDATED, async function (name, event) {
-    if(!initiate) {
-      initiate = true
-      const live = event.details.live
+    if (!initiate) {
+      initiate = true;
+      const live = event.details.live;
       self.initiate(!live);
     }
   });

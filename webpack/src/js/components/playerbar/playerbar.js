@@ -1,3 +1,5 @@
+import events, { keyTriggerEvent } from "../../events";
+
 class PlayerBar extends HTMLElement {
   play = document.createElement("play");
   setting = document.createElement("setting");
@@ -16,6 +18,7 @@ class PlayerBar extends HTMLElement {
     this.setting.innerHTML = `<span role="button" tabIndex="5"><svg style="enable-background:new 0 0 24 24;" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M22.2,14.4L21,13.7c-1.3-0.8-1.3-2.7,0-3.5l1.2-0.7c1-0.6,1.3-1.8,0.7-2.7l-1-1.7c-0.6-1-1.8-1.3-2.7-0.7   L18,5.1c-1.3,0.8-3-0.2-3-1.7V2c0-1.1-0.9-2-2-2h-2C9.9,0,9,0.9,9,2v1.3c0,1.5-1.7,2.5-3,1.7L4.8,4.4c-1-0.6-2.2-0.2-2.7,0.7   l-1,1.7C0.6,7.8,0.9,9,1.8,9.6L3,10.3C4.3,11,4.3,13,3,13.7l-1.2,0.7c-1,0.6-1.3,1.8-0.7,2.7l1,1.7c0.6,1,1.8,1.3,2.7,0.7L6,18.9   c1.3-0.8,3,0.2,3,1.7V22c0,1.1,0.9,2,2,2h2c1.1,0,2-0.9,2-2v-1.3c0-1.5,1.7-2.5,3-1.7l1.2,0.7c1,0.6,2.2,0.2,2.7-0.7l1-1.7   C23.4,16.2,23.1,15,22.2,14.4z M12,16c-2.2,0-4-1.8-4-4c0-2.2,1.8-4,4-4s4,1.8,4,4C16,14.2,14.2,16,12,16z" id="settings"/></svg></span>`;
     this.dropdown.innerHTML = `<nav id="setting-dropdown" class="active"><button id="playback-btn"><svg enable-background="new 0 0 64 64" version="1.1" viewBox="0 0 64 64" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.371,31.879c0,2.19,1.777,3.966,3.966,3.966c1.538,0,2.856-0.884,3.514-2.163l0.011,0.01l7.24-13.062l-12.71,7.794   l0.012,0.012C29.197,29.117,28.371,30.395,28.371,31.879z"/><path d="M48.315,12.981C44.251,9.429,39,7.161,33,6.822v6.027c5,0.318,7.946,1.906,10.904,4.384L48.315,12.981z"/><path d="M51.146,30h6.02c-0.404-6-2.751-10.93-6.395-14.97l-4.259,4.233C49.078,22.203,50.766,26,51.146,30z"/><path d="M51.174,33c-0.637,10-8.922,17.931-19.042,17.931c-10.535,0-19.421-8.544-19.421-19.078C12.711,21.825,21,13.62,30,12.85   V6.823C17,7.602,6.711,18.54,6.711,31.879c0,13.843,11.42,25.052,25.263,25.052C45.406,56.931,56.564,46,57.205,33H51.174z"/></svg> Playback Speed </button></nav><nav id="playback-list"><button class="dropdown-back">Playback Speed</button><button>0.25</button><button>0.5</button><button>0.75</button><button class='active'>Normal</button><button>1.25</button><button>1.5</button><button>1.75</button><button>2</button></nav>`;
     this.setting.append(this.dropdown);
+    console.log("hls js");
   }
 
   dropdownHeightAdjust() {
@@ -209,6 +212,7 @@ class PlayerBar extends HTMLElement {
 
     // Play Button Click Event
     this.play.addEventListener("click", function () {
+      player.userTrigger(player.video.paused ? "play" : "pause");
       triggerEvent(events.playPause, player);
     });
 
