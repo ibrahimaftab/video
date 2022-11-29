@@ -40,4 +40,4 @@ export const keyTriggerEvent = {
   t: events.pictureInPicture,
 };
 
-export default events
+export default events;

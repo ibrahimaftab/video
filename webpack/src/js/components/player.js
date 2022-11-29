@@ -376,9 +376,10 @@ export default class Player extends HTMLElement {
       });
       // Check or ask microphone enable at browser
       navigator.mediaDevices
-        .getUserMedia({ video: false, audio: true })
+        .getUserMedia({ audio: true })
         .then((stream) => {
           window.localStream = stream; // A
+          
           // window.localAudio.srcObject = stream; // B
           // window.localAudio.autoplay = true; // C
           self.video.autoplay && self.video.play();
