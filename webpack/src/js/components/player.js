@@ -93,19 +93,24 @@ export default class Player extends HTMLElement {
       this.style.display = "block";
     }
 
-    const self = this
-    window.addEventListener('focus', function() {
-      self.dataset.focus = 'true'
-    })
+    const self = this;
+    window.addEventListener("focus", function () {
+      self.dataset.focus = "true";
+    });
   }
 
   checkIfVideoContainsAudio() {
-    if (typeof this.video.webkitAudioDecodedByteCount !== "undefined") {
-      return this.video.webkitAudioDecodedByteCount > 0;
-    } else if (typeof this.video.mozHasAudio !== "undefined") {
-      return this.video.mozHasAudio;
+    let bool = true;
+    if (typeof this.webkitAudioDecodedByteCount !== "undefined") {
+      // non-zero if video has audio track
+      if (this.webkitAudioDecodedByteCount > 0) bool = true;
+      else bool = false;
+    } else if (typeof this.mozHasAudio !== "undefined") {
+      // true if video has audio track
+      if (this.mozHasAudio) bool = true;
+      else bool = false;
     }
-    return false;
+    return bool;
   }
 
   changePictureInPicture(obj) {
@@ -130,14 +135,14 @@ export default class Player extends HTMLElement {
     // Player Mouse Move
     this.addEventListener("mousemove", this.togglePlayer);
 
-    // Player Ready Event
-    this.addEventListener(events.playerReady, this.initiatePlayer);
+    // Player Initiate Event
+    this.addEventListener(events.initiate, this.initiatePlayer);
 
     // Player Before Play Event
     this.addEventListener(events.beforePlay, (e) => {
       e.preventDefault();
       try {
-        self.dataset.focus == 'true' && this.video.paused && this.video.play();
+        this.dataset.focus == "true" && this.video.paused && this.video.play();
         this.dataset.toggle = "played";
         this.overlayplay.classList.add("active");
         setTimeout(() => {
@@ -165,6 +170,7 @@ export default class Player extends HTMLElement {
     // Player Play/Pause Event
     this.addEventListener(events.playPause, (e) => {
       e.preventDefault();
+      this.dataset.focus = "true";
       const paused = this.video.paused;
       const toggleEvent = paused ? events.play : events.pause;
       triggerEvent(toggleEvent, this);
@@ -298,6 +304,7 @@ export default class Player extends HTMLElement {
 
     // Overlay Play Event
     this.overlayplay.addEventListener("click", function () {
+      this.dataset.focus = "true";
       self.userTrigger(self.video.paused ? "play" : "pause");
       triggerEvent(events.playPause, self);
     });
@@ -320,7 +327,7 @@ export default class Player extends HTMLElement {
         dynamicObj.init(this);
       }
       const { triggerEvent } = await import("../utils.js");
-      triggerEvent("playerReady", this);
+      triggerEvent("initiate", this);
     } else {
       // Custom HTML5 Video
       const html5Video = await import("../functions/html5Video.js");
@@ -328,13 +335,33 @@ export default class Player extends HTMLElement {
       // Check if Supported Video Format
       if (html5Video.supportedVideoFormat.includes(format)) {
         html5Video.default(this);
-        triggerEvent("playerReady", this);
+        triggerEvent("initiate", this);
         this.video.src = this.#settings.url;
       }
     }
     if (document.pictureInPictureEnabled) {
-      this.video.addEventListener("enterpictureinpicture", function () {
-        triggerEvent(events.pictureInPicture, self);
+      this.addEventListener(events.pictureInPicture, function () {
+        if (!this.pictureInPicture) {
+          try {
+            this.video
+              .requestPictureInPicture()
+              .then((pictureInPictureWindow) => {
+                triggerEvent(events.pictureInPicture, self);
+                self.changePictureInPicture({
+                  width: pictureInPictureWindow.width,
+                  height: pictureInPictureWindow.height,
+                });
+                pictureInPictureWindow.addEventListener("resize", function (e) {
+                  self.changePictureInPicture({
+                    width: e.target.width,
+                    height: e.target.height,
+                  });
+                });
+              });
+          } catch (error) {
+            console.log(error);
+          }
+        }
       });
       this.video.addEventListener("leavepictureinpicture", function () {
         triggerEvent(events.exitPictureInPicture, self);

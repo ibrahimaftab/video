@@ -6,6 +6,7 @@ class PlayerBar extends HTMLElement {
   toggleFullscreen = document.createElement("toggle-screen");
   setting = document.createElement("setting");
   dropdown = document.createElement("dropdown");
+  audioIconButton = null
   constructor() {
     super();
     this.play.innerHTML =
@@ -31,34 +32,16 @@ class PlayerBar extends HTMLElement {
   }
 
   async pictureInPictureMode() {
-     // Picture in picture mode
+    // Picture in picture mode
     if ("pictureInPictureEnabled" in document) {
-      const miniplayerBtn = document.createElement('miniplayer-btn')
-      const { picInPicIcon } = await import('../../icons.js')
-      const { triggerEvent } = await import(
-        "../../utils.js"
-      );
+      const miniplayerBtn = document.createElement("miniplayer-btn");
+      const { picInPicIcon } = await import("../../icons.js");
+      const { triggerEvent } = await import("../../utils.js");
       miniplayerBtn.innerHTML = picInPicIcon;
-      const player = this.parentElement
-      miniplayerBtn.addEventListener('click', function() {
-        const { video } = player;
-        try {
-          video.requestPictureInPicture().then((pictureInPictureWindow) => {
-            triggerEvent(events.pictureInPicture, player);
-            player.changePictureInPicture({
-              width: pictureInPictureWindow.width,
-              height: pictureInPictureWindow.height,
-            });
-            pictureInPictureWindow.addEventListener('resize', function(evt) {
-              player.changePictureInPicture({width: evt.target.width, height: evt.target.height});
-              triggerEvent(events.resizePictureInPicture, player);
-            })
-
-          });
-        } catch (error) {
-          console.log(error)
-        }
-      })
+      const player = this.parentElement;
+      miniplayerBtn.addEventListener("click", function () {
+        
+      });
       this.setting.after(miniplayerBtn);
     }
   }
@@ -114,17 +97,19 @@ class PlayerBar extends HTMLElement {
         player.toggleSubtitle(!subtitles.toggleSubtitle);
         subtitles.toggleSubtitle = !subtitles.toggleSubtitle;
         subtitleBtnSpan.textContent = subtitles.toggleSubtitle ? "On" : "Off";
-        const event = subtitles.toggleSubtitle ? events.showSubtitle : events.hideSubtitle
-        triggerEvent(event, player)
+        const event = subtitles.toggleSubtitle
+          ? events.showSubtitle
+          : events.hideSubtitle;
+        triggerEvent(event, player);
       });
-      player.addEventListener(events.toggleSubtitle, function() {
+      player.addEventListener(events.toggleSubtitle, function () {
         triggerEvent("click", subtitleBtnElement);
-      })
+      });
     }
   }
 
   async videoManiaLive() {
-    const { liveIcon } = await import('../../icons.js')
+    const { liveIcon } = await import("../../icons.js");
     const live = document.createElement("live");
     live.innerHTML = liveIcon;
     live.append("Live");
@@ -133,13 +118,13 @@ class PlayerBar extends HTMLElement {
 
   async initiate(showTimeline = true) {
     const player = this.parentElement;
-    const self = this
+    const self = this;
     const { videoDurationFormat } = await import("../../utils.js");
     const end = document.createElement("end");
     end.tabIndex = "4";
     end.role = "button";
     end.textContent = videoDurationFormat(player.video, self.durationSubstract);
-    self.append(self.play, self.setting, self.toggleFullscreen);
+    self.append(self.play, self.audioIconButton, self.setting, self.toggleFullscreen);
 
     // Duration Substract
     let durationSubstract = false;
@@ -154,7 +139,6 @@ class PlayerBar extends HTMLElement {
     // Video
     const { video } = player;
 
-
     if (showTimeline) {
       const timeline = document.createElement("timeline");
       const timelineProgressbar = document.createElement(
@@ -162,10 +146,10 @@ class PlayerBar extends HTMLElement {
       );
       const timelineBuffer = document.createElement("timeline-buffer");
       const timelineProgress = document.createElement("timeline-progress");
-      
+
       const clonedTimelineProgress = timelineProgress.cloneNode();
       clonedTimelineProgress.classList.add("hover-timeline");
-        
+
       timelineProgressbar.append(
         timelineBuffer,
         timelineProgress,
@@ -195,9 +179,9 @@ class PlayerBar extends HTMLElement {
         timelineProgress.style.width = calcPosition * 100 + "%";
         video.currentTime = video.duration * calcPosition;
       });
-      self.play.after(timeline)
+      self.play.after(timeline);
     } else {
-      this.videoManiaLive()
+      this.videoManiaLive();
     }
   }
 
@@ -224,8 +208,10 @@ class PlayerBar extends HTMLElement {
     this.parentElement.addEventListener(
       events.playable,
       async function () {
-        const { playableInitiate } = await import("../../functions/html5Video.js");
-        self.initiate()
+        const { playableInitiate } = await import(
+          "../../functions/html5Video.js"
+        );
+        self.initiate();
         playableInitiate(this);
         triggerEvent(events.initiated, player);
       },
@@ -235,20 +221,17 @@ class PlayerBar extends HTMLElement {
     // Dynamic Dash Js Event
     this.parentElement.addEventListener(
       events.dynamicDashJs,
-      async function() {
-        const dashjs = await import('./dash.js')
-        dashjs.default(player)
-      }
-    )
-
-    // Dynamic HLS Js Event
-    this.parentElement.addEventListener(
-      events.dynamicHlsJs,
       async function () {
-        const hlsjs = await import("./hls.js");
-        hlsjs.default(player);
+        const dashjs = await import("./dash.js");
+        dashjs.default(player);
       }
     );
+
+    // Dynamic HLS Js Event
+    this.parentElement.addEventListener(events.dynamicHlsJs, async function () {
+      const hlsjs = await import("./hls.js");
+      hlsjs.default(player);
+    });
 
     // Setting Plackback Button Click Event
     this.setting
@@ -288,8 +271,10 @@ class PlayerBar extends HTMLElement {
             self.dropdown
               .querySelector("#playback-list .dropdown-back")
               .dispatchEvent(new Event("click"));
-              elm.parentElement.querySelector(".active").classList.remove("active")
-              elm.classList.add("active")
+            elm.parentElement
+              .querySelector(".active")
+              .classList.remove("active");
+            elm.classList.add("active");
           }
         });
       });
@@ -335,26 +320,24 @@ class PlayerBar extends HTMLElement {
     player.addEventListener(events.initiated, async function () {
       self.subtitleList();
       setDropdownSettingHeight(self);
-      
-      self.pictureInPictureMode()
+
+      self.pictureInPictureMode();
+
       // Audio Button
       const checkAudio = player.checkIfVideoContainsAudio();
       if (checkAudio) {
         const { muteIcon, audioIcon } = await import("../../icons.js");
-        const audioIconButton = document.createElement("audio-icon");
+        self.audioIconButton = document.createElement("audio-icon");
         const audioSpan = document.createElement("span");
         audioSpan.role = "button";
         audioSpan.tabIndex = "4";
         audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
-        audioIconButton.append(audioSpan);
+        self.audioIconButton.append(audioSpan);
 
         // Audion Button Click Event
-        audioIconButton.addEventListener("click", function () {
+        self.audioIconButton.addEventListener("click", function () {
           player.video.muted = !player.video.muted;
         });
-
-        // Appending before Setting Button
-        self.setting.before(audioIconButton);
 
         // Player Video Volume Change Event
         player.addEventListener(events.volumechange, (e) => {
@@ -364,18 +347,18 @@ class PlayerBar extends HTMLElement {
     });
 
     // Player Unactive Event
-    player.addEventListener(events.playerUnActive, function() {
+    player.addEventListener(events.playerUnActive, function () {
       const settingDropdown = self.dropdown.querySelector("#setting-dropdown");
       if (self.setting.classList.contains("show-dropdown")) {
         self.setting.classList.remove("show-dropdown");
-        if(!settingDropdown.classList.contains("active")) {
-          self.dropdown.classList = []
-          self.dropdown.querySelector("nav.active").classList.remove('active')
+        if (!settingDropdown.classList.contains("active")) {
+          self.dropdown.classList = [];
+          self.dropdown.querySelector("nav.active").classList.remove("active");
           settingDropdown.classList.add("active");
-          self.dropdownHeightAdjust()
+          self.dropdownHeightAdjust();
         }
       }
-    })
+    });
   }
 }
 

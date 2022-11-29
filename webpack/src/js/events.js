@@ -1,5 +1,5 @@
 const events = {
-  playerReady: "playerReady",
+  initiate: "initiate",
   playPause: "playPause",
   play: "play",
   pause: "pause",
@@ -21,7 +21,6 @@ const events = {
   volumechange: "volumechange",
   pictureInPicture: "pictureInPicture",
   exitPictureInPicture: "exitPictureInPicture",
-  resizePictureInPicture: "resizePictureInPicture",
   toggleSubtitle: "toggleSubtitle",
   showSubtitle: "showSubtitle",
   hideSubtitle: "hideSubtitle",
@@ -32,12 +31,13 @@ const events = {
 };
 
 export const keyTriggerEvent = {
-  ' ': events.playPause,
-  'ArrowLeft': events.backward,
-  'ArrowRight': events.forward,
-  'm': events.toggleMute,
-  'f': events.toggleFullScreen,
-  't': events.toggleSubtitle
-}
+  " ": events.playPause,
+  ArrowLeft: events.backward,
+  ArrowRight: events.forward,
+  m: events.toggleMute,
+  f: events.toggleFullScreen,
+  c: events.toggleSubtitle,
+  t: events.pictureInPicture,
+};
 
 export default events
