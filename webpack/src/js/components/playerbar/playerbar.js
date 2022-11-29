@@ -6,7 +6,9 @@ class PlayerBar extends HTMLElement {
   toggleFullscreen = document.createElement("toggle-screen");
   setting = document.createElement("setting");
   dropdown = document.createElement("dropdown");
-  audioIconButton = null
+  audioIconButton = "";
+  miniplayerBtn = "";
+
   constructor() {
     super();
     this.play.innerHTML =
@@ -34,15 +36,14 @@ class PlayerBar extends HTMLElement {
   async pictureInPictureMode() {
     // Picture in picture mode
     if ("pictureInPictureEnabled" in document) {
-      const miniplayerBtn = document.createElement("miniplayer-btn");
+      this.miniplayerBtn = document.createElement("miniplayer-btn");
       const { picInPicIcon } = await import("../../icons.js");
       const { triggerEvent } = await import("../../utils.js");
-      miniplayerBtn.innerHTML = picInPicIcon;
+      this.miniplayerBtn.innerHTML = picInPicIcon;
       const player = this.parentElement;
-      miniplayerBtn.addEventListener("click", function () {
-        
+      this.miniplayerBtn.addEventListener("click", function () {
+        triggerEvent(events.pictureInPicture, player);
       });
-      this.setting.after(miniplayerBtn);
     }
   }
 
@@ -124,7 +125,13 @@ class PlayerBar extends HTMLElement {
     end.tabIndex = "4";
     end.role = "button";
     end.textContent = videoDurationFormat(player.video, self.durationSubstract);
-    self.append(self.play, self.audioIconButton, self.setting, self.toggleFullscreen);
+    self.append(
+      self.play,
+      self.audioIconButton,
+      self.setting,
+      self.miniplayerBtn,
+      self.toggleFullscreen
+    );
 
     // Duration Substract
     let durationSubstract = false;
