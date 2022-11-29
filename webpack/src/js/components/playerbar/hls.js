@@ -1,4 +1,4 @@
-import events, { keyTriggerEvent } from "../../events";
+import events from "../../events";
 
 export default async function (player) {
   const self = player.playerbar;

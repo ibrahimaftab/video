@@ -1,4 +1,5 @@
 import events, { keyTriggerEvent } from "../events";
+import { playPauseIcon, loaderAnimatedIcon, forwardIcon, rewindIcon } from "../icons";
 
 export default class Player extends HTMLElement {
   static unactivePlayer;
@@ -27,8 +28,7 @@ export default class Player extends HTMLElement {
       }
     </style>`;
     document.head.insertAdjacentHTML("beforeend", style);
-    this.overlayplay.innerHTML =
-      '<svg class="play-icon" style="enable-background: new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" > <path d="M405.2,232.9L126.8,67.2c-3.4-2-6.9-3.2-10.9-3.2c-10.9,0-19.8,9-19.8,20H96v344h0.1c0,11,8.9,20,19.8,20  c4.1,0,7.5-1.4,11.2-3.4l278.1-165.5c6.6-5.5,10.8-13.8,10.8-23.1C416,246.7,411.8,238.5,405.2,232.9z" /> </svg> <svg class="pause-icon" viewBox="0 0 32 32" width="32" xmlns="http://www.w3.org/2000/svg" > <path d="M12,6H10A2,2,0,0,0,8,8V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <path d="M22,6H20a2,2,0,0,0-2,2V24a2,2,0,0,0,2,2h2a2,2,0,0,0,2-2V8a2,2,0,0,0-2-2Z" /> <rect /> </svg>';
+    this.overlayplay.innerHTML = playPauseIcon;
   }
 
   async togglePlayer() {
@@ -190,7 +190,6 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.forward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime + this.#settings.forward;
-      const { forwardIcon } = await import("../icons.js");
       const cloned = this.overlayplay.cloneNode();
       cloned.innerHTML = forwardIcon;
       this.append(cloned);
@@ -207,7 +206,6 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.backward, async (e) => {
       e.preventDefault();
       this.video.currentTime = this.video.currentTime - this.#settings.backward;
-      const { rewindIcon } = await import("../icons.js");
       const cloned = this.overlayplay.cloneNode();
       cloned.innerHTML = rewindIcon;
       this.append(cloned);
@@ -265,7 +263,6 @@ export default class Player extends HTMLElement {
       if (!this.loader || !this.querySelector("#videoManiaLoader")) {
         const loaderElement = document.createElement("loader");
         this.loader = loaderElement;
-        const { loaderAnimatedIcon } = await import("../icons.js");
         loaderElement.innerHTML = loaderAnimatedIcon;
         loaderElement.id = "videoManiaLoader";
         this.append(this.loader);
