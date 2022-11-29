@@ -378,10 +378,7 @@ export default class Player extends HTMLElement {
       navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then((stream) => {
-          window.localStream = stream; // A
-          
-          // window.localAudio.srcObject = stream; // B
-          // window.localAudio.autoplay = true; // C
+          window.localStream = stream;
           self.video.autoplay && self.video.play();
         })
         .catch((err) => {
