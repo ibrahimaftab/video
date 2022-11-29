@@ -339,7 +339,7 @@ export default class Player extends HTMLElement {
         this.video.src = this.#settings.url;
       }
     }
-    if (document.pictureInPictureEnabled) {
+    if (document.pictureInPictureEnabled && !this.pictureInPictureDisable) {
       this.addEventListener(events.pictureInPicture, function () {
         if (!this.pictureInPicture) {
           try {

@@ -35,12 +35,12 @@ class PlayerBar extends HTMLElement {
 
   async pictureInPictureMode() {
     // Picture in picture mode
-    if ("pictureInPictureEnabled" in document) {
+    const player = this.parentElement;
+    if ("pictureInPictureEnabled" in document && !player.pictureInPictureDisable) {
       this.miniplayerBtn = document.createElement("miniplayer-btn");
       const { picInPicIcon } = await import("../../icons.js");
       const { triggerEvent } = await import("../../utils.js");
       this.miniplayerBtn.innerHTML = picInPicIcon;
-      const player = this.parentElement;
       this.miniplayerBtn.addEventListener("click", function () {
         triggerEvent(events.pictureInPicture, player);
       });
