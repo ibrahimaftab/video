@@ -3,8 +3,6 @@ export default async function (player, url) {
   const events = await import("./events");
   const { video } = player;
   const videoSrc = url;
-  console.log({ Hls });
-  console.log({ events: Hls.Events });
   if (Hls.isSupported()) {
     const hls = new Hls();
     hls.on(Hls.Events.MEDIA_ATTACHED, function () {

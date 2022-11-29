@@ -28,11 +28,10 @@ function videoMania(config, placement = "beforeend") {
         controls: true,
         rounded: true,
         addStyle: true,
+        disablePictureInPictureMode: false,
         ...config,
       };;
       element.videoManiaConfig = setting
-
-      console.log(setting)
 
       element.insertAdjacentHTML(
         placement,

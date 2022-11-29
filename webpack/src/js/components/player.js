@@ -9,12 +9,14 @@ export default class Player extends HTMLElement {
   loader = null;
   overlayplay = document.createElement("overlayplay");
   beforePlay = null;
-  pictureInPicture = null;  
+  pictureInPicture = null;
   #userTrigger = null;
+  pictureInPictureDisable = null;
 
   constructor() {
     super();
     this.#settings = this.parentElement.videoManiaConfig;
+    this.pictureInPictureDisable = this.#settings.disablePictureInPictureMode;
 
     const style = `<style id='videomania-style'>
       @layer base {
@@ -71,11 +73,11 @@ export default class Player extends HTMLElement {
     // Adding Playerbar <end>
 
     this.video.autoplay = this.#settings.autoplay;
-    this.video.muted = true;
+    this.video.muted = this.#settings.muted;
     this.video.width = this.#settings.width;
     this.video.height = this.#settings.height;
     this.video.loop = this.#settings.loop;
-    this.video.pause()
+    this.video.pause();
     this.append(this.video, this.overlayplay);
 
     const roundedClass = this.#settings.rounded ? "rounded" : "";
@@ -90,6 +92,11 @@ export default class Player extends HTMLElement {
       document.head.append(style);
       this.style.display = "block";
     }
+
+    const self = this
+    window.addEventListener('focus', function() {
+      self.dataset.focus = 'true'
+    })
   }
 
   checkIfVideoContainsAudio() {
@@ -129,21 +136,20 @@ export default class Player extends HTMLElement {
     // Player Before Play Event
     this.addEventListener(events.beforePlay, (e) => {
       e.preventDefault();
-      this.dataset.toggle = "played";
-      this.video.play();
-      this.overlayplay.classList.add("active");
-      setTimeout(() => {
-        this.overlayplay.classList.remove("active");
-      }, 200);
+      try {
+        self.dataset.focus == 'true' && this.video.paused && this.video.play();
+        this.dataset.toggle = "played";
+        this.overlayplay.classList.add("active");
+        setTimeout(() => {
+          this.overlayplay.classList.remove("active");
+        }, 200);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     this.beforePlay = (func) =>
       this.addEventListener(events.beforePlay, func, true);
-
-    // Player Play Event
-    this.addEventListener(events.play, () => {
-      triggerEvent(events.beforePlay, this);
-    });
 
     // Player Pause Event
     this.addEventListener(events.pause, (e) => {
@@ -284,7 +290,7 @@ export default class Player extends HTMLElement {
       if (existKeys.includes(e.key)) {
         triggerEvent(keyTriggerEvent[e.key], this);
 
-        if(['play','pause'].includes(keyTriggerEvent[e.key])) {
+        if (["play", "pause"].includes(keyTriggerEvent[e.key])) {
           this.#userTrigger = [keyTriggerEvent[e.key]];
         }
       }
@@ -292,7 +298,7 @@ export default class Player extends HTMLElement {
 
     // Overlay Play Event
     this.overlayplay.addEventListener("click", function () {
-      self.userTrigger(self.video.paused ? 'play' : 'pause')
+      self.userTrigger(self.video.paused ? "play" : "pause");
       triggerEvent(events.playPause, self);
     });
 
@@ -335,25 +341,37 @@ export default class Player extends HTMLElement {
         self.pictureInPicture = false;
       });
     }
-   
-    this.addEventListener(events.initiated, function () { 
-      if(document.visibilityState === 'visible' && this.#settings.autoplay) {
-        this.dataset.toggle = "played";
-        this.video.play()
-      }
-      else {
-        this.dataset.toggle = "paused";
-      }
+
+    this.addEventListener(events.initiated, function () {
+      // Player Play Event
+      this.addEventListener(events.play, () => {
+        triggerEvent(events.beforePlay, this);
+      });
+      // Check or ask microphone enable at browser
+      navigator.mediaDevices
+        .getUserMedia({ video: false, audio: true })
+        .then((stream) => {
+          window.localStream = stream; // A
+          // window.localAudio.srcObject = stream; // B
+          // window.localAudio.autoplay = true; // C
+          self.video.autoplay && self.video.play();
+        })
+        .catch((err) => {
+          console.error(`you got an error: ${err}`);
+        });
+      const checkVideoPlayState =
+        document.visibilityState === "visible" && this.#settings.autoplay;
+      this.dataset.toggle = checkVideoPlayState ? "played" : "paused";
     });
-    
+
     document.addEventListener("visibilitychange", function (event) {
       const checkPlayState = self.#userTrigger !== "pause";
       document.hidden
         ? triggerEvent(events.pause, self)
         : checkPlayState && triggerEvent(events.play, self);
     });
-    
-    window.addEventListener('load', ()=> {
+
+    window.addEventListener("load", () => {
       const checkPlayState = self.#userTrigger !== "pause";
       checkPlayState && triggerEvent(events.play, self);
     });
