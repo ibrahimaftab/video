@@ -11,11 +11,22 @@ const config = {
   entry: "./src/js/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
+    // path: path.join(__dirname, "./dist"),
+    filename: "main.js",
+    library: libraryName,
+    libraryTarget: "umd",
+    publicPath: "/dist/",
+    umdNamedDefine: true,
   },
   plugins: [
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
+  node: {
+    net: "empty",
+    tls: "empty",
+    dns: "empty",
+  },
   module: {
     rules: [
       {
@@ -44,6 +55,27 @@ const config = {
         },
       }),
     ],
+  },
+  resolve: {
+    alias: {
+      react: path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
+    },
+  },
+  externals: {
+    // Don't bundle react or react-dom
+    react: {
+      commonjs: "react",
+      commonjs2: "react",
+      amd: "React",
+      root: "React",
+    },
+    "react-dom": {
+      commonjs: "react-dom",
+      commonjs2: "react-dom",
+      amd: "ReactDOM",
+      root: "ReactDOM",
+    },
   },
 };
 
