@@ -17,14 +17,11 @@
 
 @layer base {
   vm-player {
-    --theme-color: white;
-    --player-default-color: black;
-    --live-color: #fa1130;
     display: block;
     position: relative;
     font-size: 20px;
-    background-color: var(--player-default-color);
-    color: var(--theme-color);
+    background-color: black;
+    color: white;
     overflow: hidden;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     font-family: Arial, sans-serif;
@@ -101,7 +98,7 @@
   vm-player setting span,
   vm-player miniplayer-btn {
     cursor: pointer;
-  } 
+  }
   vm-player setting svg {
     transform: scale(0.8);
   }
@@ -145,7 +142,7 @@
     width: 2rem;
     height: 2rem;
     animation: live 2s infinite;
-    color: var(--live-color);
+    color: #fa1130;
   }
   overlayplay {
     position: absolute;
