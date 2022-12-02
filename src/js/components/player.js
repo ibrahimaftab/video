@@ -1,5 +1,11 @@
 import events, { keyTriggerEvent } from "../events";
-import { playPauseIcon, loaderAnimatedIcon, forwardIcon, rewindIcon } from "../icons";
+import {
+  playPauseIcon,
+  loaderAnimatedIcon,
+  forwardIcon,
+  rewindIcon,
+} from "../icons";
+import "../../css/player.css"
 
 export default class Player extends HTMLElement {
   static unactivePlayer;
@@ -82,16 +88,6 @@ export default class Player extends HTMLElement {
 
     const roundedClass = this.#settings.rounded ? "rounded" : "";
     this.classList.add(roundedClass);
-
-    if (this.#settings.addStyle && !document.querySelector("#videoMania-css")) {
-      this.style.display = "none";
-      const importCss = await import("../../css/player.css");
-      const style = document.createElement("style");
-      style.id = "videoMania-css";
-      style.innerHTML = importCss.default;
-      document.head.append(style);
-      this.style.display = "block";
-    }
 
     const self = this;
     window.addEventListener("focus", function () {
@@ -189,33 +185,41 @@ export default class Player extends HTMLElement {
     // Forward Event
     this.addEventListener(events.forward, async (e) => {
       e.preventDefault();
-      this.video.currentTime = this.video.currentTime + this.#settings.forward;
-      const cloned = this.overlayplay.cloneNode();
-      cloned.innerHTML = forwardIcon;
-      this.append(cloned);
-      cloned.classList.add("active");
-      setTimeout(() => {
-        cloned.classList.remove("active");
+      if (!this.querySelector("#forward-overlay")) {
+        this.video.currentTime =
+          this.video.currentTime + this.#settings.forward;
+        const cloned = this.overlayplay.cloneNode();
+        cloned.id = "forward-overlay";
+        cloned.innerHTML = forwardIcon;
+        this.append(cloned);
+        cloned.classList.add("active");
         setTimeout(() => {
-          cloned.remove();
+          cloned.classList.remove("active");
+          setTimeout(() => {
+            cloned.remove();
+          }, 200);
         }, 200);
-      }, 200);
+      }
     });
 
     // Backward Event
     this.addEventListener(events.backward, async (e) => {
       e.preventDefault();
-      this.video.currentTime = this.video.currentTime - this.#settings.backward;
-      const cloned = this.overlayplay.cloneNode();
-      cloned.innerHTML = rewindIcon;
-      this.append(cloned);
-      cloned.classList.add("active");
-      setTimeout(() => {
-        cloned.classList.remove("active");
+      if (!this.querySelector("#backward-overlay")) {
+        this.video.currentTime =
+          this.video.currentTime - this.#settings.backward;
+        const cloned = this.overlayplay.cloneNode();
+        cloned.id = "backward-overlay";
+        cloned.innerHTML = rewindIcon;
+        this.append(cloned);
+        cloned.classList.add("active");
         setTimeout(() => {
-          cloned.remove();
+          cloned.classList.remove("active");
+          setTimeout(() => {
+            cloned.remove();
+          }, 200);
         }, 200);
-      }, 200);
+      }
     });
 
     // Fullscreen Event
