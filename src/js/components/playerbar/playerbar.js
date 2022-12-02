@@ -23,7 +23,7 @@ class PlayerBar extends HTMLElement {
     this.toggleFullscreen.innerHTML = fullscreenIcon;
     this.toggleFullscreen.role = "button";
     this.toggleFullscreen.tabIndex = "6";
-    this.setting.innerHTML = settingIcon;
+    this.setting.innerHTML = `<span role="button" tabindex="7">${settingIcon}</span>`;
     this.dropdown.innerHTML = `<nav id="setting-dropdown" class="active"><button id="playback-btn">${playbackIcon} Playback Speed </button></nav><nav id="playback-list"><button class="dropdown-back">Playback Speed</button><button>0.25</button><button>0.5</button><button>0.75</button><button class='active'>Normal</button><button>1.25</button><button>1.5</button><button>1.75</button><button>2</button></nav>`;
     this.setting.append(this.dropdown);
   }
