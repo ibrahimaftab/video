@@ -27,7 +27,7 @@
     font-family: Arial, sans-serif;
     max-width: 100%;
     box-sizing: border-box;
-    outline: none
+    outline: none;
   }
   vm-player.rounded {
     border-radius: 0.25em;
@@ -162,6 +162,10 @@
     transition-duration: 200ms;
     transition-timing-function: linear;
     will-change: opacity;
+  }
+
+  overlayplay~overlayplay:not(.active) {
+    pointer-events: none;
   }
 
   overlayplay.active {

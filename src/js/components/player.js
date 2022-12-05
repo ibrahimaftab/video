@@ -4,8 +4,10 @@ import {
   loaderAnimatedIcon,
   forwardIcon,
   rewindIcon,
+  muteIcon,
+  audioIcon
 } from "../icons";
-import "../../css/player.css"
+import "../../css/player.css";
 
 export default class Player extends HTMLElement {
   static unactivePlayer;
@@ -24,6 +26,7 @@ export default class Player extends HTMLElement {
     super();
     this.#settings = this.parentElement.videoManiaConfig;
     this.pictureInPictureDisable = this.#settings.disablePictureInPictureMode;
+    this.tabIndex = 0
 
     const style = `<style id='videomania-style'>
       @layer base {
@@ -75,6 +78,7 @@ export default class Player extends HTMLElement {
       const playerbar = await import("./playerbar/playerbar.js");
       customElements.define("vm-playerbar", playerbar.default);
       this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
+      this.focus()
     }
     // Adding Playerbar <end>
 
@@ -182,44 +186,60 @@ export default class Player extends HTMLElement {
       triggerEvent(events.loaded, this);
     });
 
+    function createForwardRewind(element, id) {
+      if(!element) {
+        const cloned = self.overlayplay.cloneNode();
+        cloned.id = id;
+        cloned.innerHTML = id === "forward-overlay" ? forwardIcon : rewindIcon;
+        self.append(cloned);
+        return cloned;
+      }
+      return element
+    }
+
+    let forwardIntervals = null
+    let forwardElement = null
+
     // Forward Event
     this.addEventListener(events.forward, async (e) => {
       e.preventDefault();
-      if (!this.querySelector("#forward-overlay")) {
-        this.video.currentTime =
-          this.video.currentTime + this.#settings.forward;
-        const cloned = this.overlayplay.cloneNode();
-        cloned.id = "forward-overlay";
-        cloned.innerHTML = forwardIcon;
-        this.append(cloned);
-        cloned.classList.add("active");
-        setTimeout(() => {
-          cloned.classList.remove("active");
-          setTimeout(() => {
-            cloned.remove();
-          }, 200);
-        }, 200);
-      }
+      const forwardCalc = this.video.currentTime + this.#settings.backward;
+      const { duration } = this.video;
+      const calc = forwardCalc < duration ? forwardCalc : duration;
+      this.video.currentTime = calc;
+
+      if (calc > 0 && this.querySelector("replay"))
+        this.querySelector("replay").remove();
+      forwardIntervals &&
+        clearTimeout(forwardIntervals);
+
+      forwardElement = createForwardRewind(forwardElement, "forward-overlay")
+      forwardElement.classList.add("active");
+
+      forwardIntervals = setTimeout(() => {
+        forwardElement.classList.remove("active");
+      }, 200);
     });
+
+    let backwardIntervals = null;
+    let backwardElement = null
 
     // Backward Event
     this.addEventListener(events.backward, async (e) => {
       e.preventDefault();
-      if (!this.querySelector("#backward-overlay")) {
-        this.video.currentTime =
-          this.video.currentTime - this.#settings.backward;
-        const cloned = this.overlayplay.cloneNode();
-        cloned.id = "backward-overlay";
-        cloned.innerHTML = rewindIcon;
-        this.append(cloned);
-        cloned.classList.add("active");
-        setTimeout(() => {
-          cloned.classList.remove("active");
-          setTimeout(() => {
-            cloned.remove();
-          }, 200);
-        }, 200);
-      }
+      const rewindCalc = this.video.currentTime - this.#settings.forward;
+      const calc = (rewindCalc < 0) ? 0 : rewindCalc;
+      this.video.currentTime = calc;
+          
+      backwardIntervals &&
+        clearTimeout(backwardIntervals);
+
+      backwardElement = createForwardRewind(backwardElement, "backward-overlay");
+      backwardElement.classList.add("active");
+
+      backwardIntervals = setTimeout(() => {
+        backwardElement.classList.remove("active");
+      }, 200);
     });
 
     // Fullscreen Event
@@ -243,16 +263,43 @@ export default class Player extends HTMLElement {
       triggerEvent(toggle, this);
     });
 
+    let muteElement = null;
+    let unMuteElement = null
+
     // Mute Event
-    this.addEventListener(events.mute, (e) => {
+    this.addEventListener(events.mute, async (e) => {
       e.preventDefault();
+      if(!muteElement) {
+        const cloned = this.overlayplay.cloneNode()
+        cloned.innerHTML = muteIcon
+        cloned.id = "mute-overlay"
+        this.append(cloned)
+        muteElement = cloned
+      }
       this.video.muted = true;
+      muteElement.classList.add("active");
+      
+      setTimeout(function() {
+        muteElement.classList.remove("active")
+      }, 200)
     });
 
     // Unmute Event
     this.addEventListener(events.unmute, (e) => {
       e.preventDefault();
-      this.video.muted = false;
+       if (!unMuteElement) {
+         const cloned = this.overlayplay.cloneNode();
+         cloned.innerHTML = audioIcon;
+         cloned.id = "unmute-overlay";
+         this.append(cloned);
+         unMuteElement = cloned;
+       }
+       this.video.muted = false;
+       unMuteElement.classList.add("active");
+
+       setTimeout(function () {
+         unMuteElement.classList.remove("active");
+       }, 200);
     });
 
     // Unmute Event
