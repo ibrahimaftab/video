@@ -1,12 +1,11 @@
+import events from "../events.js";
+import { triggerEvent, checkVideoBuffer } from "../utils.js";
+
 export const supportedVideoFormat = ["mp4", "webm", "ogg"];
 
 const html5Video = async (element) => {
-  const { triggerEvent, checkVideoBuffer } = await import("../utils.js");
-  const evts = await import("../events.js");
   checkVideoBuffer(element);
-  setTimeout(() => {
-    triggerEvent(evts.default.playable, element);
-  }, 200);
+  triggerEvent(events.playable, element);
 };
 
 export default html5Video;

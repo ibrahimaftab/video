@@ -14,6 +14,7 @@ class PlayerBar extends HTMLElement {
   dropdown = document.createElement("dropdown");
   audioIconButton = "";
   miniplayerBtn = "";
+  #durationSubstract = false
 
   constructor() {
     super();
@@ -41,7 +42,10 @@ class PlayerBar extends HTMLElement {
   async pictureInPictureMode() {
     // Picture in picture mode
     const player = this.parentElement;
-    if ("pictureInPictureEnabled" in document && !player.pictureInPictureDisable) {
+    if (
+      "pictureInPictureEnabled" in document &&
+      !player.pictureInPictureDisable
+    ) {
       this.miniplayerBtn = document.createElement("miniplayer-btn");
       const { picInPicIcon } = await import("../../icons.js");
       const { triggerEvent } = await import("../../utils.js");
@@ -53,7 +57,7 @@ class PlayerBar extends HTMLElement {
   }
 
   async createQualityDropdown(func) {
-    const { qualityIcon } = await import("../../icons.js")
+    const { qualityIcon } = await import("../../icons.js");
     const qualityBtn = `<button id="quality-btn">${qualityIcon} Quality </button>`;
     const qualityList = `<nav id="quality-list"><button class="dropdown-back">Quality</button></nav>`;
     const dropdownHtml = this.dropdown;
@@ -132,7 +136,7 @@ class PlayerBar extends HTMLElement {
     const end = document.createElement("end");
     end.tabIndex = "4";
     end.role = "button";
-    end.textContent = videoDurationFormat(player.video, self.durationSubstract);
+    end.textContent = videoDurationFormat(player.video, self.#durationSubstract);
     self.append(
       self.play,
       self.audioIconButton,
@@ -141,14 +145,14 @@ class PlayerBar extends HTMLElement {
       self.toggleFullscreen
     );
 
-    // Duration Substract
-    let durationSubstract = false;
-
     // End Duration Click
     end.addEventListener("click", function (e) {
       e.preventDefault();
-      durationSubstract = !durationSubstract;
-      end.textContent = videoDurationFormat(player.video, durationSubstract);
+      self.#durationSubstract = !self.#durationSubstract;
+      end.textContent = videoDurationFormat(
+        player.video,
+        self.#durationSubstract
+      );
     });
 
     // Video
@@ -223,12 +227,10 @@ class PlayerBar extends HTMLElement {
     this.parentElement.addEventListener(
       events.playable,
       async function () {
-        const { playableInitiate } = await import(
+        const html5Video = await import(
           "../../functions/html5Video.js"
         );
-        self.initiate();
-        playableInitiate(this);
-        triggerEvent(events.initiated, player);
+        html5Video.default(this);
       },
       true
     );
@@ -319,8 +321,8 @@ class PlayerBar extends HTMLElement {
       if (timelineProgress && timelineBuffer) {
         timelineProgress.style.width =
           (this.currentTime / this.duration) * 100 + "%";
-        if (self.durationSubstract) {
-          end.textContent = videoDurationFormat(this, self.durationSubstract);
+        if (self.#durationSubstract) {
+          self.querySelector("end").textContent = videoDurationFormat(this, self.#durationSubstract);
         }
         if (this.buffered.length)
           timelineBuffer.style.width =

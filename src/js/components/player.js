@@ -5,7 +5,7 @@ import {
   forwardIcon,
   rewindIcon,
   muteIcon,
-  audioIcon
+  audioIcon,
 } from "../icons";
 import "../../css/player.css";
 
@@ -21,12 +21,14 @@ export default class Player extends HTMLElement {
   pictureInPicture = null;
   #userTrigger = null;
   pictureInPictureDisable = null;
+  autoplay = false
 
   constructor() {
     super();
     this.#settings = this.parentElement.videoManiaConfig;
     this.pictureInPictureDisable = this.#settings.disablePictureInPictureMode;
-    this.tabIndex = 0
+    this.tabIndex = 0;
+    this.autoplay = this.#settings.autoplay
 
     const style = `<style id='videomania-style'>
       @layer base {
@@ -76,11 +78,21 @@ export default class Player extends HTMLElement {
     // Adding Playerbar <start>
     if (this.#settings.controls) {
       const playerbar = await import("./playerbar/playerbar.js");
-      customElements.define("vm-playerbar", playerbar.default);
+      if (!customElements.get("vm-playerbar")) {
+        customElements.define("vm-playerbar", playerbar.default);
+      }
       this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
-      this.focus()
+      this.focus();
     }
     // Adding Playerbar <end>
+
+    // Google IMA Ads testing <start>
+    // const adslot = await import("./google-ima-adslot.js");
+    // if (!customElements.get("vm-adslot")) {
+    //   customElements.define("vm-adslot", adslot.default);
+    // }
+    // this.insertAdjacentHTML("beforeend", "<vm-adslot />");
+    // Google IMA Ads testing <end>
 
     this.video.autoplay = this.#settings.autoplay;
     this.video.muted = this.#settings.muted;
@@ -187,18 +199,18 @@ export default class Player extends HTMLElement {
     });
 
     function createForwardRewind(element, id) {
-      if(!element) {
+      if (!element) {
         const cloned = self.overlayplay.cloneNode();
         cloned.id = id;
         cloned.innerHTML = id === "forward-overlay" ? forwardIcon : rewindIcon;
         self.append(cloned);
         return cloned;
       }
-      return element
+      return element;
     }
 
-    let forwardIntervals = null
-    let forwardElement = null
+    let forwardIntervals = null;
+    let forwardElement = null;
 
     // Forward Event
     this.addEventListener(events.forward, async (e) => {
@@ -210,10 +222,9 @@ export default class Player extends HTMLElement {
 
       if (calc > 0 && this.querySelector("replay"))
         this.querySelector("replay").remove();
-      forwardIntervals &&
-        clearTimeout(forwardIntervals);
+      forwardIntervals && clearTimeout(forwardIntervals);
 
-      forwardElement = createForwardRewind(forwardElement, "forward-overlay")
+      forwardElement = createForwardRewind(forwardElement, "forward-overlay");
       forwardElement.classList.add("active");
 
       forwardIntervals = setTimeout(() => {
@@ -222,19 +233,21 @@ export default class Player extends HTMLElement {
     });
 
     let backwardIntervals = null;
-    let backwardElement = null
+    let backwardElement = null;
 
     // Backward Event
     this.addEventListener(events.backward, async (e) => {
       e.preventDefault();
       const rewindCalc = this.video.currentTime - this.#settings.forward;
-      const calc = (rewindCalc < 0) ? 0 : rewindCalc;
+      const calc = rewindCalc < 0 ? 0 : rewindCalc;
       this.video.currentTime = calc;
-          
-      backwardIntervals &&
-        clearTimeout(backwardIntervals);
 
-      backwardElement = createForwardRewind(backwardElement, "backward-overlay");
+      backwardIntervals && clearTimeout(backwardIntervals);
+
+      backwardElement = createForwardRewind(
+        backwardElement,
+        "backward-overlay"
+      );
       backwardElement.classList.add("active");
 
       backwardIntervals = setTimeout(() => {
@@ -264,42 +277,42 @@ export default class Player extends HTMLElement {
     });
 
     let muteElement = null;
-    let unMuteElement = null
+    let unMuteElement = null;
 
     // Mute Event
     this.addEventListener(events.mute, async (e) => {
       e.preventDefault();
-      if(!muteElement) {
-        const cloned = this.overlayplay.cloneNode()
-        cloned.innerHTML = muteIcon
-        cloned.id = "mute-overlay"
-        this.append(cloned)
-        muteElement = cloned
+      if (!muteElement) {
+        const cloned = this.overlayplay.cloneNode();
+        cloned.innerHTML = muteIcon;
+        cloned.id = "mute-overlay";
+        this.append(cloned);
+        muteElement = cloned;
       }
       this.video.muted = true;
       muteElement.classList.add("active");
-      
-      setTimeout(function() {
-        muteElement.classList.remove("active")
-      }, 200)
+
+      setTimeout(function () {
+        muteElement.classList.remove("active");
+      }, 200);
     });
 
     // Unmute Event
     this.addEventListener(events.unmute, (e) => {
       e.preventDefault();
-       if (!unMuteElement) {
-         const cloned = this.overlayplay.cloneNode();
-         cloned.innerHTML = audioIcon;
-         cloned.id = "unmute-overlay";
-         this.append(cloned);
-         unMuteElement = cloned;
-       }
-       this.video.muted = false;
-       unMuteElement.classList.add("active");
+      if (!unMuteElement) {
+        const cloned = this.overlayplay.cloneNode();
+        cloned.innerHTML = audioIcon;
+        cloned.id = "unmute-overlay";
+        this.append(cloned);
+        unMuteElement = cloned;
+      }
+      this.video.muted = false;
+      unMuteElement.classList.add("active");
 
-       setTimeout(function () {
-         unMuteElement.classList.remove("active");
-       }, 200);
+      setTimeout(function () {
+        unMuteElement.classList.remove("active");
+      }, 200);
     });
 
     // Unmute Event
@@ -330,6 +343,17 @@ export default class Player extends HTMLElement {
     });
 
     const self = this;
+
+    // Html5 Video player
+    this.addEventListener(
+      events.playable,
+      async function () {
+        triggerEvent(events.initiate, self);
+        triggerEvent(events.initiated, self);
+        this.autoplay && triggerEvent(events.play, self);
+      },
+      true
+    );
 
     // Video Ended Event
     this.video.addEventListener("ended", function () {
@@ -375,16 +399,17 @@ export default class Player extends HTMLElement {
         dynamicObj.init(this);
       }
       const { triggerEvent } = await import("../utils.js");
-      triggerEvent("initiate", this);
+      triggerEvent(events.initiate, this);
     } else {
       // Custom HTML5 Video
       const html5Video = await import("../functions/html5Video.js");
 
       // Check if Supported Video Format
       if (html5Video.supportedVideoFormat.includes(format)) {
-        html5Video.default(this);
-        triggerEvent("initiate", this);
         this.video.src = this.#settings.url;
+        this.video.addEventListener("loadeddata", function() {
+          html5Video.default(this);
+        })
       }
     }
     if (document.pictureInPictureEnabled && !this.pictureInPictureDisable) {
