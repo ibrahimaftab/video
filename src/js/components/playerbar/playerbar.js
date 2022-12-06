@@ -3,7 +3,7 @@ import {
   playPauseIcon,
   fullscreenIcon,
   settingIcon,
-  playbackIcon
+  playbackIcon,
   } from "../../icons";
 
 class PlayerBar extends HTMLElement {
@@ -53,7 +53,9 @@ class PlayerBar extends HTMLElement {
   }
 
   async createQualityDropdown(func) {
-    const { qualityBtn, qualityList } = await import("../../defaultsHtml.js");
+    const { qualityIcon } = await import("../../icons.js")
+    const qualityBtn = `<button id="quality-btn">${qualityIcon} Quality </button>`;
+    const qualityList = `<nav id="quality-list"><button class="dropdown-back">Quality</button></nav>`;
     const dropdownHtml = this.dropdown;
     const self = this;
     const settingDropdown = dropdownHtml.querySelector("#setting-dropdown");
@@ -82,7 +84,8 @@ class PlayerBar extends HTMLElement {
         .querySelector("#setting-dropdown")
         .append(subtitleBtnElement);
       this.dropdownHeightAdjust();
-      const { subtitleBtn } = await import("../../defaultsHtml.js");
+      const { subtitleIcon } = await import("../../icons.js");
+      const subtitleBtn = `${subtitleIcon} Subtitle <span>Off</span>`;
       subtitleBtnElement.innerHTML = subtitleBtn;
       const { onCueChange } = await import("../../utils.js");
 

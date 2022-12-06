@@ -437,12 +437,14 @@ export default class Player extends HTMLElement {
       this.dataset.toggle = checkVideoPlayState ? "played" : "paused";
     });
 
-    document.addEventListener("visibilitychange", function (event) {
-      const checkPlayState = self.#userTrigger !== "pause";
-      document.hidden
-        ? triggerEvent(events.pause, self)
-        : checkPlayState && triggerEvent(events.play, self);
-    });
+    if (this.#settings.activeBrowserTabPlay) {
+      document.addEventListener("visibilitychange", function (event) {
+        const checkPlayState = self.#userTrigger !== "pause";
+        document.hidden
+          ? triggerEvent(events.pause, self)
+          : checkPlayState && triggerEvent(events.play, self);
+      });
+    }
 
     window.addEventListener("load", () => {
       const checkPlayState = self.#userTrigger !== "pause";

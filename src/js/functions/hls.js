@@ -1,6 +1,6 @@
 export default async function (player, url) {
-  const { triggerEvent } = await import("./utils.js");
-  const events = await import("./events");
+  const { triggerEvent } = await import("../utils.js");
+  const events = await import("../events");
   const { video } = player;
   const videoSrc = url;
   if (Hls.isSupported()) {
