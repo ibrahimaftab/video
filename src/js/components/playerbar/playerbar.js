@@ -5,6 +5,7 @@ import {
   settingIcon,
   playbackIcon,
   } from "../../icons";
+import { triggerEvent } from "../../utils.js";
 
 class PlayerBar extends HTMLElement {
   play = document.createElement("play");
@@ -28,7 +29,7 @@ class PlayerBar extends HTMLElement {
     this.dropdown.innerHTML = `<nav id="setting-dropdown" class="active"><button id="playback-btn">${playbackIcon} Playback Speed </button></nav><nav id="playback-list"><button class="dropdown-back">Playback Speed</button><button>0.25</button><button>0.5</button><button>0.75</button><button class='active'>Normal</button><button>1.25</button><button>1.5</button><button>1.75</button><button>2</button></nav>`;
     this.setting.append(this.dropdown);
   }
-
+  
   dropdownHeightAdjust() {
     const settingDropdown = this.dropdown.querySelector("nav.active");
     const computedStyle = getComputedStyle(this.dropdown);
@@ -48,7 +49,6 @@ class PlayerBar extends HTMLElement {
     ) {
       this.miniplayerBtn = document.createElement("miniplayer-btn");
       const { picInPicIcon } = await import("../../icons.js");
-      const { triggerEvent } = await import("../../utils.js");
       this.miniplayerBtn.innerHTML = picInPicIcon;
       this.miniplayerBtn.addEventListener("click", function () {
         triggerEvent(events.pictureInPicture, player);
@@ -136,7 +136,32 @@ class PlayerBar extends HTMLElement {
     const end = document.createElement("end");
     end.tabIndex = "4";
     end.role = "button";
-    end.textContent = videoDurationFormat(player.video, self.#durationSubstract);
+    end.textContent = videoDurationFormat(
+      player.video,
+      self.#durationSubstract
+    );
+
+    // Audio Button
+    const checkAudio = player.checkIfVideoContainsAudio();
+    if (checkAudio) {
+      const { muteIcon, audioIcon } = await import("../../icons.js");
+      self.audioIconButton = document.createElement("audio-icon");
+      const audioSpan = document.createElement("span");
+      audioSpan.role = "button";
+      audioSpan.tabIndex = "4";
+      audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
+      self.audioIconButton.append(audioSpan);
+
+      // Audion Button Click Event
+      self.audioIconButton.addEventListener("click", function () {
+        player.video.muted = !player.video.muted;
+      });
+
+      // Player Video Volume Change Event
+      player.addEventListener(events.volumechange, (e) => {
+        audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
+      });
+    }
     self.append(
       self.play,
       self.audioIconButton,
@@ -202,13 +227,15 @@ class PlayerBar extends HTMLElement {
     } else {
       this.videoManiaLive();
     }
+    
+    triggerEvent("playerbar-initial-ready", self);
   }
 
   async connectedCallback() {
     this.parentElement.playerbar = this;
     const self = this;
     const player = self.parentElement;
-    const { triggerEvent, setDropdownSettingHeight } = await import(
+    const { setDropdownSettingHeight } = await import(
       "../../utils.js"
     );
 
@@ -224,20 +251,21 @@ class PlayerBar extends HTMLElement {
     });
 
     // Playable Event (for custom html5 supported video)
-    this.parentElement.addEventListener(
+    player.addEventListener(
       events.playable,
       async function () {
+        self.initiate();
         const html5Video = await import(
-          "../../functions/html5Video.js"
+          "./html5video.js"
         );
-        html5Video.default(this);
-        self.initiate()
+        html5Video.default(player);
+        triggerEvent(events.initiated, player);
       },
       true
     );
 
     // Dynamic Dash Js Event
-    this.parentElement.addEventListener(
+    player.addEventListener(
       events.dynamicDashJs,
       async function () {
         const dashjs = await import("./dash.js");
@@ -246,7 +274,7 @@ class PlayerBar extends HTMLElement {
     );
 
     // Dynamic HLS Js Event
-    this.parentElement.addEventListener(events.dynamicHlsJs, async function () {
+    player.addEventListener(events.dynamicHlsJs, async function () {
       const hlsjs = await import("./hls.js");
       hlsjs.default(player);
     });
@@ -340,28 +368,6 @@ class PlayerBar extends HTMLElement {
       setDropdownSettingHeight(self);
 
       self.pictureInPictureMode();
-
-      // Audio Button
-      const checkAudio = player.checkIfVideoContainsAudio();
-      if (checkAudio) {
-        const { muteIcon, audioIcon } = await import("../../icons.js");
-        self.audioIconButton = document.createElement("audio-icon");
-        const audioSpan = document.createElement("span");
-        audioSpan.role = "button";
-        audioSpan.tabIndex = "4";
-        audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
-        self.audioIconButton.append(audioSpan);
-
-        // Audion Button Click Event
-        self.audioIconButton.addEventListener("click", function () {
-          player.video.muted = !player.video.muted;
-        });
-
-        // Player Video Volume Change Event
-        player.addEventListener(events.volumechange, (e) => {
-          audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
-        });
-      }
     });
 
     // Player Unactive Event

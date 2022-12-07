@@ -28,6 +28,7 @@ const events = {
   playerUnActive: "playerUnActive",
   dynamicDashJs: "dynamicDashJs",
   dynamicHlsJs: "dynamicHlsJs",
+  videoReady: "videoReady"
 };
 
 export const keyTriggerEvent = {

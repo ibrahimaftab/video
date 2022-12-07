@@ -8,6 +8,7 @@ import {
   audioIcon,
 } from "../icons";
 import "../../css/player.css";
+import { triggerEvent } from "../utils.js";
 
 export default class Player extends HTMLElement {
   static unactivePlayer;
@@ -43,7 +44,6 @@ export default class Player extends HTMLElement {
   }
 
   async togglePlayer() {
-    const { triggerEvent } = await import("../utils.js");
     this.#unactivePlayer && clearTimeout(this.#unactivePlayer);
     this.classList.add("active");
     triggerEvent(events.playerActive, this);
@@ -109,6 +109,7 @@ export default class Player extends HTMLElement {
     window.addEventListener("focus", function () {
       self.dataset.focus = "true";
     });
+    triggerEvent(events.videoReady, this);
   }
 
   checkIfVideoContainsAudio() {
@@ -137,7 +138,6 @@ export default class Player extends HTMLElement {
     const { retrieveFormat, replayIconBtn } = await import("../utils.js");
     const format = retrieveFormat(this.#settings.url);
     const { dynamicFormats } = await import("../functions/dynamic.js");
-    const { triggerEvent } = await import("../utils.js");
 
     this.tabIndex = 1;
 
@@ -377,8 +377,7 @@ export default class Player extends HTMLElement {
 
     // Html5 Video player
     this.addEventListener(events.playable, async function () {
-      triggerEvent(events.initiate, this);
-      this.autoplay && triggerEvent(events.play, this);
+
     });
 
     // Dynamic Video
@@ -393,7 +392,6 @@ export default class Player extends HTMLElement {
       } else {
         dynamicObj.init(this);
       }
-      triggerEvent(events.initiate, this);
     } else {
       // Custom HTML5 Video
       const html5Video = await import("../functions/html5Video.js");
@@ -402,7 +400,6 @@ export default class Player extends HTMLElement {
       if (html5Video.supportedVideoFormat.includes(format)) {
         this.video.src = this.#settings.url;
         html5Video.default(this);
-        triggerEvent(events.playable, this);
       }
     }
     if (document.pictureInPictureEnabled && !this.pictureInPictureDisable) {
@@ -450,8 +447,7 @@ export default class Player extends HTMLElement {
         .catch((err) => {
           console.error(`you got an error: ${err}`);
         });
-      const checkVideoPlayState =
-        document.visibilityState === "visible" && this.#settings.autoplay;
+      const checkVideoPlayState = document.visibilityState === "visible" && this.#settings.autoplay;
       this.dataset.toggle = checkVideoPlayState ? "played" : "paused";
     });
 

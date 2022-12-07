@@ -3,17 +3,15 @@ import events from "../../events";
 export default async function (player) {
   const self = player.playerbar;
   const vdo = player.dashjs;
-  vdo.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, async function (e) {
-    const bitrates = vdo.getBitrateInfoListFor("video");
-    let defaultQuality = bitrates[0].qualityIndex;
-    const live = e.streamInfo.manifestInfo.isDynamic;
-    self.initiate(!live);
+  self.addEventListener("playerbar-initial-ready", async function (e) {
+    let defaultQuality = player.bitrates[0].qualityIndex;
     // set max quality
     vdo.setQualityFor("video", -1);
 
-    if (bitrates.length > 1) {
+    // self.addEventListener("playerbar-initial-ready", function () {
+    if (player.bitrates.length > 1) {
       self.createQualityDropdown(function () {
-        bitrates.forEach((bitrate, index) => {
+        player.bitrates.forEach((bitrate, index) => {
           player
             .querySelector("dropdown #quality-list")
             .insertAdjacentHTML(
@@ -25,7 +23,7 @@ export default async function (player) {
           .querySelector("dropdown #quality-list")
           .insertAdjacentHTML(
             "beforeend",
-            `<button class="active" data-index="-1">Auto <span class="quality-auto">${bitrates[0].height}</span></button>`
+            `<button class="active" data-index="-1">Auto <span class="quality-auto">${player.bitrates[0].height}</span></button>`
           );
         player
           .querySelector(`#quality-list .dropdown-back`)
@@ -63,5 +61,7 @@ export default async function (player) {
           vdo.setQualityFor("video", defaultQuality);
         });
     }
+    // });
   });
+  self.initiate(!player.live);
 }

@@ -1,11 +1,12 @@
-const playableInitiate = async function () {
+const playableInitiate = function (player) {
   // Dropdown Qualities List
   const qualitiesList = player.qaulitiesList();
+  const playerbar = player.playerbar
 
   // Dropdown Qualities List
   if (qualitiesList.length) {
-    self.createQualityDropdown(function () {
-      const qualityDropdown = self.dropdown.querySelector("#quality-list");
+    playerbar.createQualityDropdown(function () {
+      const qualityDropdown = playerbar.dropdown.querySelector("#quality-list");
 
       // Qualities List Foreach
       qualitiesList.forEach((quality, index) => {
@@ -15,7 +16,7 @@ const playableInitiate = async function () {
         );
 
         // Change Quality Button Click Event
-        const btn = self.dropdown.querySelector(
+        const btn = playerbar.dropdown.querySelector(
           `.vm-quality-btn[data-size="${quality.size}"]`
         );
         btn.addEventListener("click", function () {
@@ -24,7 +25,7 @@ const playableInitiate = async function () {
               (quality) => quality.size == btn.dataset.size
             ).src;
             if (url) {
-              const video = self.parentElement.video;
+              const video = player.video;
               btn.parentElement
                 .querySelector(".active")
                 ?.classList.remove("active");
