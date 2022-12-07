@@ -1,11 +1,9 @@
 import events from "../../events";
 
-export default async function (player) {
+export default function (player) {
   const self = player.playerbar;
   const hls = player.hlsjs;
-  const { triggerEvent } = await import("../../utils.js");
-  triggerEvent(events.initiated, player);
-  hls.on(Hls.Events.LEVEL_SWITCHED, async function (name, event) {
+  hls.on(Hls.Events.LEVEL_SWITCHED, function () {
     if (
       hls.currentLevel > 0 ||
       player.querySelector("#quality-list.active")?.textContent == "Auto"
@@ -15,7 +13,7 @@ export default async function (player) {
       ).height;
     }
   });
-  hls.on(Hls.Events.BUFFER_CREATED, async function (name, event) {
+  hls.on(Hls.Events.BUFFER_CREATED, function () {
     if (hls.levels.length > 1) {
       self.createQualityDropdown(function () {
         hls.levels.forEach((level, i) => {
@@ -55,7 +53,7 @@ export default async function (player) {
     }
   });
   let initiate = false;
-  hls.on(Hls.Events.LEVEL_UPDATED, async function (name, event) {
+  hls.on(Hls.Events.LEVEL_UPDATED, function (_, event) {
     if (!initiate) {
       initiate = true;
       const live = event.details.live;

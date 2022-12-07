@@ -344,17 +344,6 @@ export default class Player extends HTMLElement {
 
     const self = this;
 
-    // Html5 Video player
-    this.addEventListener(
-      events.playable,
-      async function () {
-        triggerEvent(events.initiate, self);
-        triggerEvent(events.initiated, self);
-        this.autoplay && triggerEvent(events.play, self);
-      },
-      true
-    );
-
     // Video Ended Event
     this.video.addEventListener("ended", function () {
       triggerEvent(events.end, self);
@@ -386,6 +375,12 @@ export default class Player extends HTMLElement {
       triggerEvent(events.volumechange, self);
     });
 
+    // Html5 Video player
+    this.addEventListener(events.playable, async function () {
+      triggerEvent(events.initiate, this);
+      this.autoplay && triggerEvent(events.play, this);
+    });
+
     // Dynamic Video
     if (dynamicFormats.includes(format)) {
       const dynamic = await import("../functions/dynamic.js");
@@ -398,7 +393,6 @@ export default class Player extends HTMLElement {
       } else {
         dynamicObj.init(this);
       }
-      const { triggerEvent } = await import("../utils.js");
       triggerEvent(events.initiate, this);
     } else {
       // Custom HTML5 Video
@@ -407,9 +401,8 @@ export default class Player extends HTMLElement {
       // Check if Supported Video Format
       if (html5Video.supportedVideoFormat.includes(format)) {
         this.video.src = this.#settings.url;
-        this.video.addEventListener("loadeddata", function() {
-          html5Video.default(this);
-        })
+        html5Video.default(this);
+        triggerEvent(events.playable, this);
       }
     }
     if (document.pictureInPictureEnabled && !this.pictureInPictureDisable) {
