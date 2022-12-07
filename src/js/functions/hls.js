@@ -18,6 +18,7 @@ export default async function (player, url) {
         initiate = true;
         triggerEvent(events.loaded, player);
         player.live = event.details.live;
+        triggerEvent(events.initiated, player)
       }
     });
      hls.on(Hls.Events.LEVEL_SWITCHING, function () {
@@ -26,9 +27,11 @@ export default async function (player, url) {
     hls.on(Hls.Events.LEVEL_SWITCHED, function () {
       triggerEvent(events.loaded, player);
     });
-    player.addEventListener(events.videoReady, function() {
-      triggerEvent(events.dynamicHlsJs, player)
+    player.addEventListener(events.initiated, function () {
     });
+    player.addEventListener(events.videoReady, function() {
+      triggerEvent(events.dynamicHlsJs, player);
+    })
   } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = videoSrc;
   } else {

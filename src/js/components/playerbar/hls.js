@@ -3,6 +3,7 @@ import events from "../../events";
 export default function (player) {
   const self = player.playerbar;
   const hls = player.hlsjs;
+  console.log('testing')
   self.addEventListener("playerbar-initial-ready", function () {
     hls.on(Hls.Events.LEVEL_SWITCHED, function () {
       if (
