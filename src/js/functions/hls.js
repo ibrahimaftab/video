@@ -1,4 +1,4 @@
-import events from "../events"
+import events from "../events";
 import { triggerEvent } from "../utils";
 
 export default async function (player, url) {
@@ -18,23 +18,43 @@ export default async function (player, url) {
         initiate = true;
         triggerEvent(events.loaded, player);
         player.live = event.details.live;
-        triggerEvent(events.initiated, player)
+        triggerEvent(events.initiated, player);
       }
     });
-     hls.on(Hls.Events.LEVEL_SWITCHING, function () {
-       triggerEvent(events.loading, player);
-     });
+    hls.on(Hls.Events.LEVEL_SWITCHING, function () {
+      // triggerEvent(events.loading, player);
+    });
     hls.on(Hls.Events.LEVEL_SWITCHED, function () {
       triggerEvent(events.loaded, player);
     });
-    player.addEventListener(events.initiated, function () {
+    hls.on(Hls.Events.BUFFER_CREATED, function () {
+      player.levels = hls.levels;
+      triggerEvent("hlsBufferCreated", player);
     });
-    player.addEventListener(events.videoReady, function() {
-      triggerEvent(events.dynamicHlsJs, player);
-    })
+    hls.on(Hls.Events.BUFFER_FLUSHED, function () {
+      triggerEvent(events.loaded, player);
+    });
+    hls.on(Hls.Events.BUFFER_FLUSHING, function () {
+      triggerEvent(events.loading, player);
+    });
+    hls.on(Hls.Events.BUFFER_APPENDED, function () {
+      triggerEvent(events.loaded, player);
+    });
+    player.addEventListener(events.initiated, function () {});
+    player.addEventListener(events.videoReady, function () {
+      if (player?.playerbar) {
+        player.playerbar.addEventListener(
+          "playerbar-initial-ready",
+          function () {
+            triggerEvent(events.dynamicHlsJs, player);
+          }
+        );
+        player.playerbar.initiate();
+      }
+    });
   } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = videoSrc;
   } else {
-    return null
+    return null;
   }
 }
