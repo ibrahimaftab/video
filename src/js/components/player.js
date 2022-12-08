@@ -154,8 +154,9 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.beforePlay, (e) => {
       e.preventDefault();
       try {
-        this.dataset.focus == "true" && this.video.paused && this.video.play();
-        this.dataset.toggle = "played";
+        const checkFocus = this.dataset.focus == "true";
+        checkFocus && this.video.paused && this.video.play();
+        this.dataset.toggle = checkFocus ? "paused" : "played";
         this.overlayplay.classList.add("active");
         setTimeout(() => {
           this.overlayplay.classList.remove("active");
