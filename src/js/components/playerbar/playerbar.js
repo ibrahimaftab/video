@@ -258,7 +258,6 @@ class PlayerBar extends HTMLElement {
           "./html5video.js"
         );
         html5Video.default(player);
-        triggerEvent(events.initiated, player);
       },
       true
     );

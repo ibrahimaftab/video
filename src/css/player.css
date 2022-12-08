@@ -277,6 +277,20 @@
     z-index: 1;
   }
 
+  vm-player loader {
+    visibility: hidden;
+    opacity: 0;
+    transition-property: visibility, opacity;
+    will-change: visibility, opacity;
+    transition-duration: 200;
+    transition-timing-function: linear;
+  }
+
+  vm-player loader.active {
+    opacity: 1;
+    visibility: visible;
+  }
+ 
   vm-player loader svg,
   vm-player forward-rewind svg,
   vm-player replay svg {

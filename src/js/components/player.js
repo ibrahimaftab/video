@@ -1,7 +1,6 @@
 import events, { keyTriggerEvent } from "../events";
 import {
   playPauseIcon,
-  loaderAnimatedIcon,
   forwardIcon,
   rewindIcon,
   muteIcon,
@@ -23,6 +22,7 @@ export default class Player extends HTMLElement {
   #userTrigger = null;
   pictureInPictureDisable = null;
   autoplay = false
+  adsActive = false
 
   constructor() {
     super();
@@ -87,11 +87,11 @@ export default class Player extends HTMLElement {
     // Adding Playerbar <end>
 
     // Google IMA Ads testing <start>
-    // const adslot = await import("./google-ima-adslot.js");
-    // if (!customElements.get("vm-adslot")) {
-    //   customElements.define("vm-adslot", adslot.default);
-    // }
-    // this.insertAdjacentHTML("beforeend", "<vm-adslot />");
+    const adslot = await import("./google-ima-adslot.js");
+    if (!customElements.get("vm-adslot")) {
+      customElements.define("vm-adslot", adslot.default);
+    }
+    this.insertAdjacentHTML("beforeend", "<vm-adslot />");
     // Google IMA Ads testing <end>
 
     this.video.autoplay = this.#settings.autoplay;
@@ -324,21 +324,21 @@ export default class Player extends HTMLElement {
 
     // Loading Event
     this.addEventListener(events.loading, async function () {
-      if (!this.loader || !this.querySelector("#videoManiaLoader")) {
+      if (!this.loader) {
+        const { loaderAnimatedIcon } = await import("../icons");
         const loaderElement = document.createElement("loader");
         this.loader = loaderElement;
         loaderElement.innerHTML = loaderAnimatedIcon;
         loaderElement.id = "videoManiaLoader";
         this.append(this.loader);
       }
+      this.loader.classList.add("active");
     });
 
     // Loaded Event
     this.addEventListener(events.loaded, async function () {
-      if (this.loader && this.querySelector("#videoManiaLoader")) {
-        const loaderElement = this.querySelector("#" + this.loader.id);
-        loaderElement.remove();
-        this.loader = null;
+      if (this.loader) {
+        this.loader.classList.remove('active')
       }
     });
 
@@ -353,8 +353,7 @@ export default class Player extends HTMLElement {
     this.addEventListener("keydown", async (e) => {
       e.preventDefault();
       const existKeys = Object.keys(keyTriggerEvent);
-
-      if (existKeys.includes(e.key)) {
+      if (existKeys.includes(e.key) && !self.adsActive) {
         triggerEvent(keyTriggerEvent[e.key], this);
 
         if (["play", "pause"].includes(keyTriggerEvent[e.key])) {
