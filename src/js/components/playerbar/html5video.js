@@ -1,3 +1,6 @@
+import events from "../../events";
+import { triggerEvent } from "../../utils";
+
 const playableInitiate = function (player) {
   // Dropdown Qualities List
   const qualitiesList = player.qaulitiesList();
@@ -45,6 +48,7 @@ const playableInitiate = function (player) {
       });
     });
   }
+  triggerEvent(events.initiated, player)
 };
 
 export default playableInitiate

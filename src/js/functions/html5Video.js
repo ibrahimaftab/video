@@ -3,22 +3,22 @@ import events from "../events.js";
 
 export const supportedVideoFormat = ["mp4", "webm", "ogg"];
 
-const html5Video = (element) => {
-  element.addEventListener(
+const html5Video = (player) => {
+  player.addEventListener(
     events.videoReady,
-    function () {  
-      element
-        ?.querySelector("vm-playerbar")
-        .addEventListener("playerbar-initiate", function () {
-          triggerEvent(events.playable, element);
-        });
-      !element?.querySelector("vm-playerbar") &&
-        triggerEvent(events.playable, element);
+    function () {
+      player.playerbar.addEventListener(
+        "playerbar-initial-ready",
+        function () {
+          triggerEvent(events.playable, player);
+        }
+      );
+      player.playerbar.initiate()
     },
     false
   );
 
-  triggerEvent(events.initiate, element);
+  triggerEvent(events.initiate, player);
 };
 
 export default html5Video;

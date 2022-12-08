@@ -254,7 +254,6 @@ class PlayerBar extends HTMLElement {
     player.addEventListener(
       events.playable,
       async function () {
-        self.initiate();
         const html5Video = await import(
           "./html5video.js"
         );
