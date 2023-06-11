@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta http-equiv="Permissions-Policy" content="autoplay=(),">
     <title>Webpack App</title>
   </head>
   <body>
@@ -170,20 +171,23 @@
     <!-- <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script> -->
     <script src="./dist/main.js"></script>
     <script>
-      videoMania({
-        selector: "#player",
-        id: "player",
-        // url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8",
-        url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-        // url: "https://dash.akamaized.net/dash264/TestCasesIOP33/adapatationSetSwitching/5/manifest.mpd",
-        // url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        autoplay: true,
-        muted: true,
-        width: 1024,
-        height: 600,
-        disablePictureInPictureMode: true,
-        activeBrowserTabPlay: false,
-      });
+      document.addEventListener('DOMContentLoaded', function () {
+        console.log
+        videoMania.default({
+          selector: "#player",
+          id: "player",
+          // url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8",
+          // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
+          // url: "https://dash.akamaized.net/dash264/TestCasesIOP33/adapatationSetSwitching/5/manifest.mpd",
+          url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          autoplay: true,
+          width: 1024,
+          height: 600,
+          disablePictureInPictureMode: false,
+          activeBrowserTabPlay: false,
+          // muted: true
+        });
+      })
     </script>
   </body>
 </html>

@@ -45,4 +45,4 @@ function videoMania(config, placement = "beforeend") {
   };
 }
 
-window.videoMania = videoMania;
+export default videoMania

@@ -5,10 +5,9 @@ export default async function (player) {
   const vdo = player.dashjs;
   self.addEventListener("playerbar-initial-ready", async function (e) {
     let defaultQuality = player.bitrates[0].qualityIndex;
-    // set max quality
+    
     vdo.setQualityFor("video", -1);
 
-    // self.addEventListener("playerbar-initial-ready", function () {
     if (player.bitrates.length > 1) {
       self.createQualityDropdown(function () {
         player.bitrates.forEach((bitrate, index) => {
@@ -55,13 +54,13 @@ export default async function (player) {
             });
           });
       });
+      
       player
         .querySelector("timeline-progressbar")
         ?.addEventListener("click", function () {
           vdo.setQualityFor("video", defaultQuality);
         });
     }
-    // });
   });
   self.initiate(!player.live);
 }

@@ -393,10 +393,6 @@
     padding-inline: 1em;
   }
 
-  dropdown nav#playback-list {
-    height: 14.1em;
-  }
-
   dropdown nav#quality-list {
     transform: translateX(-100%);
   }

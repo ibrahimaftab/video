@@ -3,22 +3,25 @@ import events from "../events.js";
 
 export const supportedVideoFormat = ["mp4", "webm", "ogg"];
 
-const html5Video = (player) => {
-  player.addEventListener(
-    events.videoReady,
+const html5Video = (player, url) => {
+  player.video.src = url;
+  player.video.addEventListener(
+    'loadeddata',
     function () {
-      player.playerbar.addEventListener(
-        "playerbar-initial-ready",
-        function () {
-          triggerEvent(events.playable, player);
-        }
-      );
-      player.playerbar.initiate()
+     triggerEvent(events.initiate, player);
     },
     false
   );
-
-  triggerEvent(events.initiate, player);
+  player.addEventListener(events.videoReady, () => {
+    player.playerbar.initiate();
+    triggerEvent(events.initiated, player);
+  });
+  player.video.addEventListener('waiting', () => {
+    triggerEvent(events.loading, player)
+  })
+  player.video.addEventListener("playing", () => {
+    triggerEvent(events.loaded, player);
+  });
 };
 
 export default html5Video;

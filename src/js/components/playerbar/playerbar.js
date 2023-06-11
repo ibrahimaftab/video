@@ -364,7 +364,6 @@ class PlayerBar extends HTMLElement {
     player.addEventListener(events.initiated, async function () {
       self.subtitleList();
       setDropdownSettingHeight(self);
-
       self.pictureInPictureMode();
     });
 

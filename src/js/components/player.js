@@ -40,6 +40,7 @@ export default class Player extends HTMLElement {
       }
     </style>`;
     document.head.insertAdjacentHTML("beforeend", style);
+    this.overlayplay.classList.add('active')
     this.overlayplay.innerHTML = playPauseIcon;
   }
 
@@ -82,16 +83,16 @@ export default class Player extends HTMLElement {
         customElements.define("vm-playerbar", playerbar.default);
       }
       this.insertAdjacentHTML("beforeend", "<vm-playerbar />");
-      this.focus();
+      // this.focus();
     }
     // Adding Playerbar <end>
 
-    // Google IMA Ads testing <start>
-    const adslot = await import("./google-ima-adslot.js");
-    if (!customElements.get("vm-adslot")) {
-      customElements.define("vm-adslot", adslot.default);
-    }
-    this.insertAdjacentHTML("beforeend", "<vm-adslot />");
+    // Google IMA Ads testing <start>    
+    // if (!customElements.get("vm-adslot")) {
+    //   const adslot = await import("./google-ima-adslot.js");
+    //   customElements.define("vm-adslot", adslot.default);
+    //   this.insertAdjacentHTML("beforeend", "<vm-adslot />");
+    // }
     // Google IMA Ads testing <end>
 
     this.video.autoplay = this.#settings.autoplay;
@@ -154,15 +155,14 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.beforePlay, (e) => {
       e.preventDefault();
       try {
-        const checkFocus = this.dataset.focus == "true";
-        checkFocus && this.video.paused && this.video.play();
-        this.dataset.toggle = checkFocus ? "paused" : "played";
+        this.video.play();
+        this.dataset.toggle = "played";
         this.overlayplay.classList.add("active");
         setTimeout(() => {
           this.overlayplay.classList.remove("active");
         }, 200);
       } catch (error) {
-        console.log(error);
+        console.error(error.message);
       }
     });
 
@@ -175,9 +175,9 @@ export default class Player extends HTMLElement {
       this.dataset.toggle = "paused";
       this.video.pause();
       this.overlayplay.classList.add("active");
-      setTimeout(() => {
-        this.overlayplay.classList.remove("active");
-      }, 200);
+      // setTimeout(() => {
+      //   this.overlayplay.classList.remove("active");
+      // }, 200);
     });
 
     // Player Play/Pause Event
@@ -339,7 +339,7 @@ export default class Player extends HTMLElement {
     // Loaded Event
     this.addEventListener(events.loaded, async function () {
       if (this.loader) {
-        this.loader.classList.remove('active')
+        this.loader.classList.remove("active");
       }
     });
 
@@ -375,10 +375,13 @@ export default class Player extends HTMLElement {
       triggerEvent(events.volumechange, self);
     });
 
-    // Html5 Video player
-    this.addEventListener(events.playable, async function () {
-
+    // Video Player Play
+    this.video.addEventListener("play", function () {
+      triggerEvent(events.play, self);
     });
+
+    // Html5 Video player
+    this.addEventListener(events.playable, async function () {});
 
     // Dynamic Video
     if (dynamicFormats.includes(format)) {
@@ -398,8 +401,7 @@ export default class Player extends HTMLElement {
 
       // Check if Supported Video Format
       if (html5Video.supportedVideoFormat.includes(format)) {
-        this.video.src = this.#settings.url;
-        html5Video.default(this);
+        html5Video.default(this, this.#settings.url);
       }
     }
     if (document.pictureInPictureEnabled && !this.pictureInPictureDisable) {
@@ -422,7 +424,7 @@ export default class Player extends HTMLElement {
                 });
               });
           } catch (error) {
-            console.log(error);
+            console.error(error.message);
           }
         }
       });
@@ -432,23 +434,25 @@ export default class Player extends HTMLElement {
       });
     }
 
-    this.addEventListener(events.initiated, function () {
-      // Player Play Event
-      this.addEventListener(events.play, () => {
+    // Player Play Event
+    this.addEventListener(events.play, () => {
+      // if (this.#userTrigger == "play")
         triggerEvent(events.beforePlay, this);
-      });
+        // this.#userTrigger = 'pla'
+    });
+
+    this.addEventListener(events.initiated, function () {
+      // !this.video.paused &&
       // Check or ask microphone enable at browser
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          window.localStream = stream;
-          self.video.autoplay && self.video.play();
-        })
-        .catch((err) => {
-          console.error(`you got an error: ${err}`);
-        });
-      const checkVideoPlayState = document.visibilityState === "visible" && this.#settings.autoplay;
-      this.dataset.toggle = checkVideoPlayState ? "played" : "paused";
+      // navigator.mediaDevices
+      //   .getUserMedia({ audio: true })
+      //   .then((stream) => {
+      //     window.localStream = stream;
+      //     self.video.autoplay && self.video.play();
+      //   })
+      //   .catch((err) => {
+      //     console.error(`you got an error: ${err}`);
+      //   });  
     });
 
     if (this.#settings.activeBrowserTabPlay) {
@@ -460,9 +464,9 @@ export default class Player extends HTMLElement {
       });
     }
 
-    window.addEventListener("load", () => {
-      const checkPlayState = self.#userTrigger !== "pause";
-      checkPlayState && triggerEvent(events.play, self);
-    });
+    this.video.oncanplay = () => {
+      if(self.#userTrigger == "play")
+      triggerEvent(events.play, self);
+    };
   }
 }
