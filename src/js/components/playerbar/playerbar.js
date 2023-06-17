@@ -169,7 +169,7 @@ class PlayerBar extends HTMLElement {
     );
 
     // End Duration Click
-    end.addEventListener("click", function (e) {
+    end.addEventListener("click", (e) => {
       e.preventDefault();
       this.#durationSubstract = !this.#durationSubstract;
       end.textContent = videoDurationFormat(
@@ -346,7 +346,10 @@ class PlayerBar extends HTMLElement {
         timelineProgress.style.width =
           (this.currentTime / this.duration) * 100 + "%";
         if (this.#durationSubstract) {
-          this.querySelector("end").textContent = videoDurationFormat(this, this.#durationSubstract);
+          this.querySelector("end").textContent = videoDurationFormat(
+            this.parentElement.video,
+            this.#durationSubstract
+          );
         }
         if (this.parentElement.video.buffered.length)
           timelineBuffer.style.width =
