@@ -1,7 +1,7 @@
 export default async function (player, url) {
-  const events = await import('../events.js')
+  const events = await import("../events.js");
   const { triggerEvent } = await import("../utils.js");
-    const { video } = player;
+  const { video } = player;
   player.dashjs = dashjs.MediaPlayer().create();
   const vdo = player.dashjs;
   vdo.initialize(video, url, true);
@@ -12,13 +12,17 @@ export default async function (player, url) {
   vdo.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, async function (e) {
     player.bitrates = vdo.getBitrateInfoListFor("video");
     player.live = e.streamInfo.manifestInfo.isDynamic;
-    triggerEvent(events.default.initiated, player)
-  })
+    triggerEvent(events.default.initiated, player);
+  });
   vdo.on(dashjs.MediaPlayer.events.BUFFER_EMPTY, function () {
     triggerEvent(events.default.loading, player);
   });
   vdo.on(dashjs.MediaPlayer.events.BUFFER_LOADED, function () {
     triggerEvent(events.default.loaded, player);
   });
-  triggerEvent(events.default.initiated, player)
+
+  // Disable video looping
+  vdo.setLoop(player.loop);
+
+  triggerEvent(events.default.initiated, player);
 }

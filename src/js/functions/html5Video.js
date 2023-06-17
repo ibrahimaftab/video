@@ -1,4 +1,4 @@
-import { checkVideoBuffer, triggerEvent } from "../utils.js";
+import { triggerEvent } from "../utils.js";
 import events from "../events.js";
 
 export const supportedVideoFormat = ["mp4", "webm", "ogg"];

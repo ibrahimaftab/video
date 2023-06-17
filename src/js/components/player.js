@@ -23,6 +23,7 @@ export default class Player extends HTMLElement {
   pictureInPictureDisable = null;
   autoplay = false
   adsActive = false
+  loop = false
 
   constructor() {
     super();
@@ -30,6 +31,7 @@ export default class Player extends HTMLElement {
     this.pictureInPictureDisable = this.#settings.disablePictureInPictureMode;
     this.tabIndex = 0;
     this.autoplay = this.#settings.autoplay
+    this.loop = this.#settings.loop;
 
     const style = `<style id='videomania-style'>
       @layer base {
@@ -100,16 +102,16 @@ export default class Player extends HTMLElement {
     this.video.width = this.#settings.width;
     this.video.height = this.#settings.height;
     this.video.loop = this.#settings.loop;
-    this.video.pause();
+
     this.append(this.video, this.overlayplay);
 
     const roundedClass = this.#settings.rounded ? "rounded" : "";
     this.classList.add(roundedClass);
-
-    const self = this;
-    window.addEventListener("focus", function () {
-      self.dataset.focus = "true";
+    
+    window.addEventListener("focus", () => {
+      this.dataset.focus = "true";
     });
+
     triggerEvent(events.videoReady, this);
   }
 
@@ -193,10 +195,7 @@ export default class Player extends HTMLElement {
     this.addEventListener(events.end, (e) => {
       e.preventDefault();
       this.dataset.toggle = "paused";
-      this.video.currentTime = 0;
-      this.video.pause();
       replayIconBtn(this);
-      triggerEvent(events.loaded, this);
     });
 
     function createForwardRewind(element, id) {
@@ -346,17 +345,16 @@ export default class Player extends HTMLElement {
     const self = this;
 
     // Video Ended Event
-    this.video.addEventListener("ended", function () {
-      triggerEvent(events.end, self);
+    this.video.addEventListener("ended", () => {
+      triggerEvent(events.end, this);
     });
 
     // Keypress Event
     this.addEventListener("keydown", async (e) => {
       e.preventDefault();
       const existKeys = Object.keys(keyTriggerEvent);
-      if (existKeys.includes(e.key) && !self.adsActive) {
+      if (existKeys.includes(e.key)) {
         triggerEvent(keyTriggerEvent[e.key], this);
-
         if (["play", "pause"].includes(keyTriggerEvent[e.key])) {
           this.#userTrigger = [keyTriggerEvent[e.key]];
         }
