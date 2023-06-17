@@ -160,6 +160,7 @@ class PlayerBar extends HTMLElement {
         audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
       });
     }
+    this.pictureInPictureMode();
     this.append(
       this.play,
       this.audioIconButton,
@@ -362,9 +363,9 @@ class PlayerBar extends HTMLElement {
 
     // Player Initiated Event
     player.addEventListener(events.initiated, async () => {
-      this.subtitleList();
+      await this.subtitleList();
       setDropdownSettingHeight(this);
-      this.pictureInPictureMode();
+      // await this.pictureInPictureMode();
     });
 
     // Player Unactive Event
