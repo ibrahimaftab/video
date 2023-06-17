@@ -23,7 +23,15 @@ To use VideoMania in your project, follow these steps:
 2. Import VideoMania into your JavaScript file:
 
    ```javascript
-   import { videoMania } from 'videomania';
+   import videoMania from 'videomania/dist/main';
+   ````
+
+and use videoMania function:
+   ````javascript
+   videoMania({ selector: 'ELEMENT SELECTOR', url: 'VIDEO URL HERE' });
+   ````
+
+videoMania is only available on vanilla js and we are working on React.js and will be available soon
 
 #### Property Descriptions
 
@@ -39,9 +47,9 @@ To use VideoMania in your project, follow these steps:
 
 - `url` (string): The URL or path to the video file that you want to play. This is a required property.
 
-- `id` (string): Optional identifier for the video player element.
+- `id` (string): Optional add id to video player element.
 
-- `qualities` (array): An array of objects representing different video quality options. Each object should have `label` (string) and `src` (string) properties.
+- `qualities` (array): An array of objects representing different video quality options. Each object should have `size` (integer).
 
 - `subtitles` (array): An array of objects representing different subtitle options for the video. Each object should have `label` (string), `src` (string), and `srclang` (string) properties.
 
