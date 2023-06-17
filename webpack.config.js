@@ -3,58 +3,48 @@
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 
-const isProduction = process.env.NODE_ENV == "production";
-
-const stylesHandler = "style-loader";
-
-const config = {
-  entry: "./src/js/index.js",
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "main.js",
-    library: "videoMania",
-    libraryTarget: "umd",
-  },
-  plugins: [
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/i,
-        loader: "babel-loader",
-      },
-      {
-        test: /\.css$/i,
-        use: [stylesHandler, "css-loader"],
-      },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: "asset",
-      },
-
-      // Add your rules for custom modules here
-      // Learn more about loaders from https://webpack.js.org/loaders/
-    ],
-  },
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          keep_fnames: true,
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === "production";
+  return {
+    entry: "./src/js/index.js",
+    output: {
+      path: path.resolve(__dirname, "dist"),
+      filename: "main.js",
+      library: "videoMania",
+      libraryTarget: "umd",
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(js|jsx)$/i,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env"],
+            },
+          },
         },
-      }),
-    ],
-  },
-};
-
-module.exports = () => {
-  if (isProduction) {
-    config.mode = "production";
-  } else {
-    config.mode = "development";
-  }
-  return config;
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader"],
+        },
+        {
+          test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+          type: "asset",
+        },
+      ],
+    },
+    optimization: {
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            keep_fnames: true,
+          },
+        }),
+      ],
+    },
+    mode: isProduction ? "production" : "development",
+  };
 };

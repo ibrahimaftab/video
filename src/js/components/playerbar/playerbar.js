@@ -61,7 +61,6 @@ class PlayerBar extends HTMLElement {
     const qualityBtn = `<button id="quality-btn">${qualityIcon} Quality </button>`;
     const qualityList = `<nav id="quality-list"><button class="dropdown-back">Quality</button></nav>`;
     const dropdownHtml = this.dropdown;
-    const self = this;
     const settingDropdown = dropdownHtml.querySelector("#setting-dropdown");
     settingDropdown.insertAdjacentHTML("beforeend", qualityBtn);
     dropdownHtml.insertAdjacentHTML("beforeend", qualityList);
@@ -69,12 +68,12 @@ class PlayerBar extends HTMLElement {
     func();
     dropdownHtml
       .querySelector("#quality-btn")
-      .addEventListener("click", function () {
+      .addEventListener("click", () => {
         dropdownHtml.classList.add("show-quality");
         dropdownHtml.classList.add("dropdown-active");
         dropdownHtml.querySelector("nav.active").classList.remove("active");
         dropdownHtml.querySelector("#quality-list").classList.add("active");
-        self.dropdownHeightAdjust();
+        this.dropdownHeightAdjust();
       });
   }
 
@@ -131,29 +130,28 @@ class PlayerBar extends HTMLElement {
 
   async initiate(showTimeline = true) {
     const player = this.parentElement;
-    const self = this;
     const { videoDurationFormat } = await import("../../utils.js");
     const end = document.createElement("end");
     end.tabIndex = "4";
     end.role = "button";
     end.textContent = videoDurationFormat(
       player.video,
-      self.#durationSubstract
+      this.#durationSubstract
     );
 
     // Audio Button
     const checkAudio = player.checkIfVideoContainsAudio();
     if (checkAudio) {
       const { muteIcon, audioIcon } = await import("../../icons.js");
-      self.audioIconButton = document.createElement("audio-icon");
+      this.audioIconButton = document.createElement("audio-icon");
       const audioSpan = document.createElement("span");
       audioSpan.role = "button";
       audioSpan.tabIndex = "4";
       audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
-      self.audioIconButton.append(audioSpan);
+      this.audioIconButton.append(audioSpan);
 
       // Audion Button Click Event
-      self.audioIconButton.addEventListener("click", function () {
+      this.audioIconButton.addEventListener("click", function () {
         player.video.muted = !player.video.muted;
       });
 
@@ -162,21 +160,21 @@ class PlayerBar extends HTMLElement {
         audioSpan.innerHTML = player.video.muted ? muteIcon : audioIcon;
       });
     }
-    self.append(
-      self.play,
-      self.audioIconButton,
-      self.setting,
-      self.miniplayerBtn,
-      self.toggleFullscreen
+    this.append(
+      this.play,
+      this.audioIconButton,
+      this.setting,
+      this.miniplayerBtn,
+      this.toggleFullscreen
     );
 
     // End Duration Click
     end.addEventListener("click", function (e) {
       e.preventDefault();
-      self.#durationSubstract = !self.#durationSubstract;
+      this.#durationSubstract = !this.#durationSubstract;
       end.textContent = videoDurationFormat(
         player.video,
-        self.#durationSubstract
+        this.#durationSubstract
       );
     });
 
@@ -223,18 +221,17 @@ class PlayerBar extends HTMLElement {
         timelineProgress.style.width = calcPosition * 100 + "%";
         video.currentTime = video.duration * calcPosition;
       });
-      self.play.after(timeline);
+      this.play.after(timeline);
     } else {
       this.videoManiaLive();
     }
     
-    triggerEvent("playerbar-initial-ready", self);
+    triggerEvent("playerbar-initial-ready", this);
   }
 
   async connectedCallback() {
     this.parentElement.playerbar = this;
-    const self = this;
-    const player = self.parentElement;
+    const player = this.parentElement;
     const { setDropdownSettingHeight } = await import(
       "../../utils.js"
     );
@@ -280,39 +277,39 @@ class PlayerBar extends HTMLElement {
     // Setting Plackback Button Click Event
     this.setting
       .querySelector("#playback-btn")
-      .addEventListener("click", function () {
-        self.dropdown.classList.add("show-playback");
-        self.dropdown.classList.add("dropdown-active");
-        self.querySelector("nav.active").classList.remove("active");
-        self.querySelector("#playback-list").classList.add("active");
-        self.dropdownHeightAdjust();
+      .addEventListener("click", () => {
+        this.dropdown.classList.add("show-playback");
+        this.dropdown.classList.add("dropdown-active");
+        this.querySelector("nav.active").classList.remove("active");
+        this.querySelector("#playback-list").classList.add("active");
+        this.dropdownHeightAdjust();
       });
 
     // Setting Button Click Event
-    this.setting.querySelector("span").addEventListener("click", function () {
-      self.setting.classList.toggle("show-dropdown");
-      self.dropdown.classList = [];
-      self.dropdown
+    this.setting.querySelector("span").addEventListener("click", () => {
+      this.setting.classList.toggle("show-dropdown");
+      this.dropdown.classList = [];
+      this.dropdown
         .querySelector("#setting-dropdown:not(.active)")
         ?.classList.add("active");
-      self.dropdown
+      this.dropdown
         .querySelector("nav.active:not(#setting-dropdown)")
         ?.classList.remove("active");
-      self.dropdownHeightAdjust();
+      this.dropdownHeightAdjust();
     });
 
     // Dropdown All Button(s) (not back button) Click Event
     this.dropdown
       .querySelectorAll("#playback-list button:not(.dropdown-back)")
       .forEach((elm) => {
-        elm.addEventListener("click", function () {
+        elm.addEventListener("click", () => {
           if (!elm.classList.contains("active")) {
             const playback =
               elm.textContent === "Normal"
                 ? player.video.defaultPlaybackRate
                 : Number(elm.textContent);
             player.video.playbackRate = playback;
-            self.dropdown
+            this.dropdown
               .querySelector("#playback-list .dropdown-back")
               .dispatchEvent(new Event("click"));
             elm.parentElement
@@ -323,60 +320,60 @@ class PlayerBar extends HTMLElement {
         });
       });
 
-    self.addEventListener("click", function (e) {
+    this.addEventListener("click", (e) => {
       if (
         e.target.classList.contains("dropdown-back") ||
         e.target.parentElement.classList.contains("dropdown-back")
       ) {
-        self.dropdown.classList.remove("dropdown-active");
-        self.dropdown.querySelector("nav.active").classList.remove("active");
-        self.dropdown
+        this.dropdown.classList.remove("dropdown-active");
+        this.dropdown.querySelector("nav.active").classList.remove("active");
+        this.dropdown
           .querySelector("#setting-dropdown")
           .classList.add("active");
-        self.dropdownHeightAdjust();
+        this.dropdownHeightAdjust();
         setTimeout(() => {
-          self.dropdown.classList = [];
+          this.dropdown.classList = [];
         }, 150);
       }
     });
 
     // Video Time Update Event
-    this.parentElement.video.addEventListener("timeupdate", async function () {
+    this.parentElement.video.addEventListener("timeupdate", async () => {
       const { videoDurationFormat } = await import("../../utils.js");
-      const timelineProgress = self.querySelector("timeline-progress");
-      const timelineBuffer = self.querySelector("timeline-buffer");
+      const timelineProgress = this.querySelector("timeline-progress");
+      const timelineBuffer = this.querySelector("timeline-buffer");
       if (timelineProgress && timelineBuffer) {
         timelineProgress.style.width =
           (this.currentTime / this.duration) * 100 + "%";
-        if (self.#durationSubstract) {
-          self.querySelector("end").textContent = videoDurationFormat(this, self.#durationSubstract);
+        if (this.#durationSubstract) {
+          this.querySelector("end").textContent = videoDurationFormat(this, this.#durationSubstract);
         }
-        if (this.buffered.length)
+        if (this.parentElement.video.buffered.length)
           timelineBuffer.style.width =
-            ((this?.buffered?.end(this.buffered.length - 1) ?? 0) /
-              this?.duration) *
+            ((this.parentElement.video?.buffered?.end(this.parentElement.video.buffered.length - 1) ?? 0) /
+              this.parentElement.video?.duration) *
               100 +
             "%";
       }
     });
 
     // Player Initiated Event
-    player.addEventListener(events.initiated, async function () {
-      self.subtitleList();
-      setDropdownSettingHeight(self);
-      self.pictureInPictureMode();
+    player.addEventListener(events.initiated, async () => {
+      this.subtitleList();
+      setDropdownSettingHeight(this);
+      this.pictureInPictureMode();
     });
 
     // Player Unactive Event
-    player.addEventListener(events.playerUnActive, function () {
-      const settingDropdown = self.dropdown.querySelector("#setting-dropdown");
-      if (self.setting.classList.contains("show-dropdown")) {
-        self.setting.classList.remove("show-dropdown");
+    player.addEventListener(events.playerUnActive, () => {
+      const settingDropdown = this.dropdown.querySelector("#setting-dropdown");
+      if (this.setting.classList.contains("show-dropdown")) {
+        this.setting.classList.remove("show-dropdown");
         if (!settingDropdown.classList.contains("active")) {
-          self.dropdown.classList = [];
-          self.dropdown.querySelector("nav.active").classList.remove("active");
+          this.dropdown.classList = [];
+          this.dropdown.querySelector("nav.active").classList.remove("active");
           settingDropdown.classList.add("active");
-          self.dropdownHeightAdjust();
+          this.dropdownHeightAdjust();
         }
       }
     });

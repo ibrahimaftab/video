@@ -198,12 +198,12 @@ export default class Player extends HTMLElement {
       replayIconBtn(this);
     });
 
-    function createForwardRewind(element, id) {
+    const createForwardRewind = (element, id) => {
       if (!element) {
-        const cloned = self.overlayplay.cloneNode();
+        const cloned = this.overlayplay.cloneNode();
         cloned.id = id;
         cloned.innerHTML = id === "forward-overlay" ? forwardIcon : rewindIcon;
-        self.append(cloned);
+        this.append(cloned);
         return cloned;
       }
       return element;
@@ -362,20 +362,20 @@ export default class Player extends HTMLElement {
     });
 
     // Overlay Play Event
-    this.overlayplay.addEventListener("click", function () {
+    this.overlayplay.addEventListener("click", () => {
       this.dataset.focus = "true";
-      self.userTrigger(self.video.paused ? "play" : "pause");
-      triggerEvent(events.playPause, self);
+      this.userTrigger(this.video.paused ? "play" : "pause");
+      triggerEvent(events.playPause, this);
     });
 
     // Volume Change Event
-    this.video.addEventListener("volumechange", function () {
-      triggerEvent(events.volumechange, self);
+    this.video.addEventListener("volumechange", () => {
+      triggerEvent(events.volumechange, this);
     });
 
     // Video Player Play
-    this.video.addEventListener("play", function () {
-      triggerEvent(events.play, self);
+    this.video.addEventListener("play", () => {
+      triggerEvent(events.play, this);
     });
 
     // Html5 Video player
@@ -403,19 +403,19 @@ export default class Player extends HTMLElement {
       }
     }
     if (document.pictureInPictureEnabled && !this.pictureInPictureDisable) {
-      this.addEventListener(events.pictureInPicture, function () {
+      this.addEventListener(events.pictureInPicture, () => {
         if (!this.pictureInPicture) {
           try {
             this.video
               .requestPictureInPicture()
               .then((pictureInPictureWindow) => {
-                triggerEvent(events.pictureInPicture, self);
-                self.changePictureInPicture({
+                triggerEvent(events.pictureInPicture, this);
+                this.changePictureInPicture({
                   width: pictureInPictureWindow.width,
                   height: pictureInPictureWindow.height,
                 });
                 pictureInPictureWindow.addEventListener("resize", function (e) {
-                  self.changePictureInPicture({
+                  this.changePictureInPicture({
                     width: e.target.width,
                     height: e.target.height,
                   });
@@ -426,9 +426,9 @@ export default class Player extends HTMLElement {
           }
         }
       });
-      this.video.addEventListener("leavepictureinpicture", function () {
-        triggerEvent(events.exitPictureInPicture, self);
-        self.pictureInPicture = false;
+      this.video.addEventListener("leavepictureinpicture", () => {
+        triggerEvent(events.exitPictureInPicture, this);
+        this.pictureInPicture = false;
       });
     }
 
@@ -454,17 +454,17 @@ export default class Player extends HTMLElement {
     });
 
     if (this.#settings.activeBrowserTabPlay) {
-      document.addEventListener("visibilitychange", function (event) {
-        const checkPlayState = self.#userTrigger !== "pause";
+      document.addEventListener("visibilitychange", (event) => {
+        const checkPlayState = this.#userTrigger !== "pause";
         document.hidden
-          ? triggerEvent(events.pause, self)
-          : checkPlayState && triggerEvent(events.play, self);
+          ? triggerEvent(events.pause, this)
+          : checkPlayState && triggerEvent(events.play, this);
       });
     }
 
     this.video.oncanplay = () => {
-      if(self.#userTrigger == "play")
-      triggerEvent(events.play, self);
+      if(this.#userTrigger == "play")
+      triggerEvent(events.play, this);
     };
   }
 }
