@@ -177,3 +177,17 @@ export async function checkVideoBuffer(element) {
 export const retrieveFormat = (url) => url.split('.')[url.split('.').length - 1].toLowerCase();
 
 export const triggerEvent = (eventName, element) => element.dispatchEvent(new Event(eventName))
+
+export const checkIfVideoContainsAudio = (video) => {
+    let bool = true;
+    if (typeof video.webkitAudioDecodedByteCount !== "undefined") {
+      // non-zero if video has audio track
+      if (video.webkitAudioDecodedByteCount > 0) bool = true;
+      else bool = false;
+    } else if (typeof video.mozHasAudio !== "undefined") {
+      // true if video has audio track
+      if (video.mozHasAudio) bool = true;
+      else bool = false;
+    }
+    return bool;
+  }

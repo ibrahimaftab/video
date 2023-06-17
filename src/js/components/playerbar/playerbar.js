@@ -139,8 +139,10 @@ class PlayerBar extends HTMLElement {
       this.#durationSubstract
     );
 
+    const { checkIfVideoContainsAudio } =  await import('../../utils')
+
     // Audio Button
-    const checkAudio = player.checkIfVideoContainsAudio();
+    const checkAudio = checkIfVideoContainsAudio(this.parentElement.video);
     if (checkAudio) {
       const { muteIcon, audioIcon } = await import("../../icons.js");
       this.audioIconButton = document.createElement("audio-icon");

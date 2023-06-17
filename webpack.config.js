@@ -9,7 +9,7 @@ module.exports = (env, argv) => {
     entry: "./src/js/index.js",
     output: {
       path: path.resolve(__dirname, "dist"),
-      filename: "main.js",
+      filename: "[name].js",
       library: "videoMania",
       libraryTarget: "umd",
     },
@@ -44,6 +44,10 @@ module.exports = (env, argv) => {
           },
         }),
       ],
+      splitChunks: {
+        chunks: "async",
+        minSize: 0,
+      },
     },
     mode: isProduction ? "production" : "development",
   };

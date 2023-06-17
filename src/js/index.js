@@ -1,4 +1,3 @@
-import Player from "./components/player.js"
 import defaultConfig from "./defaultConfig.js"
 
 const allSupportedFormat = ["mp4", "webm", "ogg", "m3u8", "mpd"];
@@ -10,7 +9,10 @@ function videoMania(config, placement = "beforeend") {
     const splitUrl = config.url.split(".");
     const extension = splitUrl[splitUrl.length - 1];
     if (!customElements.get("vm-player")) {
-      customElements.define("vm-player", Player);
+       import("./components/player.js")
+          .then(Player => {
+            customElements.define("vm-player", Player.default);
+          })
     }
     if (allSupportedFormat.includes(extension)) {
       const setting = {

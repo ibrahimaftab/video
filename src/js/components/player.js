@@ -115,20 +115,6 @@ export default class Player extends HTMLElement {
     triggerEvent(events.videoReady, this);
   }
 
-  checkIfVideoContainsAudio() {
-    let bool = true;
-    if (typeof this.webkitAudioDecodedByteCount !== "undefined") {
-      // non-zero if video has audio track
-      if (this.webkitAudioDecodedByteCount > 0) bool = true;
-      else bool = false;
-    } else if (typeof this.mozHasAudio !== "undefined") {
-      // true if video has audio track
-      if (this.mozHasAudio) bool = true;
-      else bool = false;
-    }
-    return bool;
-  }
-
   changePictureInPicture(obj) {
     this.pictureInPicture = {
       width: obj.width,
@@ -341,8 +327,6 @@ export default class Player extends HTMLElement {
         this.loader.classList.remove("active");
       }
     });
-
-    const self = this;
 
     // Video Ended Event
     this.video.addEventListener("ended", () => {
