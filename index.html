@@ -1,23 +1,26 @@
-<!-- 
-
-// url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8",
-          // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
-          url: "https://dash.akamaized.net/dash264/TestCasesIOP33/adapatationSetSwitching/5/manifest.mpd",
-          // url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-
- -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="./dist/styles.css" />
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
+    <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
-    <sonic-vibe
-      src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-      aspect-ratio="16/9"
-    >
-    </sonic-vibe>
-    <script src="./dist/main.js"></script>
+    <div id="app">
+      <!--  // url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8",
+          // url: "http://playertest.longtailvideo.com/adaptive/wowzaid3/playlist.m3u8",
+          // url: "https://dash.akamaized.net/dash264/TestCasesIOP33/adapatationSetSwitching/5/manifest.mpd",
+          url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" -->
+
+      <sonic-vibe
+        src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp42"
+        width="1400"
+        muted="true"
+      >
+      </sonic-vibe>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

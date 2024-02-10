@@ -1,3 +1,14 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+sonic-vibe {
+  @apply bg-gray-950 block relative;
+  font-size: 18px;
+  max-width: 100%;
+}
+
+sonic-vibe-error {
+  @apply flex flex-wrap w-full h-full items-center justify-center text-gray-600;
+  font-size: clamp(1em, 4vw, 6em);
+}

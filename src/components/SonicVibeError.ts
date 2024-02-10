@@ -1,8 +1,8 @@
 export default class SonicVibeError extends HTMLElement {
-	// #video: HTMLVideoElement
-	constructor() {
-		super()
+  message = "No Video File Found";
 
-		console.log(this)
-	}
+  constructor(message?: string) {
+    super();
+    this.textContent = message ?? this.message;
+  }
 }
