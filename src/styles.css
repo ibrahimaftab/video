@@ -1,3 +1,11 @@
+sonic-vibe,
+sonic-vibe * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
 sonic-vibe {
   --screen: #00151d;
   --error-bg: #0d0202;
@@ -10,6 +18,10 @@ sonic-vibe {
   position: relative;
   color: white;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+sonic-vibe video {
+  display: block;
 }
 
 sonic-vibe-error {
