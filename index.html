@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + TS</title>
     <link rel="stylesheet" href="/src/styles.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
@@ -15,6 +22,7 @@
           url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" -->
 
       <sonic-vibe
+        class="sonic-vibe-tailwind"
         src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp42"
         width="1400"
         muted="true"
