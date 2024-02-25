@@ -1,8 +1,15 @@
+import { addStylesheet } from "../utils/functions";
+
 export default class SonicVibeError extends HTMLElement {
-  message = "No Video File Found";
+  defaultMessage = "No Video File Found";
+  message: string | null = null;
 
   constructor(message?: string) {
     super();
-    this.textContent = message ?? this.message;
+    this.message = message ?? this.defaultMessage;
+  }
+  connectedCallback() {
+    addStylesheet("error");
+    this.textContent = this.message;
   }
 }
