@@ -12,6 +12,12 @@ export default class SonicVibe extends HTMLElement {
   private src: string | null | undefined = null;
 
   /**
+   * Mouse Dragged
+   * @type {boolean}
+   */
+  mouseDragged = false;
+
+  /**
    * The video DOM HTML.
    * @type {HTMLVideoElement | undefined}
    */
@@ -118,13 +124,13 @@ export default class SonicVibe extends HTMLElement {
           e.stopPropagation();
           e.preventDefault();
           if (this.video) {
-            if (e.deltaX < -5 || e.deltaX > 5) {
+            if (e.deltaX < -10 || e.deltaX > 10) {
               this.video.currentTime -= e.deltaX * 0.1;
             }
           }
         });
-        this.addEventListener("click", () => {
-          if (this.video?.played) {
+        this.addEventListener("click", (e) => {
+          if (this.video?.played && !this.mouseDragged) {
             this.video?.paused ? this.video?.play() : this.video.pause();
           }
         });

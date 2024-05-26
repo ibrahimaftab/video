@@ -68,12 +68,5 @@ export function calculateBufferedDuration(
   media: HTMLVideoElement | HTMLAudioElement
 ) {
   const buffered = media?.buffered;
-  let bufferedDuration = 0;
-
-  for (let i = 0; i < buffered.length; i++) {
-    if (i === 0) bufferedDuration += buffered.end(i) - buffered.start(i);
-    else bufferedDuration += media.currentTime - buffered.start(i);
-  }
-
-  return bufferedDuration;
+  return buffered.end(buffered.length - 1);
 }

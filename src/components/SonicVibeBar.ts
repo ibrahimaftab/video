@@ -45,6 +45,10 @@ export default class SonicVibeBar extends HTMLElement {
           "--sonic-vibe-timeline-buffered",
           (media.currentTime / media.duration) * 100 + "%"
         );
+        this.style.setProperty(
+          "--sonic-vibe-timeline",
+          (media.currentTime / media.duration) * 100 + "%"
+        );
 
         if (e.clientX > this.getBoundingClientRect().width - 100)
           alert("testing");
@@ -56,8 +60,17 @@ export default class SonicVibeBar extends HTMLElement {
       if (previewTimeout) clearTimeout(previewTimeout);
       previewTimeout = setTimeout(() => this.classList.remove("preview"), 3e3);
     });
-    media?.addEventListener("progress", (e) => {
-      console.log({ progressE: e });
+    player.addEventListener("wheel", (e) => {
+      if (e.deltaX < -10 || e.deltaX > 10) {
+        this.classList.add("preview");
+        if (media)
+          this.style.setProperty(
+            "--sonic-vibe-timeline",
+            (media.currentTime / media.duration) * 100 + "%"
+          );
+      }
+    });
+    media?.addEventListener("progress", () => {
       this.style.setProperty(
         "--sonic-vibe-timeline-buffered",
         (calculateBufferedDuration(media) / media.duration) * 100 + "%"

@@ -62,15 +62,18 @@ export default class VideoPlayer {
     );
 
     let videoTimerTimeout: null | number = null;
-    player.addEventListener("wheel", () => {
-      videoTimer.classList.add("active");
-      playButton.classList.remove("active");
-      pauseButton.classList.remove("active");
-      if (videoTimerTimeout) clearTimeout(videoTimerTimeout);
-      videoTimerTimeout = setTimeout(() => {
-        videoTimer.classList.remove("active");
-        if (video.paused) playButton.classList.add("active");
-      });
+    player.addEventListener("wheel", (e) => {
+      if (e.deltaX < -10 || e.deltaX > 10) {
+        videoTimer.classList.add("active");
+        videoTimer.textContent = formatVideoDuration(video.currentTime);
+        playButton.classList.remove("active");
+        pauseButton.classList.remove("active");
+        if (videoTimerTimeout) clearTimeout(videoTimerTimeout);
+        videoTimerTimeout = setTimeout(() => {
+          videoTimer.classList.remove("active");
+          if (video.paused) playButton.classList.add("active");
+        }, 1e3);
+      }
     });
 
     let pauseTimeout: null | number = null;
@@ -83,6 +86,23 @@ export default class VideoPlayer {
           3e3
         );
       }
+    });
+
+    let mouseDragged = 0;
+
+    player.addEventListener("mouseup", (e) => {
+      const calc = e.clientX - mouseDragged;
+
+      if (calc != 0 && (calc > 10 || calc < -10)) video.currentTime += calc;
+      else player.mouseDragged = false;
+
+      setTimeout(() => {
+        player.mouseDragged = false;
+      });
+    });
+    player.addEventListener("mousedown", (e) => {
+      player.mouseDragged = true;
+      mouseDragged = e.clientX;
     });
     return [video, playButton, pauseButton, videoTimer];
   }
