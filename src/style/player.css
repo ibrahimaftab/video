@@ -1,3 +1,125 @@
+sonic-vibe {
+  --sonic-vibe-corners: 0.25em;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--sonic-vibe-corners);
+  position: relative;
+}
 sonic-vibe video {
   display: block;
+  pointer-events: none;
+  border-radius: var(--sonic-vibe-corners);
+}
+sonic-vibe video::-webkit-media-controls {
+  display: none !important;
+  opacity: 0;
+}
+sonic-vibe video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+.sonic-vibe-state {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: auto;
+  border-radius: 3em;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  transition-property: transform, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: linear;
+  background-color: transparent;
+  filter: drop-shadow(0 0 0.05em rgba(0, 0, 0, 0.5));
+}
+
+.sonic-vibe-state:not(.sonic-vibe-timer) {
+  --scale: 0.5;
+  width: 6em;
+  height: 6em;
+}
+
+.sonic-vibe-state.active {
+  opacity: 1;
+  --scale: 1;
+}
+.sonic-vibe-state:before {
+  content: "";
+  position: absolute;
+  left: -0.4em;
+  top: -0.4em;
+  right: -0.4em;
+  bottom: -0.4em;
+  border: dashed 0.2em rgba(255, 255, 255, 0.75);
+  border-radius: 4em;
+}
+
+.sonic-vibe-pause:before {
+  animation: pauseborder 100s linear infinite;
+}
+
+.sonic-vibe-state:after {
+  --scale: 0.5;
+  content: "";
+  display: block;
+  width: 2.5em;
+  height: 2.5em;
+  transform-origin: center;
+}
+
+.sonic-vibe-state.active:after {
+  --scale: 1;
+}
+
+.sonic-vibe-play:before {
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.sonic-vibe-play:after {
+  background-image: linear-gradient(
+    45deg,
+    transparent 50%,
+    rgba(255, 255, 255, 0.8) 50%
+  );
+  transform: translateX(-0.8em) scaleX(1.25) scaleY(0.75) rotate(45deg);
+}
+
+.sonic-vibe-pause:after {
+  --pauseSize: 0.75em;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.8) var(--pauseSize),
+    transparent var(--pauseSize),
+    transparent calc(100% - var(--pauseSize)),
+    rgba(255, 255, 255, 0.8) calc(100% - var(--pauseSize)),
+    rgba(255, 255, 255, 0.8) 100%
+  );
+}
+
+@keyframes pauseborder {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(1000deg);
+  }
+}
+
+.sonic-vibe-timer {
+  --scale: 1;
+  padding: 1em;
+  text-align: center;
+  font-weight: 700;
+  justify-content: center;
+}
+
+.sonic-vibe-timer:after {
+  content: none;
 }

@@ -15,7 +15,13 @@ export default class SonicVibe extends HTMLElement {
    * The video DOM HTML.
    * @type {HTMLVideoElement | undefined}
    */
-  private video: HTMLVideoElement | undefined;
+  video: HTMLVideoElement | undefined;
+
+  /**
+   * The audio DOM HTML.
+   * @type {HTMLAudioElement | undefined}
+   */
+  audio: HTMLAudioElement | undefined;
 
   /**
    * The aspect ratio of the video, e.g: "16/9", default is "16/9".
@@ -67,6 +73,9 @@ export default class SonicVibe extends HTMLElement {
     this.video = undefined;
   }
 
+  /**
+   * Connected Callback
+   */
   connectedCallback() {
     this.initiateVideo();
 
@@ -77,6 +86,9 @@ export default class SonicVibe extends HTMLElement {
     });
   }
 
+  /**
+   * Initiate Video, adding the necessary html elements, css style and js functionality for player
+   */
   initiateVideo() {
     addStylesheet("styles");
     this.src = this.getAttribute("src");
@@ -91,18 +103,36 @@ export default class SonicVibe extends HTMLElement {
       const src = this.src;
       (async () => {
         const VideoPlayer = await (await import("./VideoPlayer")).default;
-        this.video = VideoPlayer.createVideo({
-          src,
-          aspectRatio: this.aspectRatio,
-          autoplay: this.autoplay == "true",
-          muted: this.muted == "true",
-          playsInline: this.playsInline == "true",
+        const [video, play, pause, timer] = VideoPlayer.createVideo(
+          {
+            src,
+            aspectRatio: this.aspectRatio,
+            autoplay: this.autoplay == "true",
+            muted: this.muted == "true",
+            playsInline: this.playsInline == "true",
+          },
+          this
+        );
+        this.video = video;
+        this.addEventListener("wheel", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (this.video) {
+            if (e.deltaX < -5 || e.deltaX > 5) {
+              this.video.currentTime -= e.deltaX * 0.1;
+            }
+          }
+        });
+        this.addEventListener("click", () => {
+          if (this.video?.played) {
+            this.video?.paused ? this.video?.play() : this.video.pause();
+          }
         });
         this.append(this.video);
         if (this.bar) {
           const SonicVibeBar = await (await import("./SonicVibeBar")).default;
           const bar = new SonicVibeBar();
-          this.append(bar);
+          this.append(play, pause, timer, bar);
         }
       })();
     } else {

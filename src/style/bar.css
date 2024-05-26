@@ -1,0 +1,61 @@
+sonic-vibe-bar {
+  --sonic-vibe-timeline-current: "00:00";
+  --sonic-vibe-timeline-duration: "00:00";
+  --sonic-vibe-timeline: "0%";
+  --sonic-vibe-timeline-buffered: "0%";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.3)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.5) var(--sonic-vibe-timeline),
+      rgba(255, 255, 255, 0) var(--sonic-vibe-timeline)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.2) var(--sonic-vibe-timeline-buffered),
+      rgba(255, 255, 255, 0) var(--sonic-vibe-timeline-buffered)
+    );
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5em;
+  transition-property: background-image, transform, opacity;
+  will-change: background-image, transform, opacity;
+  transition-duration: 150ms, 300ms, 200ms;
+  transition-timing-function: linear;
+  transform: translateY(101%);
+  opacity: 0;
+  border-radius: var(--sonic-vibe-corners);
+}
+
+sonic-vibe-bar.preview {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+sonic-vibe-bar:before,
+sonic-vibe-bar:after {
+  color: white;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-shadow: 0 0 0.15em rgba(0, 0, 0, 1);
+  opacity: 0.85;
+}
+
+sonic-vibe-bar::before {
+  content: var(--sonic-vibe-timeline-current);
+}
+
+sonic-vibe-bar:after {
+  content: var(--sonic-vibe-timeline-duration);
+}

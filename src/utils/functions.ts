@@ -17,17 +17,16 @@ export function elementDefaultAttribute<T extends HTMLElement, Y>(
 
 /**
  * Check media file extension.
- * @param {string} file The name of the attribute or property.
+ * @param {string} file The Video File URL.
  * @returns {boolean} The value of the attribute or property.
  */
 export function checkMediaFile(file: string) {
-  const extensions = ["mpd", "m3u8", "mp4", "webm", "ogg", "mp3", "wav"];
-  return Boolean(extensions.find((extension) => file.includes(extension)));
+  return /\.(mpd|m3u8|mp4|webm|ogg|mp3|wav)$/g.test(file);
 }
 
 /**
  * Add stylesheet.
- * @param {string} filename The name of the css file.
+ * @param {string} filename Name Of The CSS File.
  * @returns {void}
  */
 export function addStylesheet(filename: string) {
@@ -35,4 +34,46 @@ export function addStylesheet(filename: string) {
   link.rel = "stylesheet";
   link.href = `/src/style/${filename}.css`;
   document.head.append(link);
+}
+
+/**
+ * Format video duration
+ * @param {number} seconds Video Duration.
+ * @returns {string} Output should be "MM:SS" or "HH:MM:SS"
+ */
+export function formatVideoDuration(seconds: number) {
+  type numstr = number | string;
+  let hours: numstr = Math.floor(seconds / 3600);
+  let minutes: numstr = Math.floor((seconds % 3600) / 60);
+  let remainingSeconds: numstr = Math.floor(seconds % 60);
+
+  hours = hours < 10 ? `0${hours}` : hours;
+  minutes = minutes < 10 ? `0${minutes}` : minutes;
+  remainingSeconds =
+    remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
+
+  if (+hours > 0) {
+    return `${hours}:${minutes}:${remainingSeconds}`;
+  } else {
+    return `${minutes}:${remainingSeconds}`;
+  }
+}
+
+/**
+ * Media Total Buffered Duration
+ * @param media Media Element of Video or Audio
+ * @returns {number}
+ */
+export function calculateBufferedDuration(
+  media: HTMLVideoElement | HTMLAudioElement
+) {
+  const buffered = media?.buffered;
+  let bufferedDuration = 0;
+
+  for (let i = 0; i < buffered.length; i++) {
+    if (i === 0) bufferedDuration += buffered.end(i) - buffered.start(i);
+    else bufferedDuration += media.currentTime - buffered.start(i);
+  }
+
+  return bufferedDuration;
 }
