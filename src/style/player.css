@@ -34,8 +34,9 @@ sonic-vibe video::-webkit-media-controls-start-playback-button {
   transition-property: transform, opacity;
   transition-duration: 150ms;
   transition-timing-function: linear;
-  background-color: transparent;
+  background-color: rgba(255, 255, 255, 0.4);
   filter: drop-shadow(0 0 0.05em rgba(0, 0, 0, 0.5));
+  text-shadow: 0 0 2px rgba(0, 0, 0, 1);
 }
 
 .sonic-vibe-state:not(.sonic-vibe-timer) {
@@ -55,7 +56,7 @@ sonic-vibe video::-webkit-media-controls-start-playback-button {
   top: -0.4em;
   right: -0.4em;
   bottom: -0.4em;
-  border: dashed 0.2em rgba(255, 255, 255, 0.75);
+  border: dashed 0.15em rgba(255, 255, 255, 0.75);
   border-radius: 4em;
 }
 
@@ -115,10 +116,17 @@ sonic-vibe video::-webkit-media-controls-start-playback-button {
 
 .sonic-vibe-timer {
   --scale: 1;
-  padding: 0.5rem 1em;
+  padding: 0.75em 1em;
   text-align: center;
   font-weight: 700;
   justify-content: center;
+  font-size: 1.5em;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+}
+
+.sonic-vibe-timer:before {
+  border-width: 0;
 }
 
 .sonic-vibe-timer:after {

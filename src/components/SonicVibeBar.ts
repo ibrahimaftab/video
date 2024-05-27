@@ -63,11 +63,16 @@ export default class SonicVibeBar extends HTMLElement {
     player.addEventListener("wheel", (e) => {
       if (e.deltaX < -10 || e.deltaX > 10) {
         this.classList.add("preview");
-        if (media)
+        if (media) {
           this.style.setProperty(
             "--sonic-vibe-timeline",
             (media.currentTime / media.duration) * 100 + "%"
           );
+          this.style.setProperty(
+            "--sonic-vibe-timeline-current",
+            `\"${formatVideoDuration(media.currentTime)}\"`
+          );
+        }
       }
     });
     media?.addEventListener("progress", () => {
