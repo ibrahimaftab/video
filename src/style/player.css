@@ -76,7 +76,8 @@ sonic-vibe video::-webkit-media-controls-start-playback-button {
   --scale: 1;
 }
 
-.sonic-vibe-play:before {
+.sonic-vibe-play:before,
+.sonic-vibe-timer:before {
   border-style: solid;
   border-color: rgba(255, 255, 255, 0.75);
 }
@@ -114,7 +115,7 @@ sonic-vibe video::-webkit-media-controls-start-playback-button {
 
 .sonic-vibe-timer {
   --scale: 1;
-  padding: 1em;
+  padding: 0.5rem 1em;
   text-align: center;
   font-weight: 700;
   justify-content: center;
