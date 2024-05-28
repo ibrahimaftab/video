@@ -1,4 +1,10 @@
-import { addStylesheet, checkMediaFile } from "../utils/functions";
+import SonicVibeEvents from "../events";
+import {
+  addStylesheet,
+  checkVideoFile,
+  checkAudioFile,
+  triggerEvent,
+} from "../utils/functions";
 
 /**
  * Represents a custom element called SonicVibe.
@@ -19,15 +25,9 @@ export default class SonicVibe extends HTMLElement {
 
   /**
    * The video DOM HTML.
-   * @type {HTMLVideoElement | undefined}
+   * @type {HTMLVideoElement | HTMLAudioElement | undefined}
    */
-  video: HTMLVideoElement | undefined;
-
-  /**
-   * The audio DOM HTML.
-   * @type {HTMLAudioElement | undefined}
-   */
-  audio: HTMLAudioElement | undefined;
+  media?: HTMLVideoElement | HTMLAudioElement;
 
   /**
    * The aspect ratio of the video, e.g: "16/9", default is "16/9".
@@ -76,7 +76,7 @@ export default class SonicVibe extends HTMLElement {
    */
   constructor() {
     super();
-    this.video = undefined;
+    this.media = undefined;
   }
 
   /**
@@ -105,42 +105,101 @@ export default class SonicVibe extends HTMLElement {
     this.bar = this.getAttribute("bar") == "true" || this.bar;
     this.style.aspectRatio = this.aspectRatio;
     this.style.width = +this.width + "px";
-    if (this.src && checkMediaFile(this.src)) {
-      const src = this.src;
+    this.tabIndex = 0;
+    this.focus();
+
+    this.addEventListener(SonicVibeEvents.error, () => {
       (async () => {
-        const VideoPlayer = await (await import("./VideoPlayer")).default;
-        const [video, play, pause, timer] = VideoPlayer.createVideo(
-          {
-            src,
-            aspectRatio: this.aspectRatio,
-            autoplay: this.autoplay == "true",
-            muted: this.muted == "true",
-            playsInline: this.playsInline == "true",
-          },
-          this
-        );
-        this.video = video;
-        this.addEventListener("wheel", (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (this.video) {
-            if (e.deltaX < -10 || e.deltaX > 10) {
-              this.video.currentTime -= e.deltaX * 0.1;
-            }
-          }
-        });
-        this.addEventListener("click", (e) => {
-          if (this.video?.played && !this.mouseDragged) {
-            this.video?.paused ? this.video?.play() : this.video.pause();
-          }
-        });
-        this.append(this.video);
-        if (this.bar) {
-          const SonicVibeBar = await (await import("./SonicVibeBar")).default;
-          const bar = new SonicVibeBar();
-          this.append(play, pause, timer, bar);
-        }
+        const SonicVibeError = await (await import("./SonicVibeError")).default;
+        this.append(new SonicVibeError(this.error));
       })();
+    });
+
+    if (this.src) {
+      const src = this.src;
+      if (checkVideoFile(src)) {
+        (async () => {
+          const VideoPlayer = await (await import("./VideoPlayer")).default;
+          const [video, play, pause, timer] = VideoPlayer.createVideo(
+            {
+              src,
+              aspectRatio: this.aspectRatio,
+              autoplay: this.autoplay == "true",
+              muted: this.muted == "true",
+              playsInline: this.playsInline == "true",
+            },
+            this
+          );
+          this.media = video;
+          this.append(this.media);
+          if (this.bar) {
+            const SonicVibeVideoBar = await (
+              await import("./SonicVibeVideoBar")
+            ).default;
+            const bar = new SonicVibeVideoBar();
+            this.append(play, pause, timer, bar);
+          }
+        })();
+      } else {
+        triggerEvent(SonicVibeEvents.error, this);
+      }
+      this.addEventListener(SonicVibeEvents.ready, () => {
+        const media = this.media;
+        if (media?.played) {
+          this.addEventListener("wheel", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const { deltaX, deltaY } = e;
+            if (deltaX < -10 && media.currentTime + 1 < media.duration) {
+              triggerEvent(SonicVibeEvents.forward, this);
+            } else if (deltaX > 10 && media.currentTime - 1 > 0) {
+              triggerEvent(SonicVibeEvents.backward, this);
+            } else if (deltaY > 2) {
+              triggerEvent(SonicVibeEvents.amplify, this);
+            } else if (deltaY < -2) {
+              triggerEvent(SonicVibeEvents.deminish, this);
+            }
+          });
+          this.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (media?.played) {
+              if (e.key === " ") {
+                media.paused ? media.play() : media.pause();
+              } else if (
+                e.key === "ArrowRight" &&
+                media.currentTime + 10 < media.duration
+              ) {
+                triggerEvent(SonicVibeEvents.forward, this);
+              } else if (e.key === "ArrowLeft" && media.currentTime > 10) {
+                triggerEvent(SonicVibeEvents.backward, this);
+              } else if (e.key === "f") {
+                triggerEvent(SonicVibeEvents.fullscreen, this);
+              }
+            }
+          });
+
+          this.addEventListener(SonicVibeEvents.forward, () => {
+            media.currentTime += 1;
+          });
+          this.addEventListener(SonicVibeEvents.backward, () => {
+            media.currentTime -= 1;
+          });
+          this.addEventListener(SonicVibeEvents.amplify, () => {
+            media.muted = false;
+            media.volume = Math.min(media.volume + 0.1, 1);
+          });
+          this.addEventListener(SonicVibeEvents.deminish, () => {
+            media.volume = Math.max(media.volume - 0.1, 0);
+          });
+          this.addEventListener(SonicVibeEvents.fullscreen, () => {
+            if (document.fullscreenElement) document.exitFullscreen();
+            else this.requestFullscreen();
+          });
+          this.addEventListener(SonicVibeEvents.play, () => media.play());
+          this.addEventListener(SonicVibeEvents.pause, () => media.pause());
+        }
+      });
     } else {
       (async () => {
         const SonicVibeError = await (await import("./SonicVibeError")).default;

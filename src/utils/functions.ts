@@ -5,6 +5,9 @@
  * @returns {string} The value of the attribute or property.
  */
 
+import type SonicVibe from "../components/SonicVibe";
+import SonicVibeEvents from "../events";
+
 export function elementDefaultAttribute<T extends HTMLElement, Y>(
   property: string,
   element: T
@@ -16,12 +19,21 @@ export function elementDefaultAttribute<T extends HTMLElement, Y>(
 }
 
 /**
- * Check media file extension.
+ * Check video file extension.
  * @param {string} file The Video File URL.
  * @returns {boolean} The value of the attribute or property.
  */
-export function checkMediaFile(file: string) {
-  return /\.(mpd|m3u8|mp4|webm|ogg|mp3|wav)$/g.test(file);
+export function checkVideoFile(file: string) {
+  return /\.(mpd|m3u8|mp4|webm)$/g.test(file);
+}
+
+/**
+ * Check audio file extension.
+ * @param {string} file The Audio File URL.
+ * @returns {boolean} The value of the attribute or property.
+ */
+export function checkAudioFile(file: string) {
+  return /\.(ogg|mp3|wav)$/g.test(file);
 }
 
 /**
@@ -69,4 +81,13 @@ export function calculateBufferedDuration(
 ) {
   const buffered = media?.buffered;
   return buffered.end(buffered.length - 1);
+}
+
+/**
+ * Dispatch Sonic Vibe Event
+ * @param {SonicVibeEvents} event
+ * @param {SonicVibe} player
+ */
+export function triggerEvent(event: SonicVibeEvents, player: SonicVibe) {
+  player.dispatchEvent(new Event(event));
 }

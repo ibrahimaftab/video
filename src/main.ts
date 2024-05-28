@@ -1,5 +1,5 @@
 import SonicVibe from "./components/SonicVibe";
-import SonicVibeBar from "./components/SonicVibeBar";
+import SonicVibeBar from "./components/SonicVibeVideoBar";
 import SonicVibeError from "./components/SonicVibeError";
 
 customElements.define("sonic-vibe", SonicVibe);

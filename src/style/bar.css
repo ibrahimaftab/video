@@ -3,38 +3,51 @@ sonic-vibe-bar {
   --sonic-vibe-timeline-duration: "00:00";
   --sonic-vibe-timeline: "0%";
   --sonic-vibe-timeline-buffered: "0%";
+  --sonic-vibe-timeline-alpha: 0.8;
+  --sonic-vibe-theme: 255, 255, 255;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
+  background-color: rgba(0, 0, 0, 0.4);
   background-image: linear-gradient(
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 0.3)
+      90deg,
+      rgba(
+        var(--sonic-vibe-theme),
+        calc(var(--sonic-vibe-timeline-alpha) - 0.2)
+      ),
+      rgba(var(--sonic-vibe-theme), var(--sonic-vibe-timeline-alpha))
+        var(--sonic-vibe-timeline),
+      rgba(var(--sonic-vibe-theme), 0) var(--sonic-vibe-timeline)
     ),
     linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.5) var(--sonic-vibe-timeline),
-      rgba(255, 255, 255, 0) var(--sonic-vibe-timeline)
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 0.2) var(--sonic-vibe-timeline-buffered),
-      rgba(255, 255, 255, 0) var(--sonic-vibe-timeline-buffered)
+      rgba(
+        var(--sonic-vibe-theme),
+        calc(var(--sonic-vibe-timeline-alpha) - 0.4)
+      ),
+      rgba(
+          var(--sonic-vibe-theme),
+          calc(var(--sonic-vibe-timeline-alpha) - 0.2)
+        )
+        var(--sonic-vibe-timeline-buffered),
+      rgba(var(--sonic-vibe-theme), 0) var(--sonic-vibe-timeline-buffered)
     );
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5em;
+  height: 0.75em;
   transition-property: background-image, transform, opacity;
   will-change: background-image, transform, opacity;
   transition-duration: 150ms, 300ms, 200ms;
   transition-timing-function: linear;
   transform: translateY(101%);
   opacity: 0;
-  border-radius: var(--sonic-vibe-corners);
+}
+
+sonic-vibe-bar:hover {
+  --sonic-vibe-timeline-alpha: 0.65;
 }
 
 sonic-vibe-bar.preview {
@@ -45,17 +58,21 @@ sonic-vibe-bar.preview {
 sonic-vibe-bar:before,
 sonic-vibe-bar:after {
   color: white;
-  font-size: 0.8em;
+  font-size: 0.7em;
   font-weight: 700;
   letter-spacing: 0.025em;
   text-shadow: 0 0 0.15em rgba(0, 0, 0, 1);
   opacity: 0.85;
+  margin-block-start: -3em;
 }
 
 sonic-vibe-bar::before {
   content: var(--sonic-vibe-timeline-current);
+  margin-inline-start: 0.75em;
+  pointer-events: none;
 }
 
 sonic-vibe-bar:after {
   content: var(--sonic-vibe-timeline-duration);
+  margin-inline-end: 0.75em;
 }
