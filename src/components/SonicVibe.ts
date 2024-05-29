@@ -4,6 +4,7 @@ import {
   checkVideoFile,
   checkAudioFile,
   triggerEvent,
+  checkMediaFile,
 } from "../utils/functions";
 
 /**
@@ -114,97 +115,102 @@ export default class SonicVibe extends HTMLElement {
         this.append(new SonicVibeError(this.error));
       })();
     });
+    const src = this.src;
 
-    if (this.src) {
-      const src = this.src;
-      if (checkVideoFile(src)) {
-        (async () => {
-          const VideoPlayer = await (await import("./VideoPlayer")).default;
-          const [video, play, pause, timer] = VideoPlayer.createVideo(
-            {
-              src,
-              aspectRatio: this.aspectRatio,
-              autoplay: this.autoplay == "true",
-              muted: this.muted == "true",
-              playsInline: this.playsInline == "true",
-            },
-            this
-          );
-          this.media = video;
-          this.append(this.media);
-          if (this.bar) {
-            const SonicVibeVideoBar = await (
-              await import("./SonicVibeVideoBar")
-            ).default;
-            const bar = new SonicVibeVideoBar();
-            this.append(play, pause, timer, bar);
-          }
-        })();
-      } else {
-        triggerEvent(SonicVibeEvents.error, this);
+    if (!src || !checkMediaFile(src)) {
+      return triggerEvent(SonicVibeEvents.error, this);
+    }
+
+    if (checkVideoFile(src)) {
+      (async () => {
+        const VideoPlayer = await (await import("./VideoPlayer")).default;
+        const [video, play, pause, timer] = VideoPlayer.createVideo(
+          {
+            src,
+            aspectRatio: this.aspectRatio,
+            autoplay: this.autoplay == "true",
+            muted: this.muted == "true",
+            playsInline: this.playsInline == "true",
+          },
+          this
+        );
+        this.media = video;
+        this.append(this.media);
+        if (this.bar) {
+          const SonicVibeVideoBar = await (
+            await import("./SonicVibeVideoBar")
+          ).default;
+          const bar = new SonicVibeVideoBar();
+          this.append(play, pause, timer, bar);
+        }
+      })();
+    } else {
+    }
+    this.addEventListener(SonicVibeEvents.ready, () => {
+      const media = this.media;
+      if (!media?.played) {
+        return;
       }
-      this.addEventListener(SonicVibeEvents.ready, () => {
-        const media = this.media;
-        if (media?.played) {
-          this.addEventListener("wheel", (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            const { deltaX, deltaY } = e;
-            if (deltaX < -10 && media.currentTime + 1 < media.duration) {
-              triggerEvent(SonicVibeEvents.forward, this);
-            } else if (deltaX > 10 && media.currentTime - 1 > 0) {
-              triggerEvent(SonicVibeEvents.backward, this);
-            } else if (deltaY > 2) {
-              triggerEvent(SonicVibeEvents.amplify, this);
-            } else if (deltaY < -2) {
-              triggerEvent(SonicVibeEvents.deminish, this);
-            }
-          });
-          this.addEventListener("keydown", (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (media?.played) {
-              if (e.key === " ") {
-                media.paused ? media.play() : media.pause();
-              } else if (
-                e.key === "ArrowRight" &&
-                media.currentTime + 10 < media.duration
-              ) {
-                triggerEvent(SonicVibeEvents.forward, this);
-              } else if (e.key === "ArrowLeft" && media.currentTime > 10) {
-                triggerEvent(SonicVibeEvents.backward, this);
-              } else if (e.key === "f") {
-                triggerEvent(SonicVibeEvents.fullscreen, this);
-              }
-            }
-          });
-
-          this.addEventListener(SonicVibeEvents.forward, () => {
-            media.currentTime += 1;
-          });
-          this.addEventListener(SonicVibeEvents.backward, () => {
-            media.currentTime -= 1;
-          });
-          this.addEventListener(SonicVibeEvents.amplify, () => {
-            media.muted = false;
-            media.volume = Math.min(media.volume + 0.1, 1);
-          });
-          this.addEventListener(SonicVibeEvents.deminish, () => {
-            media.volume = Math.max(media.volume - 0.1, 0);
-          });
-          this.addEventListener(SonicVibeEvents.fullscreen, () => {
-            if (document.fullscreenElement) document.exitFullscreen();
-            else this.requestFullscreen();
-          });
-          this.addEventListener(SonicVibeEvents.play, () => media.play());
-          this.addEventListener(SonicVibeEvents.pause, () => media.pause());
+      this.addEventListener("wheel", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const { deltaX, deltaY } = e;
+        if (deltaX < -10 && media.currentTime + 1 < media.duration) {
+          triggerEvent(SonicVibeEvents.forward, this);
+        } else if (deltaX > 10 && media.currentTime - 1 > 0) {
+          triggerEvent(SonicVibeEvents.backward, this);
+        } else if (deltaY > 2) {
+          triggerEvent(SonicVibeEvents.amplify, this);
+        } else if (deltaY < -2) {
+          triggerEvent(SonicVibeEvents.deminish, this);
         }
       });
-    } else {
-      (async () => {
-        const SonicVibeError = await (await import("./SonicVibeError")).default;
-        this.append(new SonicVibeError(this.error));
-      })();
-    }
+      this.addEventListener("keydown", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (e.key === " ") {
+          media.paused ? media.play() : media.pause();
+        } else if (
+          e.key === "ArrowRight" &&
+          media.currentTime + 10 < media.duration
+        ) {
+          triggerEvent(SonicVibeEvents.forward, this);
+        } else if (e.key === "ArrowLeft" && media.currentTime > 10) {
+          triggerEvent(SonicVibeEvents.backward, this);
+        } else if (e.key === "f") {
+          triggerEvent(SonicVibeEvents.fullscreen, this);
+        } else if (e.key === "m") {
+          const toggleMute = media.muted
+            ? SonicVibeEvents.unmute
+            : SonicVibeEvents.mute;
+          triggerEvent(toggleMute, this);
+        }
+      });
+
+      this.addEventListener(SonicVibeEvents.forward, () => {
+        media.currentTime += 1;
+      });
+      this.addEventListener(SonicVibeEvents.backward, () => {
+        media.currentTime -= 1;
+      });
+      this.addEventListener(SonicVibeEvents.amplify, () => {
+        if (media.muted) triggerEvent(SonicVibeEvents.unmute, this);
+        media.volume = Math.min(media.volume + 0.1, 1);
+      });
+      this.addEventListener(SonicVibeEvents.deminish, () => {
+        media.volume = Math.max(media.volume - 0.1, 0);
+      });
+      this.addEventListener(SonicVibeEvents.fullscreen, () => {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else this.requestFullscreen();
+      });
+      this.addEventListener(SonicVibeEvents.play, () => media.play());
+      this.addEventListener(SonicVibeEvents.pause, () => media.pause());
+      this.addEventListener(SonicVibeEvents.mute, () => (media.muted = true));
+      this.addEventListener(
+        SonicVibeEvents.unmute,
+        () => (media.muted = false)
+      );
+    });
   }
 }

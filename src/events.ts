@@ -9,6 +9,8 @@ enum SonicVibeEvents {
   fullscreen = "fullscreen",
   progress = "progress",
   error = "error",
+  mute = "mute",
+  unmute = "unmute",
 }
 
 export default SonicVibeEvents;

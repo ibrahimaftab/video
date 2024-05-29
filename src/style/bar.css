@@ -24,7 +24,7 @@ sonic-vibe-bar {
       90deg,
       rgba(
         var(--sonic-vibe-theme),
-        calc(var(--sonic-vibe-timeline-alpha) - 0.4)
+        calc(var(--sonic-vibe-timeline-alpha) - 0.3)
       ),
       rgba(
           var(--sonic-vibe-theme),

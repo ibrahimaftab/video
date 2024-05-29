@@ -8,6 +8,7 @@ sonic-vibe {
   --sonic-vibe-cursor-y: 0px;
   --sonic-vibe-cursor-scale: 0.5;
   --sonic-vibe-cursor-text: "";
+  --sonic-vibe-cursor-offset: -0.32em;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -34,8 +35,8 @@ sonic-vibe::before {
   min-height: 1em;
   min-width: 1em;
   transform: translate(
-      calc(var(--sonic-vibe-cursor-x) - 50%),
-      calc(var(--sonic-vibe-cursor-y) - 50%)
+      calc(var(--sonic-vibe-cursor-x) + var(--sonic-vibe-cursor-offset)),
+      calc(var(--sonic-vibe-cursor-y) + var(--sonic-vibe-cursor-offset))
     )
     scale(var(--sonic-vibe-cursor-scale));
   transform-origin: center;
@@ -171,16 +172,16 @@ sonic-vibe video::-webkit-media-controls-start-playback-button {
   50% {
     background-color: rgba(0, 0, 0, 0.75);
     transform: translate(
-        calc(var(--sonic-vibe-cursor-x) - 50%),
-        calc(var(--sonic-vibe-cursor-y) - 50%)
+        calc(var(--sonic-vibe-cursor-x) + var(--sonic-vibe-cursor-offset)),
+        calc(var(--sonic-vibe-cursor-y) + var(--sonic-vibe-cursor-offset))
       )
       scale(0.75);
   }
   100% {
     background-color: rgba(0, 0, 0, var(--sonic-vibe-cursor-alpha));
     transform: translate(
-        calc(var(--sonic-vibe-cursor-x) - 50%),
-        calc(var(--sonic-vibe-cursor-y) - 50%)
+        calc(var(--sonic-vibe-cursor-x) + var(--sonic-vibe-cursor-offset)),
+        calc(var(--sonic-vibe-cursor-y) + var(--sonic-vibe-cursor-offset))
       )
       scale(var(--sonic-vibe-cursor-scale));
   }

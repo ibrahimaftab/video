@@ -19,6 +19,15 @@ export function elementDefaultAttribute<T extends HTMLElement, Y>(
 }
 
 /**
+ * Check media file extension.
+ * @param {string} file The Media File URL.
+ * @returns {boolean} The value of the attribute or property.
+ */
+export function checkMediaFile(file: string) {
+  return checkVideoFile(file) || checkAudioFile(file);
+}
+
+/**
  * Check video file extension.
  * @param {string} file The Video File URL.
  * @returns {boolean} The value of the attribute or property.
