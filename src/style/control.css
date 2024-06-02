@@ -1,15 +1,15 @@
-sonic-vibe-bar {
+sonic-vibe-video-bar {
   --sonic-vibe-timeline-current: "00:00";
   --sonic-vibe-timeline-duration: "00:00";
   --sonic-vibe-timeline: "0%";
   --sonic-vibe-timeline-buffered: "0%";
-  --sonic-vibe-timeline-alpha: 0.8;
+  --sonic-vibe-timeline-alpha: 0.7;
   --sonic-vibe-theme: 255, 255, 255;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.2);
   background-image: linear-gradient(
       90deg,
       rgba(
@@ -24,11 +24,11 @@ sonic-vibe-bar {
       90deg,
       rgba(
         var(--sonic-vibe-theme),
-        calc(var(--sonic-vibe-timeline-alpha) - 0.3)
+        calc(var(--sonic-vibe-timeline-alpha) - 0.4)
       ),
       rgba(
           var(--sonic-vibe-theme),
-          calc(var(--sonic-vibe-timeline-alpha) - 0.2)
+          calc(var(--sonic-vibe-timeline-alpha) - 0.3)
         )
         var(--sonic-vibe-timeline-buffered),
       rgba(var(--sonic-vibe-theme), 0) var(--sonic-vibe-timeline-buffered)
@@ -46,17 +46,17 @@ sonic-vibe-bar {
   opacity: 0;
 }
 
-sonic-vibe-bar:hover {
+sonic-vibe-video-bar:hover {
   --sonic-vibe-timeline-alpha: 0.65;
 }
 
-sonic-vibe-bar.preview {
+sonic-vibe-video-bar.preview {
   transform: translateY(0);
   opacity: 1;
 }
 
-sonic-vibe-bar:before,
-sonic-vibe-bar:after {
+sonic-vibe-video-bar:before,
+sonic-vibe-video-bar:after {
   color: white;
   font-size: 0.7em;
   font-weight: 700;
@@ -66,13 +66,13 @@ sonic-vibe-bar:after {
   margin-block-start: -3em;
 }
 
-sonic-vibe-bar::before {
+sonic-vibe-video-bar::before {
   content: var(--sonic-vibe-timeline-current);
   margin-inline-start: 0.75em;
   pointer-events: none;
 }
 
-sonic-vibe-bar:after {
+sonic-vibe-video-bar:after {
   content: var(--sonic-vibe-timeline-duration);
   margin-inline-end: 0.75em;
 }

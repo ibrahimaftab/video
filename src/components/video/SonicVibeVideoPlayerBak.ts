@@ -1,85 +1,103 @@
-import SonicVibeEvents from "../events";
+import SonicVibeEvents from "../../events";
+import type IVideoPlayer from "../../models/video-player";
+import { VideoOptions, VideoHtml } from "../../models/video-player";
 import {
   addStylesheet,
   formatVideoDuration,
   triggerEvent,
-} from "../utils/functions";
-import type SonicVibe from "./SonicVibe";
+} from "../../utils/functions";
+import type SonicVibe from "../SonicVibe";
 
 export default class VideoPlayer {
-  static createVideo(
-    options: VideoOptions,
-    player: SonicVibe
-  ): [HTMLVideoElement, HTMLSpanElement, HTMLSpanElement, HTMLSpanElement] {
+  video = document.createElement("video");
+
+  constructor(options: VideoOptions) {
+    this.video.style.aspectRatio = options.aspectRatio;
+    this.video.style.width = "100%";
+    this.video.src = options.src;
+    this.video.autoplay = options.autoplay;
+    this.video.playsInline = options.playsInline;
+    this.video.muted = options.muted;
+    this.video.controls = false;
+  }
+  createVideo(player: SonicVibe): VideoHtml {
     addStylesheet("player");
-    const video = document.createElement("video");
-    video.style.aspectRatio = options.aspectRatio;
-    video.style.width = "100%";
-    video.src = options.src;
-    video.autoplay = options.autoplay;
-    video.playsInline = options.playsInline;
-    video.muted = options.muted;
-    video.controls = false;
-
-    const timerOutDuration = 600;
-
-    const playButton = document.createElement("span");
-    playButton.classList.add("sonic-vibe-play", "sonic-vibe-state");
 
     const pauseButton = document.createElement("span");
-    pauseButton.classList.add("sonic-vibe-pause", "sonic-vibe-state");
 
     const videoTimer = document.createElement("span");
     videoTimer.classList.add("sonic-vibe-timer", "sonic-vibe-state");
     videoTimer.textContent = "0:00";
 
-    video.addEventListener("loadeddata", () =>
+    const waveform = document.createElement("svg");
+
+    // Function to render waveform using SVG
+    function renderWaveform(audioData: number[]) {
+      // Clear existing waveform
+      waveform.innerHTML = "";
+
+      // Render waveform
+      audioData.forEach((amplitude, index) => {
+        const x = index * 2;
+        const y = 50 - amplitude * 50;
+        const rect = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "rect"
+        );
+        rect.setAttribute("x", `${x}`);
+        rect.setAttribute("y", `${y}`);
+        rect.setAttribute("width", "2");
+        rect.setAttribute("height", `${amplitude * 100}`);
+        rect.setAttribute("fill", "blue");
+        waveform.appendChild(rect);
+      });
+    }
+
+    // Function to extract audio data from video
+    function extractAudioData(video: HTMLVideoElement) {
+      const audioCtx = new AudioContext();
+      const source = audioCtx.createMediaElementSource(video);
+      const analyser = audioCtx.createAnalyser();
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      return () => {
+        analyser.getByteTimeDomainData(dataArray);
+        return Array.from(dataArray).map((value) => value / 128 - 1);
+      };
+    }
+
+    // Render waveform when video is loaded
+    this.video.addEventListener("canplay", () => {
+      const getAudioData = extractAudioData(video);
+      renderWaveform(getAudioData());
+    });
+
+    // Update waveform on video timeupdate
+    this.video.addEventListener("timeupdate", () => {
+      const getAudioData = extractAudioData(video);
+      renderWaveform(getAudioData());
+    });
+
+    this.video.addEventListener("loadeddata", () =>
       triggerEvent(SonicVibeEvents.ready, player)
     );
 
-    video.addEventListener("error", (e) => {
+    this.video.addEventListener("error", (e) => {
       const message = (e.target as HTMLVideoElement).error?.message;
       if (message?.length) player.error = message;
       triggerEvent(SonicVibeEvents.error, player);
     });
 
     player.addEventListener(SonicVibeEvents.ready, () => {
-      let playTimeOut: number | null = null;
-      video.addEventListener("play", () => {
-        if (video.played && !videoTimer.classList.contains("active")) {
-          pauseButton.classList.remove("active");
-          playButton.classList.add("active");
-          if (playTimeOut) clearTimeout(playTimeOut);
-          playTimeOut = setTimeout(
-            () => playButton.classList.remove("active"),
-            timerOutDuration
-          );
-        }
-      });
-
-      let pauseTimeout: null | number = null;
-      video.addEventListener("pause", () => {
-        if (video.played && !videoTimer.classList.contains("active")) {
-          playButton.classList.remove("active");
-          pauseButton.classList.add("active");
-          if (pauseTimeout) clearInterval(pauseTimeout);
-          pauseTimeout = setTimeout(
-            () => pauseButton.classList.remove("active"),
-            timerOutDuration
-          );
-        }
-      });
-
-      video.addEventListener(
-        "timeupdate",
-        () => (videoTimer.textContent = formatVideoDuration(video.currentTime))
-      );
-
       let videoTimerTimeout: null | number = null;
       const handleOnScroll = () => {
         videoTimer.classList.add("active");
-        videoTimer.textContent = formatVideoDuration(video.currentTime);
-        playButton.classList.remove("active");
+        videoTimer.textContent = formatVideoDuration(this.video.currentTime);
+        this.playButton.classList.remove("active");
         pauseButton.classList.remove("active");
         if (videoTimerTimeout) clearTimeout(videoTimerTimeout);
         player.classList.add("trigger");
@@ -89,8 +107,8 @@ export default class VideoPlayer {
         }, 5e2);
         videoTimerTimeout = setTimeout(() => {
           videoTimer.classList.remove("active");
-          if (video.paused) playButton.classList.add("active");
-        }, timerOutDuration);
+          if (this.video.paused) this.playButton.classList.add("active");
+        }, this.#timerOutDuration);
       };
       const handleOnForward = () => {
         player.style.setProperty("--sonic-vibe-cursor-text", `"Forward"`);
@@ -108,7 +126,8 @@ export default class VideoPlayer {
       player.addEventListener("mouseup", (e) => {
         const calc = e.clientX - mouseDragged;
 
-        if (calc != 0 && (calc > 10 || calc < -10)) video.currentTime += calc;
+        if (calc != 0 && (calc > 10 || calc < -10))
+          this.video.currentTime += calc;
         else player.mouseDragged = false;
 
         setTimeout(() => {
@@ -186,6 +205,6 @@ export default class VideoPlayer {
         }
       });
     });
-    return [video, playButton, pauseButton, videoTimer];
+    return [video, waveform, playButton, pauseButton, videoTimer];
   }
 }

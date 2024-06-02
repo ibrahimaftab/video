@@ -19,3 +19,10 @@ sonic-vibe {
   color: white;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+sonic-vibe-video {
+  min-width: 100%;
+  display: block;
+  position: relative;
+  pointer-events: none;
+}

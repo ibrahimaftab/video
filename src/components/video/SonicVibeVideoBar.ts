@@ -1,11 +1,11 @@
-import SonicVibeEvents from "../events";
+import SonicVibeEvents from "../../events";
 import {
   addStylesheet,
   calculateBufferedDuration,
   formatVideoDuration,
   triggerEvent,
-} from "../utils/functions";
-import SonicVibe from "./SonicVibe";
+} from "../../utils/functions";
+import SonicVibe from "../SonicVibe";
 
 export default class SonicVibeBar extends HTMLElement {
   timeline = 0;
@@ -15,12 +15,14 @@ export default class SonicVibeBar extends HTMLElement {
   }
 
   connectedCallback() {
-    addStylesheet("bar");
-    const player = this.parentElement as SonicVibe;
+    addStylesheet("control");
+    const player = this.parentElement?.parentElement as SonicVibe;
     const media = player.media;
     this.style.setProperty("--sonic-vibe-timeline", "0px");
 
-    media?.addEventListener("timeupdate", async () => {
+    if (!media) return;
+
+    media.addEventListener("timeupdate", async () => {
       // alert(video.currentTime / video.duration);
       this.style.setProperty(
         "--sonic-vibe-timeline",
@@ -59,7 +61,7 @@ export default class SonicVibeBar extends HTMLElement {
           return;
         }
         media.currentTime =
-          (e.clientX / this.getBoundingClientRect().width) * media?.duration;
+          (e.clientX / this.getBoundingClientRect().width) * media.duration;
         this.style.setProperty(
           "--sonic-vibe-timeline-buffered",
           (media.currentTime / media.duration) * 100 + "%"
@@ -77,10 +79,10 @@ export default class SonicVibeBar extends HTMLElement {
       previewTimeout = setTimeout(() => this.classList.remove("preview"), 3e3);
     });
     const playerScrollHandler = () => {
-      if (media?.played) {
+      if (media.played) {
         this.style.setProperty(
           "--sonic-vibe-timeline",
-          (media?.currentTime / media?.duration) * 100 + "%"
+          (media.currentTime / media.duration) * 100 + "%"
         );
         this.style.setProperty(
           "--sonic-vibe-timeline-current",
@@ -90,7 +92,7 @@ export default class SonicVibeBar extends HTMLElement {
     };
     player.addEventListener(SonicVibeEvents.forward, playerScrollHandler);
     player.addEventListener(SonicVibeEvents.backward, playerScrollHandler);
-    media?.addEventListener("progress", () => {
+    media.addEventListener("progress", () => {
       this.style.setProperty(
         "--sonic-vibe-timeline-buffered",
         (calculateBufferedDuration(media) / media.duration) * 100 + "%"

@@ -1,21 +1,20 @@
+import type SonicVibe from "../components/SonicVibe";
+import SonicVibeEvents from "../events";
+import { MediaType } from "../models/default-options";
+
 /**
  * Retrieves the default attribute value of an HTML element based on a property name.
  * @param {string} property The name of the attribute or property.
  * @param {T} element The HTML element from which to retrieve the attribute value.
  * @returns {string} The value of the attribute or property.
  */
-
-import type SonicVibe from "../components/SonicVibe";
-import SonicVibeEvents from "../events";
-
 export function elementDefaultAttribute<T extends HTMLElement, Y>(
   property: string,
   element: T
 ): Y {
-  return (
-    element.getAttribute(property) ??
-    Object.getOwnPropertyDescriptor(element, property)?.value
-  );
+  return element.hasAttribute(property)
+    ? element.getAttribute(property)
+    : Object.getOwnPropertyDescriptor(element, property)?.value;
 }
 
 /**
@@ -33,7 +32,7 @@ export function checkMediaFile(file: string) {
  * @returns {boolean} The value of the attribute or property.
  */
 export function checkVideoFile(file: string) {
-  return /\.(mpd|m3u8|mp4|webm)$/g.test(file);
+  return /\.(mpd|m3u8|mp4|webm)$/g.test(file) && MediaType.video;
 }
 
 /**
@@ -42,7 +41,7 @@ export function checkVideoFile(file: string) {
  * @returns {boolean} The value of the attribute or property.
  */
 export function checkAudioFile(file: string) {
-  return /\.(ogg|mp3|wav)$/g.test(file);
+  return /\.(ogg|mp3|wav)$/g.test(file) && MediaType.audio;
 }
 
 /**
@@ -97,6 +96,12 @@ export function calculateBufferedDuration(
  * @param {SonicVibeEvents} event
  * @param {SonicVibe} player
  */
-export function triggerEvent(event: SonicVibeEvents, player: SonicVibe) {
-  player.dispatchEvent(new Event(event));
+export function triggerEvent<T>(
+  event: SonicVibeEvents,
+  player: SonicVibe,
+  payload?: T
+) {
+  player.dispatchEvent(
+    new CustomEvent(event, { detail: payload, bubbles: true, cancelable: true })
+  );
 }
