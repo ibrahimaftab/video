@@ -76,5 +76,15 @@ export default class SonicVibeCursor {
       this.player.style.setProperty("--sonic-vibe-cursor-text", `"Pause"`);
       handleOnClick();
     });
+
+    let previewTimeout: null | number = null;
+    this.player.addEventListener("mousemove", () => {
+      this.player.classList.add("visible");
+      if (previewTimeout) clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(
+        () => this.player.classList.remove("visible"),
+        3e3
+      );
+    });
   }
 }

@@ -49,6 +49,10 @@ sonic-vibe.sonic-vibe-video-cursor::before {
   justify-content: center;
   z-index: 1;
   pointer-events: none;
+  opacity: 0;
+}
+sonic-vibe.sonic-vibe-video-cursor.visible::before {
+  opacity: 1;
 }
 sonic-vibe.sonic-vibe-video-cursor.trigger:before {
   --sonic-vibe-cursor-scale: 1;
