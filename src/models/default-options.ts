@@ -5,7 +5,7 @@ export enum MediaType {
   audio = "audio",
 }
 
-export abstract class SonicVibeChildComponent {
-  protected player!: SonicVibe;
-  create!: () => void;
+export enum VideoType {
+  vod,
+  live,
 }

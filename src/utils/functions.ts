@@ -105,3 +105,11 @@ export function triggerEvent<T>(
     new CustomEvent(event, { detail: payload, bubbles: true, cancelable: true })
   );
 }
+
+/**
+ * Check boolean as string
+ * @param {string} value
+ */
+export function checkBooleanString(value: string) {
+  return value === "true";
+}

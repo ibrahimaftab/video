@@ -24,5 +24,9 @@ sonic-vibe-video {
   min-width: 100%;
   display: block;
   position: relative;
+}
+
+sonic-vibe video,
+sonic-vibe audio {
   pointer-events: none;
 }

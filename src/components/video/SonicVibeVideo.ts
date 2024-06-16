@@ -1,53 +1,80 @@
 import SonicVibeEvents from "../../events";
 import {
   addStylesheet,
+  checkBooleanString,
   elementDefaultAttribute,
   triggerEvent,
 } from "../../utils/functions";
-import type SonicVibe from "../SonicVibe";
+import SonicVibe from "../SonicVibe";
 
 export default class SonicVibeVideo extends HTMLElement {
-  private _player = this.parentElement as SonicVibe;
-  private _video = document.createElement("video");
+  player: SonicVibe;
 
   constructor() {
     super();
-    addStylesheet("player");
-    this._video.style.aspectRatio = elementDefaultAttribute(
-      "aspectRatio",
-      this._player
-    );
-    this._video.style.width = elementDefaultAttribute("width", this._player);
-    this._video.src = this._player.getAttribute("src") ?? "";
-    this._video.autoplay = elementDefaultAttribute("autoplay", this._player);
-    this._video.playsInline = elementDefaultAttribute(
-      "playsInline",
-      this._player
-    );
-    this._video.muted = elementDefaultAttribute("muted", this._player);
-    this._video.controls = false;
-    this._player.removeAttribute("src");
-    this._player.removeAttribute("muted");
-    this._player.removeAttribute("width");
-    this.append(this._video);
-
-    this._video.addEventListener("loadedmetadata", () => {
-      triggerEvent(SonicVibeEvents.ready, this._player, this._video);
-    });
-    this._video.addEventListener("error", (e) => {
-      const error = (e.target as HTMLVideoElement).error;
-      triggerEvent(SonicVibeEvents.error, this._player, error);
-    });
-    this._player.addEventListener(SonicVibeEvents.ready, () =>
-      this.createControl()
-    );
+    this.player = this.parentElement as SonicVibe;
+    this.setupPlayer();
+    this.setupEventListeners();
   }
 
-  createControl() {
-    if (elementDefaultAttribute("control", this._player)) {
+  private setupPlayer() {
+    addStylesheet("player");
+    const media = document.createElement("video");
+    this.configureMedia(media);
+    this.append(media);
+  }
+
+  private configureMedia(media: HTMLVideoElement) {
+    media.src = this.player.getAttribute("src") ?? "";
+    media.autoplay = checkBooleanString(this.player.autoplay);
+    media.playsInline = checkBooleanString(this.player.playsInline);
+    media.muted = checkBooleanString(this.player.muted);
+    media.controls = false;
+    media.style.width = this.player.width;
+    media.style.aspectRatio = this.player.aspectRatio;
+    this.player.media = media;
+  }
+
+  private setupEventListeners() {
+    if (!this.player.media) return;
+    this.player.media.addEventListener("loadedmetadata", () => {
+      triggerEvent(SonicVibeEvents.ready, this.player, {});
+    });
+
+    this.player.media.addEventListener("error", (e) => {
+      const error = (e.target as HTMLVideoElement).error;
+      triggerEvent(SonicVibeEvents.error, this.player, error);
+    });
+
+    this.player.addEventListener(SonicVibeEvents.ready, () =>
+      this.createControl()
+    );
+
+    this.player.addEventListener("click", () => {
+      if (this.player.media?.played && !this.player.mouseDragged) {
+        const event = this.player.media?.paused
+          ? SonicVibeEvents.play
+          : SonicVibeEvents.pause;
+        triggerEvent(event, this.player);
+      }
+    });
+  }
+
+  private createControl() {
+    if (elementDefaultAttribute("control", this.player)) {
       this.insertAdjacentHTML(
         "beforeend",
         "<sonic-vibe-video-bar></sonic-vibe-video-bar>"
+      );
+    }
+    if (elementDefaultAttribute("overflowButtons", this.player)) {
+      import("./SonicVibeVideoOverflowIcons").then(
+        (module) => new module.default(this.player)
+      );
+    }
+    if (elementDefaultAttribute("cursor", this.player)) {
+      import("./SonicVibeVideoCursor").then(
+        (module) => new module.default(this.player)
       );
     }
   }

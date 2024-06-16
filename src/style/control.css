@@ -1,8 +1,8 @@
 sonic-vibe-video-bar {
   --sonic-vibe-timeline-current: "00:00";
   --sonic-vibe-timeline-duration: "00:00";
-  --sonic-vibe-timeline: "0%";
-  --sonic-vibe-timeline-buffered: "0%";
+  --sonic-vibe-timeline: "1%";
+  --sonic-vibe-timeline-buffered: var(--sonic-vibe-timeline);
   --sonic-vibe-timeline-alpha: 0.7;
   --sonic-vibe-theme: 255, 255, 255;
   position: absolute;
@@ -37,17 +37,22 @@ sonic-vibe-video-bar {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  height: 0.75em;
+  height: 0.5em;
   transition-property: background-image, transform, opacity;
   will-change: background-image, transform, opacity;
   transition-duration: 150ms, 300ms, 200ms;
   transition-timing-function: linear;
   transform: translateY(101%);
   opacity: 0;
+  cursor: pointer;
+}
+
+sonic-vibe.sonic-vibe-video-cursor sonic-vibe-video-bar {
+  cursor: none;
 }
 
 sonic-vibe-video-bar:hover {
-  --sonic-vibe-timeline-alpha: 0.65;
+  --sonic-vibe-timeline-alpha: 0.9;
 }
 
 sonic-vibe-video-bar.preview {
@@ -55,7 +60,7 @@ sonic-vibe-video-bar.preview {
   opacity: 1;
 }
 
-sonic-vibe-video-bar:before,
+/* sonic-vibe-video-bar:before,
 sonic-vibe-video-bar:after {
   color: white;
   font-size: 0.7em;
@@ -75,4 +80,4 @@ sonic-vibe-video-bar::before {
 sonic-vibe-video-bar:after {
   content: var(--sonic-vibe-timeline-duration);
   margin-inline-end: 0.75em;
-}
+} */

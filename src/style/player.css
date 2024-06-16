@@ -17,14 +17,14 @@ sonic-vibe {
   position: relative;
   outline: none;
 }
-sonic-vibe.sonic-vibe-video {
+sonic-vibe.sonic-vibe-video-cursor {
   cursor: none;
 }
-sonic-vibe.sonic-vibe-video:hover::before {
+sonic-vibe.sonic-vibe-video-cursor:hover::before {
   content: var(--sonic-vibe-cursor-text);
   animation: cursor 2s infinite;
 }
-sonic-vibe::before {
+sonic-vibe.sonic-vibe-video-cursor::before {
   position: absolute;
   left: -1em;
   top: -1em;
@@ -47,8 +47,10 @@ sonic-vibe::before {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  z-index: 1;
+  pointer-events: none;
 }
-sonic-vibe.trigger:before {
+sonic-vibe.sonic-vibe-video-cursor.trigger:before {
   --sonic-vibe-cursor-scale: 1;
 }
 sonic-vibe video {

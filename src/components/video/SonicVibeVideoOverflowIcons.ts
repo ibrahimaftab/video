@@ -1,22 +1,17 @@
 import SonicVibeEvents from "../../events";
-import { SonicVibeChildComponent } from "../../models/default-options";
-import {
-  addStylesheet,
-  formatVideoDuration,
-  triggerEvent,
-} from "../../utils/functions";
+import { addStylesheet, formatVideoDuration } from "../../utils/functions";
 import type SonicVibe from "../SonicVibe";
 
-export default class SonicVibeOverflowIcons extends SonicVibeChildComponent {
-  protected playButton = document.createElement("span");
-  protected pauseButton = document.createElement("span");
-  protected videoTimer = document.createElement("span");
-  protected videoTimerTimeout: null | number = null;
-  protected timerOutDuration = 600;
-  protected player: SonicVibe;
+export default class SonicVibeOverflowIcons {
+  private playButton = document.createElement("span");
+  private pauseButton = document.createElement("span");
+  private videoTimer = document.createElement("span");
+  private videoTimerTimeout: null | number = null;
+  private timerOutDuration = 600;
+  private player!: SonicVibe;
   constructor(player: SonicVibe) {
-    super();
     this.player = player;
+    this.create();
   }
   handleOnScroll = () => {
     this.videoTimer.classList.add("active");
@@ -39,6 +34,7 @@ export default class SonicVibeOverflowIcons extends SonicVibeChildComponent {
     addStylesheet("overflow-icons");
     this.playButton.classList.add("sonic-vibe-play", "sonic-vibe-state");
     this.pauseButton.classList.add("sonic-vibe-pause", "sonic-vibe-state");
+    this.videoTimer.classList.add("sonic-vibe-timer", "sonic-vibe-state");
     this.videoTimer.textContent = "0:00";
     let playTimeOut: number | null = null;
     this.player.media?.addEventListener("play", () => {
@@ -82,15 +78,6 @@ export default class SonicVibeOverflowIcons extends SonicVibeChildComponent {
 
     this.player.addEventListener(SonicVibeEvents.forward, this.handleOnScroll);
     this.player.addEventListener(SonicVibeEvents.backward, this.handleOnScroll);
-
-    this.player.addEventListener("click", () => {
-      if (this.player.media?.played && !this.player.mouseDragged) {
-        const event = this.player.media?.paused
-          ? SonicVibeEvents.play
-          : SonicVibeEvents.pause;
-        triggerEvent(event, this.player);
-      }
-    });
     this.player.append(this.playButton, this.pauseButton, this.videoTimer);
   }
 }
