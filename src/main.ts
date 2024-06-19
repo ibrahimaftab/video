@@ -1,5 +1,5 @@
 import SonicVibe from "./components/SonicVibe";
-import SonicVibeVideoBar from "./components/video/SonicVibeVideoBar";
+import SonicVibeVideoBar from "./components/playerbar/SonicVibeBar";
 import SonicVibeError from "./components/SonicVibeError";
 import SonicVibeVideo from "./components/video/SonicVibeVideo";
 

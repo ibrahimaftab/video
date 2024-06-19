@@ -1,5 +1,5 @@
 import SonicVibeEvents from "../events";
-import { MediaType } from "../models/default-options";
+import { MediaType, SonicVibeMedia } from "../models/default-options";
 import {
   addStylesheet,
   checkVideoFile,
@@ -23,9 +23,9 @@ export default class SonicVibe extends HTMLElement {
 
   /**
    * The video DOM HTML.
-   * @type {HTMLVideoElement | HTMLAudioElement | undefined}
+   * @type {SonicVibeMedia | undefined}
    */
-  media!: HTMLVideoElement | HTMLAudioElement;
+  media!: SonicVibeMedia;
 
   /**
    * The aspect ratio of the video, e.g: "16/9", default is "16/9".
@@ -74,6 +74,18 @@ export default class SonicVibe extends HTMLElement {
    * @type {boolean | undefined}
    */
   cursor = true;
+
+  /**
+   * SonicVibe video bar timeline enabling, e.g: "true" or "false", default is "true".
+   * @type {boolean | undefined}
+   */
+  timeline = true;
+
+  /**
+   * SonicVibe video bar buttons enabling, e.g: "true" or "false", default is "true".
+   * @type {boolean | undefined}
+   */
+  buttons = true;
 
   /**
    * Constructs a new SonicVibe element.

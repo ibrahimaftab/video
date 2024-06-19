@@ -1,4 +1,4 @@
-import type SonicVibe from "../components/SonicVibe";
+export type SonicVibeMedia = HTMLVideoElement | HTMLAudioElement;
 
 export enum MediaType {
   video = "video",

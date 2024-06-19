@@ -30,6 +30,7 @@ export default class SonicVibeVideo extends HTMLElement {
     media.playsInline = checkBooleanString(this.player.playsInline);
     media.muted = checkBooleanString(this.player.muted);
     media.controls = false;
+    media.preload = "metadata";
     media.style.width = this.player.width;
     media.style.aspectRatio = this.player.aspectRatio;
     this.player.media = media;
