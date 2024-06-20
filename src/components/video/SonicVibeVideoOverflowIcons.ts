@@ -1,6 +1,7 @@
 import SonicVibeEvents from "../../events";
 import { addStylesheet, formatVideoDuration } from "../../utils/functions";
 import type SonicVibe from "../SonicVibe";
+import type SonicVibeVideo from "./SonicVibeVideo";
 
 export default class SonicVibeOverflowIcons {
   private playButton = document.createElement("span");
@@ -9,8 +10,10 @@ export default class SonicVibeOverflowIcons {
   private videoTimerTimeout: null | number = null;
   private timerOutDuration = 600;
   private player!: SonicVibe;
-  constructor(player: SonicVibe) {
-    this.player = player;
+  private playerVideo!: SonicVibeVideo;
+  constructor(playerVideo: SonicVibeVideo) {
+    this.player = playerVideo.parentElement as SonicVibe;
+    this.playerVideo = playerVideo;
     this.create();
   }
   handleOnScroll = () => {
@@ -78,6 +81,6 @@ export default class SonicVibeOverflowIcons {
 
     this.player.addEventListener(SonicVibeEvents.forward, this.handleOnScroll);
     this.player.addEventListener(SonicVibeEvents.backward, this.handleOnScroll);
-    this.player.append(this.playButton, this.pauseButton, this.videoTimer);
+    this.playerVideo.append(this.playButton, this.pauseButton, this.videoTimer);
   }
 }

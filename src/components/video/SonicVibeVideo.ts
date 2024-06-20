@@ -70,7 +70,7 @@ export default class SonicVibeVideo extends HTMLElement {
     }
     if (elementDefaultAttribute("overflowButtons", this.player)) {
       import("./SonicVibeVideoOverflowIcons").then(
-        (module) => new module.default(this.player)
+        (module) => new module.default(this)
       );
     }
     if (elementDefaultAttribute("cursor", this.player)) {
