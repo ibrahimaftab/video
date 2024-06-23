@@ -89,12 +89,12 @@ sonic-vibe-video-bar .btns {
   display: flex;
   flex-wrap: wrap;
   gap: 1em;
-  margin-block-end: 0.5em;
+  margin-block-end: 0.75em;
   padding: 0 0.8em;
   position: relative;
   transform: translateY(-101%);
   opacity: 0;
-  transition-duration: 200ms;
+  transition-duration: 150ms;
   transition-timing-function: linear;
   transition-property: transform, opacity;
 }
