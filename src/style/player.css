@@ -26,14 +26,14 @@ sonic-vibe.sonic-vibe-video-cursor:hover::before {
 }
 sonic-vibe.sonic-vibe-video-cursor::before {
   position: absolute;
-  left: -1em;
-  top: -1em;
+  left: -0.75em;
+  top: -0.75em;
   background-color: rgba(0, 0, 0, var(--sonic-vibe-cursor-alpha));
   padding: 0.75em;
   border-radius: 2em;
-  font-size: 1em;
-  min-height: 1em;
-  min-width: 1em;
+  font-size: 0.75em;
+  min-height: 0.75em;
+  min-width: 0.75em;
   transform: translate(
       calc(var(--sonic-vibe-cursor-x) + var(--sonic-vibe-cursor-offset)),
       calc(var(--sonic-vibe-cursor-y) + var(--sonic-vibe-cursor-offset))

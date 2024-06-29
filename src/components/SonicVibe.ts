@@ -181,10 +181,10 @@ export default class SonicVibe extends HTMLElement {
         });
         this.addEventListener(SonicVibeEvents.amplify, () => {
           if (this.media.muted) triggerEvent(SonicVibeEvents.unmute, this);
-          this.media.volume = Math.min(this.media.volume + 0.1, 1);
+          this.media.volume = Math.min(this.media.volume + 0.025, 1);
         });
         this.addEventListener(SonicVibeEvents.deminish, () => {
-          this.media.volume = Math.max(this.media.volume - 0.1, 0);
+          this.media.volume = Math.max(this.media.volume - 0.025, 0);
         });
         this.addEventListener(SonicVibeEvents.fullscreen, () => {
           if (document.fullscreenElement) document.exitFullscreen();

@@ -73,10 +73,10 @@ export default class SonicVibeVideo extends HTMLElement {
         (module) => new module.default(this)
       );
     }
-    if (elementDefaultAttribute("cursor", this.player)) {
-      import("./SonicVibeVideoCursor").then(
-        (module) => new module.default(this.player)
-      );
-    }
+    // if (elementDefaultAttribute("cursor", this.player)) {
+    //   import("./SonicVibeVideoCursor").then(
+    //     (module) => new module.default(this.player)
+    //   );
+    // }
   }
 }
