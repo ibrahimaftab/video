@@ -65,8 +65,8 @@ sonic-vibe .timeline {
   transition-duration: 150ms, 200ms, 200ms;
   transition-timing-function: linear;
   transform-origin: bottom;
-  transform: translateY(var(--sonic-vibe-timeline-y))
-    scaleY(var(--sonic-vibe-timeline-scale));
+  transform: translate3d(0, var(--sonic-vibe-timeline-y), 0)
+    scale3d(1, var(--sonic-vibe-timeline-scale), 1);
   opacity: var(--sonic-vibe-timeline-opacity);
   cursor: pointer;
 }

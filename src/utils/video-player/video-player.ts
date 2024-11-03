@@ -7,9 +7,7 @@ const videoPlayer = async (playerInstance: SonicVibe) => {
   player[id] = {
     instance: playerInstance,
     functions: {
-      click: [],
-      mousemove: [],
-      mouseleave: [],
+      click: {},
     },
   };
   createVideoWithConfig(id);
@@ -50,7 +48,7 @@ const setupEventListeners = (id: string) => {
     });
   }
 
-  player[id].instance.addEventListener("click", () => {
+  player[id].functions.click[id] = () => {
     if (
       player[id].instance.media?.played &&
       !player[id].instance.mouseDragged
@@ -60,7 +58,7 @@ const setupEventListeners = (id: string) => {
         : SonicVibeEvents.pause;
       player[id].instance.triggerEvent(event, player[id]);
     }
-  });
+  };
 };
 
 export default videoPlayer;

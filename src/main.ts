@@ -5,9 +5,9 @@ type SonicVibeOps = {
   [key: string]: {
     instance: SonicVibe;
     functions: {
-      click: Array<() => void>;
-      mousemove: Array<() => void>;
-      mouseleave: Array<() => void>;
+      click: {
+        [key: string]: (e: MouseEvent) => void;
+      };
     };
   };
 };

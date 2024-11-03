@@ -7,8 +7,10 @@ import { MediaType } from "../models/default-options";
  * @param {string} file The Media File URL.
  * @returns {boolean} The value of the attribute or property.
  */
-export function checkMediaFile(file: string) {
-  return checkVideoFile(file) || checkAudioFile(file);
+export function checkMediaFile(file: string | null) {
+  return (
+    typeof file == "string" && (checkVideoFile(file) || checkAudioFile(file))
+  );
 }
 
 /**

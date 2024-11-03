@@ -8,6 +8,7 @@ const addTimeline = (id: string, plaberBarElement: HTMLElement) => {
   const { media } = player[id].instance;
   const timeline = document.createElement("div");
   timeline.classList.add("timeline");
+  timeline.id = id + "-timeline";
 
   const updateProperties = (currentTime: number) => {
     const duration = media.duration;
@@ -67,7 +68,7 @@ const addTimeline = (id: string, plaberBarElement: HTMLElement) => {
       `${(calculateBufferedDuration(media) / media.duration) * 100}%`
     );
   });
-  timeline.addEventListener("click", toggleTimer);
+  player[id].functions.click[id + "-timeline"] = toggleTimer;
   player[id].instance.addEventListener(SonicVibeEvents.forward, updateTimeline);
   player[id].instance.addEventListener(
     SonicVibeEvents.backward,

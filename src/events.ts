@@ -12,6 +12,8 @@ enum SonicVibeEvents {
   mute = "mute",
   unmute = "unmute",
   click = "click",
+  wheel = "wheel",
+  keydown = "keydown",
 }
 
 export default SonicVibeEvents;
