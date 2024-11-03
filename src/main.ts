@@ -1,9 +1,27 @@
 import SonicVibe from "./components/SonicVibe";
-import SonicVibeVideoBar from "./components/playerbar/SonicVibeBar";
 import SonicVibeError from "./components/SonicVibeError";
-import SonicVibeVideo from "./components/video/SonicVibeVideo";
+
+type SonicVibeOps = {
+  [key: string]: {
+    instance: SonicVibe;
+    functions: {
+      click: Array<() => void>;
+      mousemove: Array<() => void>;
+      mouseleave: Array<() => void>;
+    };
+  };
+};
+
+declare global {
+  interface Window {
+    player: SonicVibeOps;
+  }
+  const player: SonicVibeOps;
+}
+
+window.player = {};
 
 customElements.define("sonic-vibe", SonicVibe);
-customElements.define("sonic-vibe-video", SonicVibeVideo);
-customElements.define("sonic-vibe-video-bar", SonicVibeVideoBar);
+// customElements.define("sonic-vibe-video", SonicVibeVideo);
+// customElements.define("sonic-vibe-video-bar", SonicVibeVideoBar);
 customElements.define("sonic-vibe-error", SonicVibeError);

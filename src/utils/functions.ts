@@ -3,21 +3,6 @@ import SonicVibeEvents from "../events";
 import { MediaType } from "../models/default-options";
 
 /**
- * Retrieves the default attribute value of an HTML element based on a property name.
- * @param {string} property The name of the attribute or property.
- * @param {T} element The HTML element from which to retrieve the attribute value.
- * @returns {string} The value of the attribute or property.
- */
-export function elementDefaultAttribute<T extends HTMLElement, Y>(
-  property: string,
-  element: T
-): Y {
-  return element.hasAttribute(property)
-    ? element.getAttribute(property)
-    : Object.getOwnPropertyDescriptor(element, property)?.value;
-}
-
-/**
  * Check media file extension.
  * @param {string} file The Media File URL.
  * @returns {boolean} The value of the attribute or property.
@@ -41,7 +26,7 @@ export function checkVideoFile(file: string) {
  * @returns {boolean} The value of the attribute or property.
  */
 export function checkAudioFile(file: string) {
-  return /\.(ogg|mp3|wav)$/g.test(file) && MediaType.audio;
+  return /\.(ogg|mp3|wav|m4a)$/g.test(file) && MediaType.audio;
 }
 
 /**

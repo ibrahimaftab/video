@@ -2,13 +2,11 @@ import SonicVibeEvents from "../events";
 import { MediaType, SonicVibeMedia } from "../models/default-options";
 import {
   addStylesheet,
-  checkVideoFile,
-  checkAudioFile,
   triggerEvent,
   checkMediaFile,
-  elementDefaultAttribute,
 } from "../utils/functions";
-import type SonicVibeVideo from "./video/SonicVibeVideo";
+
+let counter = 1;
 
 /**
  * Represents a custom element called SonicVibe.
@@ -76,6 +74,12 @@ export default class SonicVibe extends HTMLElement {
   cursor = true;
 
   /**
+   * SonicVibe video player bar enabling, e.g: "true" or "false", default is "true".
+   * @type {boolean | undefined}
+   */
+  playerbar = true;
+
+  /**
    * SonicVibe video bar timeline enabling, e.g: "true" or "false", default is "true".
    * @type {boolean | undefined}
    */
@@ -88,35 +92,35 @@ export default class SonicVibe extends HTMLElement {
   buttons = true;
 
   /**
+   * SonicVibe media bidirectional speed adjusting speed in seconds forward and backward, e.g: "1" or "5", default is "2" second.
+   * @type {number | undefined}
+   */
+  bidirectional = 2;
+
+  /**
+   * SonicVibe media source must be a valid URL for media files, such as `'video.mp4'` or `'audio.mp3'`. Acceptable formats include **MP4, HLS (M3U8), DASH (MPD), WebM, M4A, OGG, MP3, and WAV**.
+   * @type {string | undefined}
+   */
+  src!: string;
+
+  /**
    * Constructs a new SonicVibe element.
    */
   constructor() {
     super();
     addStylesheet("styles");
-    this.width = elementDefaultAttribute("width", this);
-    this.control = elementDefaultAttribute("control", this);
-    this.aspectRatio = elementDefaultAttribute("aspectRatio", this);
-    this.muted = elementDefaultAttribute("muted", this);
-    this.playsInline = elementDefaultAttribute("playsInline", this);
+    this.width = this.elementDefaultAttribute("width");
+    this.control = this.elementDefaultAttribute("control");
+    this.aspectRatio = this.elementDefaultAttribute("aspectRatio");
+    this.muted = this.elementDefaultAttribute("muted");
+    this.playsInline = this.elementDefaultAttribute("playsInline");
     this.style.aspectRatio = this.aspectRatio;
     this.style.width = this.width;
+    this.id = `sonic-vibe-${counter++}`;
     this.tabIndex = 0;
-    this.focus();
-    const src = this.getAttribute("src");
+    this.src = this.elementDefaultAttribute("src");
 
-    if (!src || !checkMediaFile(src)) {
-      triggerEvent(SonicVibeEvents.error, this);
-    } else {
-      const mediaFileType = checkMediaFile(src);
-
-      if (mediaFileType === MediaType.video) {
-        this.insertAdjacentHTML(
-          "afterbegin",
-          `<sonic-vibe-video></sonic-vibe-video>`
-        );
-      } else {
-      }
-    }
+    this.checkSourceFile();
 
     this.addEventListener(
       SonicVibeEvents.error,
@@ -138,19 +142,22 @@ export default class SonicVibe extends HTMLElement {
           e.stopPropagation();
           e.preventDefault();
           const { deltaX, deltaY } = e;
+          let event!: keyof typeof SonicVibeEvents;
           if (
             deltaX < -10 &&
             this.media.currentTime + 1 < this.media.duration
           ) {
-            triggerEvent(SonicVibeEvents.forward, this);
+            event = "forward";
           } else if (deltaX > 10 && this.media.currentTime - 1 > 0) {
-            triggerEvent(SonicVibeEvents.backward, this);
+            event = "backward";
           } else if (deltaY > 2) {
-            triggerEvent(SonicVibeEvents.amplify, this);
+            event = "amplify";
           } else if (deltaY < -2) {
-            triggerEvent(SonicVibeEvents.deminish, this);
+            event = "deminish";
           }
+          event && this.triggerEvent(SonicVibeEvents[event]);
         });
+
         this.addEventListener("keydown", (e) => {
           e.stopPropagation();
           e.preventDefault();
@@ -174,10 +181,10 @@ export default class SonicVibe extends HTMLElement {
         });
 
         this.addEventListener(SonicVibeEvents.forward, () => {
-          this.media.currentTime += 1;
+          this.media.currentTime += this.bidirectional;
         });
         this.addEventListener(SonicVibeEvents.backward, () => {
-          this.media.currentTime -= 1;
+          this.media.currentTime -= this.bidirectional;
         });
         this.addEventListener(SonicVibeEvents.amplify, () => {
           if (this.media.muted) triggerEvent(SonicVibeEvents.unmute, this);
@@ -200,7 +207,60 @@ export default class SonicVibe extends HTMLElement {
           SonicVibeEvents.unmute,
           () => (this.media.muted = false)
         );
+        this.addEventListener(
+          SonicVibeEvents.click,
+          () => {
+            
+          }
+        )
       }
+    );
+  }
+
+  /**
+   * Check if the source file is valid, if not, trigger "error" event.
+   * If the source file is a video, insert a <sonic-vibe-video> element to render the video.
+   * If the source file is an audio, do nothing for now.
+   */
+  async checkSourceFile() {
+    const src = this.getAttribute("src");
+    if (!src || !checkMediaFile(src)) {
+      this.triggerEvent(SonicVibeEvents.error);
+    } else {
+      const mediaFileType = checkMediaFile(src);
+
+      if (mediaFileType === MediaType.video) {
+        import("../utils/video-player/video-player").then((module) => {
+          module.default(this);
+        });
+      } else {
+      }
+    }
+  }
+
+  /**
+   * Retrieves the default attribute value of an HTML element based on a property name.
+   * @param {string} property The name of the attribute or property.
+   * @returns {T} The value of the attribute or property.
+   */
+  elementDefaultAttribute<T>(property: string): T {
+    return this.hasAttribute(property)
+      ? this.getAttribute(property)
+      : Object.getOwnPropertyDescriptor(this, property)?.value;
+  }
+
+  /**
+   * Dispatch Sonic Vibe Event
+   * @param {SonicVibeEvents} event
+   * @returns {void}
+   */
+  triggerEvent<T>(event: SonicVibeEvents, payload?: T) {
+    this.dispatchEvent(
+      new CustomEvent(event, {
+        detail: payload,
+        bubbles: true,
+        cancelable: true,
+      })
     );
   }
 }

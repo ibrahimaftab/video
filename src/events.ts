@@ -11,6 +11,7 @@ enum SonicVibeEvents {
   error = "error",
   mute = "mute",
   unmute = "unmute",
+  click = "click",
 }
 
 export default SonicVibeEvents;
