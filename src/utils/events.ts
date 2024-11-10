@@ -5,7 +5,7 @@ const addPlayerEvents = (player: SonicVibe) => {
   player.addEventListener(SonicVibeEvents.wheel, handleWheel);
   player.addEventListener(SonicVibeEvents.keydown, handleKeyDown);
   player.addEventListener(SonicVibeEvents.forward, handleForward);
-  player.addEventListener(SonicVibeEvents.backward, handleForward);
+  player.addEventListener(SonicVibeEvents.backward, handleBackward);
   player.addEventListener(SonicVibeEvents.amplify, handleAmplify);
   player.addEventListener(SonicVibeEvents.deminish, handleDeminish);
   player.addEventListener(SonicVibeEvents.fullscreen, handleFullScreen);
@@ -17,21 +17,27 @@ const addPlayerEvents = (player: SonicVibe) => {
 };
 
 const handleWheel = (e: WheelEvent) => {
+  const { deltaX, deltaY, target } = e;
+  const player = target as SonicVibe;
+  const { currentTime, duration } = player.media;
+  let event!: SonicVibeEvents;
+
+  if (deltaX < -10 && currentTime + 1 < duration) {
+    event = SonicVibeEvents.forward;
+  } else if (deltaX > 10 && currentTime - 1 > 0) {
+    event = SonicVibeEvents.backward;
+  } else if (deltaY > 2) {
+    event = SonicVibeEvents.amplify;
+  } else if (deltaY < -2) {
+    event = SonicVibeEvents.deminish;
+  } else {
+    return;
+  }
+
+  player.triggerEvent(event);
+
   e.stopPropagation();
   e.preventDefault();
-  const player = e.target as SonicVibe;
-  const { deltaX, deltaY } = e;
-  let event!: keyof typeof SonicVibeEvents;
-  if (deltaX < -10 && player.media.currentTime + 1 < player.media.duration) {
-    event = "forward";
-  } else if (deltaX > 10 && player.media.currentTime - 1 > 0) {
-    event = "backward";
-  } else if (deltaY > 2) {
-    event = "amplify";
-  } else if (deltaY < -2) {
-    event = "deminish";
-  }
-  event && player.triggerEvent(SonicVibeEvents[event]);
 };
 
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,6 +66,11 @@ const handleKeyDown = (e: KeyboardEvent) => {
 const handleForward = (e: Event) => {
   const player = e.target as SonicVibe;
   player.media.currentTime += player.bidirectional;
+};
+
+const handleBackward = (e: Event) => {
+  const player = e.target as SonicVibe;
+  player.media.currentTime -= player.bidirectional;
 };
 
 const handleAmplify = (e: Event) => {
