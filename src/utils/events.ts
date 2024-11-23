@@ -71,6 +71,71 @@ const handleWheel = (e: WheelEvent) => {
 };
 
 /**
+ * Toggles between play and pause for a player's media element.
+ * @param {SonicVibe} player - The player element.
+ * @returns {void}
+ */
+const togglePlayPause = (player: SonicVibe) =>
+  player.media[player.media.paused ? "play" : "pause"]();
+
+/**
+ * Toggles mute and unmute for a player's media element.
+ * @param {SonicVibe} player - The player element.
+ * @returns {void}
+ */
+const toggleMute = (player: SonicVibe) => {
+  const toggleMuteEvent = player.media.muted
+    ? SonicVibeEvents.unmute
+    : SonicVibeEvents.mute;
+  player.triggerEvent(toggleMuteEvent, player);
+};
+
+// Define a helper function to handle key actions
+const keyHandlers: { [key: string]: (player: SonicVibe) => void } = {
+  /**
+   * Handles the space bar key press.
+   *
+   * @param {SonicVibe} player - The SonicVibe instance.
+   *
+   * @fires SonicVibeEvents.play - If the media is paused.
+   * @fires SonicVibeEvents.pause - If the media is playing.
+   */
+  " ": togglePlayPause,
+  /**
+   * If the right arrow key is pressed and the media allows it, triggers a
+   * forward event.
+   */
+  ArrowRight: (player: SonicVibe) => {
+    if (player.media.currentTime + 10 < player.media.duration) {
+      player.triggerEvent(SonicVibeEvents.forward, player);
+    }
+  },
+  /**
+   * If the left arrow key is pressed and the media is more than 10 seconds into
+   * the video, triggers a backward event.
+   */
+  ArrowLeft: (player: SonicVibe) => {
+    if (player.media.currentTime > 10) {
+      player.triggerEvent(SonicVibeEvents.backward, player);
+    }
+  },
+
+  /**
+   * Triggers a fullscreen event for the player.
+   * @param {SonicVibe} player - The player element to trigger the fullscreen event on.
+   */
+  f: (player: SonicVibe) => {
+    player.triggerEvent(SonicVibeEvents.fullscreen, player);
+  },
+
+  /**
+   * Triggers a mute/unmute event for the player.
+   * @param {SonicVibe} player - The player element to trigger the mute/unmute event on.
+   */
+  m: toggleMute,
+};
+
+/**
  * Handles a keydown event on a player element.
  * @param {KeyboardEvent} e - The keyboard event.
  * @listens keydown - Adds a keydown event listener.
@@ -86,23 +151,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   e.stopPropagation();
   e.preventDefault();
   const player = e.target as SonicVibe;
-  if (e.key === " ") {
-    player.media.paused ? player.media.play() : player.media.pause();
-  } else if (
-    e.key === "ArrowRight" &&
-    player.media.currentTime + 10 < player.media.duration
-  ) {
-    player.triggerEvent(SonicVibeEvents.forward, player);
-  } else if (e.key === "ArrowLeft" && player.media.currentTime > 10) {
-    player.triggerEvent(SonicVibeEvents.backward, player);
-  } else if (e.key === "f") {
-    player.triggerEvent(SonicVibeEvents.fullscreen, player);
-  } else if (e.key === "m") {
-    const toggleMute = player.media.muted
-      ? SonicVibeEvents.unmute
-      : SonicVibeEvents.mute;
-    player.triggerEvent(toggleMute, player);
-  }
+  keyHandlers[e.key]?.(player);
 };
 
 /**
