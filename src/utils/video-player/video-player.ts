@@ -10,6 +10,7 @@ const videoPlayer = async (playerInstance: SonicVibe) => {
       click: {},
       play: {},
       pause: {},
+      keydown: {},
     },
   };
   createVideoWithConfig(id);
@@ -59,6 +60,13 @@ const setupEventListeners = (id: string) => {
         ? SonicVibeEvents.play
         : SonicVibeEvents.pause;
       player[id].instance.triggerEvent(event, player[id]);
+    }
+  };
+  player[id].functions.keydown[id] = (e: KeyboardEvent) => {
+    if (e.key === "i") {
+      if (document.pictureInPictureElement?.parentElement?.id !== id)
+        (player[id].instance.media as HTMLVideoElement).requestPictureInPicture();
+      else document.exitPictureInPicture();
     }
   };
 };

@@ -136,22 +136,26 @@ const keyHandlers: { [key: string]: (player: SonicVibe) => void } = {
 };
 
 /**
- * Handles a keydown event on a player element.
- * @param {KeyboardEvent} e - The keyboard event.
- * @listens keydown - Adds a keydown event listener.
- * @fires SonicVibeEvents.play - Triggers play event if space key is pressed and media is paused.
- * @fires SonicVibeEvents.pause - Triggers pause event if space key is pressed and media is playing.
- * @fires SonicVibeEvents.forward - Triggers a forward event if the right arrow key is pressed and the media allows it.
- * @fires SonicVibeEvents.backward - Triggers a backward event if the left arrow key is pressed and the media allows it.
- * @fires SonicVibeEvents.fullscreen - Triggers a fullscreen event if the 'f' key is pressed.
- * @fires SonicVibeEvents.mute - Triggers a mute event if the 'm' key is pressed and media is not muted.
- * @fires SonicVibeEvents.unmute - Triggers an unmute event if the 'm' key is pressed and media is muted.
+ * Handles keydown events on the player element.
+ *
+ * @param {KeyboardEvent} e - The keydown event.
+ *
+ * @fires SonicVibeEvents.forward - If the right arrow key is pressed.
+ * @fires SonicVibeEvents.backward - If the left arrow key is pressed.
+ * @fires SonicVibeEvents.play - If the space bar is pressed and the media is paused.
+ * @fires SonicVibeEvents.pause - If the space bar is pressed and the media is playing.
+ * @fires SonicVibeEvents.fullscreen - If the "f" key is pressed.
+ * @fires SonicVibeEvents.mute - If the "m" key is pressed and the media is not muted.
+ * @fires SonicVibeEvents.unmute - If the "m" key is pressed and the media is muted.
+ * @fires SonicVibeEvents - If any other key is pressed and a key handler is defined for particular media types with that key.
  */
 const handleKeyDown = (e: KeyboardEvent) => {
   e.stopPropagation();
   e.preventDefault();
-  const player = e.target as SonicVibe;
-  keyHandlers[e.key]?.(player);
+  const playerInstance = e.target as SonicVibe;
+  if (keyHandlers[e.key]) keyHandlers[e.key]?.(playerInstance);
+  else if (player[playerInstance?.id])
+    player[playerInstance.id].functions.keydown[playerInstance.id]?.(e);
 };
 
 /**

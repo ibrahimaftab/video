@@ -21,6 +21,9 @@ export interface SonicVibeOp {
     pause: {
       [key: string]: <T extends Event>(e: T) => void;
     };
+    keydown: {
+      [key: string]: <T extends KeyboardEvent>(e: T) => void;
+    };
   };
 }
 
