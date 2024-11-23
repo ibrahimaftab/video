@@ -16,4 +16,12 @@ enum SonicVibeEvents {
   keydown = "keydown",
 }
 
+export enum SonicVibeEventsOps {
+  forward = SonicVibeEvents.forward,
+  backward = SonicVibeEvents.backward,
+  click = SonicVibeEvents.click,
+  play = SonicVibeEvents.play,
+  pause = SonicVibeEvents.pause,
+}
+
 export default SonicVibeEvents;

@@ -130,6 +130,7 @@ export default class SonicVibe extends HTMLElement {
       (e: CustomEventInit<HTMLVideoElement>) => {
         import("../utils/events").then((module) => {
           module.default(this);
+          Object.freeze(window.player);
         });
       }
     );

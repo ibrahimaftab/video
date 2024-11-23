@@ -8,6 +8,8 @@ const videoPlayer = async (playerInstance: SonicVibe) => {
     instance: playerInstance,
     functions: {
       click: {},
+      play: {},
+      pause: {},
     },
   };
   createVideoWithConfig(id);

@@ -1,7 +1,24 @@
 import type SonicVibe from "../components/SonicVibe";
 import SonicVibeEvents from "../events";
 
+/**
+ * Adds event listeners to a player element.
+ * @param {SonicVibe} player - The player element to add event listeners to.
+ * @listens SonicVibeEvents.wheel - Adds a wheel event listener.
+ * @listens SonicVibeEvents.keydown - Adds a keydown event listener.
+ * @listens SonicVibeEvents.forward - Adds a forward event listener.
+ * @listens SonicVibeEvents.backward - Adds a backward event listener.
+ * @listens SonicVibeEvents.amplify - Adds an amplify event listener.
+ * @listens SonicVibeEvents.deminish - Adds a deminish event listener.
+ * @listens SonicVibeEvents.fullscreen - Adds a fullscreen event listener.
+ * @listens SonicVibeEvents.play - Adds a play event listener.
+ * @listens SonicVibeEvents.pause - Adds a pause event listener.
+ * @listens SonicVibeEvents.mute - Adds a mute event listener.
+ * @listens SonicVibeEvents.unmute - Adds an unmute event listener.
+ * @listens SonicVibeEvents.click - Adds a click event listener.
+ */
 const addPlayerEvents = (player: SonicVibe) => {
+  const { id } = player;
   player.addEventListener(SonicVibeEvents.wheel, handleWheel);
   player.addEventListener(SonicVibeEvents.keydown, handleKeyDown);
   player.addEventListener(SonicVibeEvents.forward, handleForward);
@@ -9,13 +26,26 @@ const addPlayerEvents = (player: SonicVibe) => {
   player.addEventListener(SonicVibeEvents.amplify, handleAmplify);
   player.addEventListener(SonicVibeEvents.deminish, handleDeminish);
   player.addEventListener(SonicVibeEvents.fullscreen, handleFullScreen);
-  player.addEventListener(SonicVibeEvents.play, handlePlay);
-  player.addEventListener(SonicVibeEvents.pause, handlePause);
+  player.addEventListener(SonicVibeEvents.play, (e) => handlePlay(e, id));
+  player.addEventListener(SonicVibeEvents.pause, (e) => handlePause(e, id));
   player.addEventListener(SonicVibeEvents.mute, handleMute);
   player.addEventListener(SonicVibeEvents.unmute, handleUnmute);
-  player.addEventListener(SonicVibeEvents.click, (e) => handleClick(e, player));
+  player.addEventListener(SonicVibeEvents.click, (e) => handleClick(e, id));
 };
 
+/**
+ * Handles a wheel event on a player element.
+ * @param {WheelEvent} e - The wheel event.
+ * @listens wheel - Adds a wheel event listener.
+ * @fires SonicVibeEvents.forward - Fires a forward event if the user scrolls
+ *   to the right.
+ * @fires SonicVibeEvents.backward - Fires a backward event if the user scrolls
+ *   to the left.
+ * @fires SonicVibeEvents.amplify - Fires an amplify event if the user scrolls
+ *   up.
+ * @fires SonicVibeEvents.deminish - Fires a deminish event if the user scrolls
+ *   down.
+ */
 const handleWheel = (e: WheelEvent) => {
   const { deltaX, deltaY, target } = e;
   const player = target as SonicVibe;
@@ -40,6 +70,18 @@ const handleWheel = (e: WheelEvent) => {
   e.preventDefault();
 };
 
+/**
+ * Handles a keydown event on a player element.
+ * @param {KeyboardEvent} e - The keyboard event.
+ * @listens keydown - Adds a keydown event listener.
+ * @fires SonicVibeEvents.play - Triggers play event if space key is pressed and media is paused.
+ * @fires SonicVibeEvents.pause - Triggers pause event if space key is pressed and media is playing.
+ * @fires SonicVibeEvents.forward - Triggers a forward event if the right arrow key is pressed and the media allows it.
+ * @fires SonicVibeEvents.backward - Triggers a backward event if the left arrow key is pressed and the media allows it.
+ * @fires SonicVibeEvents.fullscreen - Triggers a fullscreen event if the 'f' key is pressed.
+ * @fires SonicVibeEvents.mute - Triggers a mute event if the 'm' key is pressed and media is not muted.
+ * @fires SonicVibeEvents.unmute - Triggers an unmute event if the 'm' key is pressed and media is muted.
+ */
 const handleKeyDown = (e: KeyboardEvent) => {
   e.stopPropagation();
   e.preventDefault();
@@ -63,57 +105,118 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 };
 
+/**
+ * Handles a forward event on a player element.
+ * @param {Event} e - The forward event.
+ * @fires SonicVibeEvents.forward - Triggers a forward event.
+ */
 const handleForward = (e: Event) => {
   const player = e.target as SonicVibe;
   player.media.currentTime += player.bidirectional;
 };
 
+/**
+ * Handles a backward event on a player element.
+ * @param {Event} e - The backward event.
+ * @fires SonicVibeEvents.backward - Triggers a backward event.
+ */
 const handleBackward = (e: Event) => {
   const player = e.target as SonicVibe;
   player.media.currentTime -= player.bidirectional;
 };
 
+/**
+ * Handles an amplify event on a player element.
+ * @param {Event} e - The amplify event.
+ * @fires SonicVibeEvents.unmute - Triggers an unmute event if the player is muted.
+ * @description Increases the player's volume by 0.012 or sets it to 1 if it's
+ *   already greater than 0.975.
+ */
 const handleAmplify = (e: Event) => {
   const player = e.target as SonicVibe;
   if (player.media.muted) player.triggerEvent(SonicVibeEvents.unmute, player);
-  player.media.volume = Math.min(player.media.volume + 0.025, 1);
+  player.media.volume = Math.min(player.media.volume + 0.012, 1);
 };
 
+/**
+ * Handles a deminish event on a player element.
+ * @param {Event} e - The deminish event.
+ * @fires SonicVibeEvents.unmute - Triggers an unmute event if the player is muted.
+ * @description Decreases the player's volume by 0.012 or sets it to 0 if it's already
+ *   less than 0.012.
+ */
 const handleDeminish = (e: Event) => {
   const player = e.target as SonicVibe;
   if (player.media.muted) player.triggerEvent(SonicVibeEvents.unmute, player);
-  player.media.volume = Math.max(player.media.volume - 0.025, 0);
+  player.media.volume = Math.max(player.media.volume - 0.012, 0);
 };
 
+/**
+ * Handles a fullscreen event on a player element.
+ * @param {Event} e - The fullscreen event.
+ * @description Toggles the player element's fullscreen mode on and off.
+ */
 const handleFullScreen = (e: Event) => {
   const player = e.target as SonicVibe;
   if (document.fullscreenElement) document.exitFullscreen();
   else player.requestFullscreen();
 };
 
-const handlePlay = (e: Event) => {
-  const player = e.target as SonicVibe;
-  player.media.play();
+/**
+ * Handles a play event on a player element.
+ * @param {Event} e - The play event.
+ * @param {string} id - The id of the player.
+ * @description Triggers any play event listeners associated with the player and
+ *   plays the player's media.
+ */
+const handlePlay = (e: Event, id: string) => {
+  const eventFor = (e.target as HTMLElement).id;
+  player[id].functions.play[eventFor]?.(e);
+  player[id].instance.media.play();
 };
 
-const handlePause = (e: Event) => {
-  const player = e.target as SonicVibe;
-  player.media.pause();
+/**
+ * Handles a pause event on a player element.
+ * @param {Event} e - The pause event.
+ * @param {string} id - The id of the player.
+ * @description Triggers any pause event listeners associated with the player and
+ *   pauses the player's media.
+ */
+const handlePause = (e: Event, id: string) => {
+  const eventFor = (e.target as HTMLElement).id;
+  player[id].functions.pause[eventFor]?.(e);
+  player[id].instance.media.pause();
 };
 
+/**
+ * Handles a mute event on a player element.
+ * @param {Event} e - The mute event.
+ * @description Sets the player's media's muted property to true.
+ */
 const handleMute = (e: Event) => {
   const player = e.target as SonicVibe;
   player.media.muted = true;
 };
 
+/**
+ * Handles an unmute event on a player element.
+ * @param {Event} e - The unmute event.
+ * @description Sets the player's media's muted property to false.
+ */
 const handleUnmute = (e: Event) => {
   const player = e.target as SonicVibe;
   player.media.muted = false;
 };
 
-const handleClick = (e: MouseEvent, currentPlayer: SonicVibe) => {
+/**
+ * Handles a click event on a player element.
+ * @param {MouseEvent} e - The click event.
+ * @param {string} id - The id of the player.
+ * @description Triggers any click event listeners associated with the player.
+ */
+const handleClick = (e: MouseEvent, id: string) => {
   const eventFor = (e.target as HTMLElement).id;
-  player[currentPlayer.id].functions.click[eventFor](e);
+  player[id].functions.click[eventFor](e);
 };
 
 export default addPlayerEvents;

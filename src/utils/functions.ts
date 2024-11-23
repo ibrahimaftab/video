@@ -32,19 +32,21 @@ export function checkAudioFile(file: string) {
 }
 
 /**
- * Add stylesheet.
+ * Add stylesheet to head if not already added.
  * @param {string} filename Name Of The CSS File.
  * @returns {void}
  */
 export function addStylesheet(filename: string) {
+  if (document.getElementById(filename)) return;
   const link = document.createElement("link");
   link.rel = "stylesheet";
   link.href = `/src/style/${filename}.css`;
+  link.id = filename;
   document.head.append(link);
 }
 
 /**
- * Format video duration
+ * Format video duration to MM:SS or HH:MM:SS
  * @param {number} seconds Video Duration.
  * @returns {string} Output should be "MM:SS" or "HH:MM:SS"
  */

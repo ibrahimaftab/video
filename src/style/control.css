@@ -85,7 +85,7 @@ sonic-vibe.preview .timeline {
   --sonic-vibe-timeline-opacity: 1;
 }
 
-sonic-vibe.btns {
+sonic-vibe .sonic-vibe-bar-btns {
   display: flex;
   flex-wrap: wrap;
   gap: 1em;
@@ -99,11 +99,11 @@ sonic-vibe.btns {
   transition-property: transform, opacity;
 }
 
-.sonic-vibe-bar .btns svg {
+.sonic-vibe-bar .sonic-vibe-bar-btns svg {
   fill: currentColor;
 }
 
-.sonic-vibe-bar.preview .btns {
+sonic-vibe.preview .sonic-vibe-bar-btns {
   transform: translateY(0);
   opacity: 1;
 }
@@ -116,6 +116,12 @@ sonic-vibe.btns {
   transform-origin: center;
   color: rgba(var(--sonic-vibe-icon-theme), var(--alpha));
   transition: color 150ms linear;
+  cursor: pointer;
+
+  svg,
+  img {
+    pointer-events: none;
+  }
 }
 
 .sonic-vibe-bar .btn:hover,
@@ -172,7 +178,7 @@ sonic-vibe.btns {
   top: -0.1em;
   bottom: -0.1em;
   width: 0.7em;
-  background-color: rgba(var(--sonic-vibe-icon-theme), 0.8);
+  background-color: rgba(var(--sonic-vibe-icon-theme), 1);
   border-radius: 0.7em;
 }
 

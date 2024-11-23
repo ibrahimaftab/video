@@ -1,3 +1,4 @@
+import createButtons from "./player-bar-buttons";
 import addTimeline from "./timeline";
 
 const playerBar = (id: string) => {
@@ -6,6 +7,7 @@ const playerBar = (id: string) => {
   const enableButtons = player[id].instance.elementDefaultAttribute("buttons");
   const plaberBarElement = document.createElement("div");
   plaberBarElement.classList.add("sonic-vibe-bar");
+  plaberBarElement.id = `sonic-vibe-bar-${id}`;
   let previewTimeout: null | number = null;
   player[id].instance.addEventListener("mousemove", () => {
     player[id].instance.classList.add("preview");
@@ -16,11 +18,9 @@ const playerBar = (id: string) => {
     );
   });
   // Create Player Bar Buttons if enabled
-  // if (enableButtons) {
-  //   import("./SonicVibeBarButtons").then(
-  //     (module) => new module.default(this, media)
-  //   );
-  // }
+  if (enableButtons) {
+    createButtons(id, plaberBarElement);
+  }
 
   // // Create Player Bar Timeline if enabled
   if (enableTimeline) {
