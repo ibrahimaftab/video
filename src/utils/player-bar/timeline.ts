@@ -3,9 +3,11 @@ import {
   calculateBufferedDuration,
   formatVideoDuration,
 } from "../../utils/functions";
+import sonicVibeProxy from "../global";
 
 const addTimeline = (id: string, plaberBarElement: HTMLElement) => {
-  const { media } = player[id].instance;
+  const player = sonicVibeProxy.instance[id];
+  const media = sonicVibeProxy.media[id];
   const timeline = document.createElement("div");
   timeline.classList.add("timeline");
   timeline.id = id + "-timeline";
@@ -68,9 +70,9 @@ const addTimeline = (id: string, plaberBarElement: HTMLElement) => {
       `${(calculateBufferedDuration(media) / media.duration) * 100}%`
     );
   });
-  player[id].functions.click[id + "-timeline"] = toggleTimer;
-  player[id].instance.addEventListener(SonicVibeEvents.forward, updateTimeline);
-  player[id].instance.addEventListener(
+  sonicVibeProxy.click[id + "-timeline"] = toggleTimer;
+  player.addEventListener(SonicVibeEvents.forward, updateTimeline);
+  player.addEventListener(
     SonicVibeEvents.backward,
     updateTimeline
   );

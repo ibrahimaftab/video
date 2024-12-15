@@ -1,5 +1,6 @@
 import type SonicVibe from "../components/SonicVibe";
 import SonicVibeEvents from "../events";
+import sonicVibeProxy from "./global";
 
 /**
  * Adds event listeners to a player element.
@@ -30,7 +31,11 @@ const addPlayerEvents = (player: SonicVibe) => {
   player.addEventListener(SonicVibeEvents.pause, (e) => handlePause(e, id));
   player.addEventListener(SonicVibeEvents.mute, handleMute);
   player.addEventListener(SonicVibeEvents.unmute, handleUnmute);
-  player.addEventListener(SonicVibeEvents.click, (e) => handleClick(e, id));
+  player.addEventListener(SonicVibeEvents.click, handleClick);
+  player.addEventListener(SonicVibeEvents.mouseenter, handleMouseEnter);
+  player.addEventListener(SonicVibeEvents.mouseleave, handleMouseLeave);
+  player.addEventListener(SonicVibeEvents.mousemove, handleMouseMove);
+  player.addEventListener(SonicVibeEvents.mouseup, handleMouseUp);
 };
 
 /**
@@ -49,7 +54,7 @@ const addPlayerEvents = (player: SonicVibe) => {
 const handleWheel = (e: WheelEvent) => {
   const { deltaX, deltaY, target } = e;
   const player = target as SonicVibe;
-  const { currentTime, duration } = player.media;
+  const { currentTime, duration } = sonicVibeProxy.media[player.id];
   let event!: SonicVibeEvents;
 
   if (deltaX < -10 && currentTime + 1 < duration) {
@@ -75,8 +80,10 @@ const handleWheel = (e: WheelEvent) => {
  * @param {SonicVibe} player - The player element.
  * @returns {void}
  */
-const togglePlayPause = (player: SonicVibe) =>
-  player.media[player.media.paused ? "play" : "pause"]();
+const togglePlayPause = (player: SonicVibe) => {
+  const media = sonicVibeProxy.media[player.id];
+  media[media.paused ? "play" : "pause"]();
+};
 
 /**
  * Toggles mute and unmute for a player's media element.
@@ -84,10 +91,11 @@ const togglePlayPause = (player: SonicVibe) =>
  * @returns {void}
  */
 const toggleMute = (player: SonicVibe) => {
-  const toggleMuteEvent = player.media.muted
+  const media = sonicVibeProxy.media[player.id];
+  const toggleMuteEvent = media.muted
     ? SonicVibeEvents.unmute
     : SonicVibeEvents.mute;
-  player.triggerEvent(toggleMuteEvent, player);
+  player.triggerEvent(toggleMuteEvent);
 };
 
 // Define a helper function to handle key actions
@@ -106,8 +114,9 @@ const keyHandlers: { [key: string]: (player: SonicVibe) => void } = {
    * forward event.
    */
   ArrowRight: (player: SonicVibe) => {
-    if (player.media.currentTime + 10 < player.media.duration) {
-      player.triggerEvent(SonicVibeEvents.forward, player);
+    const media = sonicVibeProxy.media[player.id];
+    if (media.currentTime + 10 < media.duration) {
+      player.triggerEvent(SonicVibeEvents.forward);
     }
   },
   /**
@@ -115,8 +124,9 @@ const keyHandlers: { [key: string]: (player: SonicVibe) => void } = {
    * the video, triggers a backward event.
    */
   ArrowLeft: (player: SonicVibe) => {
-    if (player.media.currentTime > 10) {
-      player.triggerEvent(SonicVibeEvents.backward, player);
+    const media = sonicVibeProxy.media[player.id];
+    if (media.currentTime > 10) {
+      player.triggerEvent(SonicVibeEvents.backward);
     }
   },
 
@@ -125,7 +135,7 @@ const keyHandlers: { [key: string]: (player: SonicVibe) => void } = {
    * @param {SonicVibe} player - The player element to trigger the fullscreen event on.
    */
   f: (player: SonicVibe) => {
-    player.triggerEvent(SonicVibeEvents.fullscreen, player);
+    player.triggerEvent(SonicVibeEvents.fullscreen);
   },
 
   /**
@@ -154,8 +164,6 @@ const handleKeyDown = (e: KeyboardEvent) => {
   e.preventDefault();
   const playerInstance = e.target as SonicVibe;
   if (keyHandlers[e.key]) keyHandlers[e.key]?.(playerInstance);
-  else if (player[playerInstance?.id])
-    player[playerInstance.id].functions.keydown[playerInstance.id]?.(e);
 };
 
 /**
@@ -165,7 +173,8 @@ const handleKeyDown = (e: KeyboardEvent) => {
  */
 const handleForward = (e: Event) => {
   const player = e.target as SonicVibe;
-  player.media.currentTime += player.bidirectional;
+
+  sonicVibeProxy.media[player.id].currentTime += player.bidirectional;
 };
 
 /**
@@ -175,7 +184,7 @@ const handleForward = (e: Event) => {
  */
 const handleBackward = (e: Event) => {
   const player = e.target as SonicVibe;
-  player.media.currentTime -= player.bidirectional;
+  sonicVibeProxy.media[player.id].currentTime -= player.bidirectional;
 };
 
 /**
@@ -187,8 +196,9 @@ const handleBackward = (e: Event) => {
  */
 const handleAmplify = (e: Event) => {
   const player = e.target as SonicVibe;
-  if (player.media.muted) player.triggerEvent(SonicVibeEvents.unmute, player);
-  player.media.volume = Math.min(player.media.volume + 0.012, 1);
+  const media = sonicVibeProxy.media[player.id];
+  if (media.muted) player.triggerEvent(SonicVibeEvents.unmute);
+  media.volume = Math.min(media.volume + 0.012, 1);
 };
 
 /**
@@ -200,8 +210,9 @@ const handleAmplify = (e: Event) => {
  */
 const handleDeminish = (e: Event) => {
   const player = e.target as SonicVibe;
-  if (player.media.muted) player.triggerEvent(SonicVibeEvents.unmute, player);
-  player.media.volume = Math.max(player.media.volume - 0.012, 0);
+  const media = sonicVibeProxy.media[player.id];
+  if (media.muted) player.triggerEvent(SonicVibeEvents.unmute);
+  media.volume = Math.max(media.volume - 0.012, 0);
 };
 
 /**
@@ -224,8 +235,9 @@ const handleFullScreen = (e: Event) => {
  */
 const handlePlay = (e: Event, id: string) => {
   const eventFor = (e.target as HTMLElement).id;
-  player[id].functions.play[eventFor]?.(e);
-  player[id].instance.media.play();
+  const media = sonicVibeProxy.media[id];
+  sonicVibeProxy.play[eventFor]?.(e);
+  media.play();
 };
 
 /**
@@ -237,8 +249,9 @@ const handlePlay = (e: Event, id: string) => {
  */
 const handlePause = (e: Event, id: string) => {
   const eventFor = (e.target as HTMLElement).id;
-  player[id].functions.pause[eventFor]?.(e);
-  player[id].instance.media.pause();
+  const media = sonicVibeProxy.media[id];
+  sonicVibeProxy.pause[eventFor]?.(e);
+  media.pause();
 };
 
 /**
@@ -248,7 +261,7 @@ const handlePause = (e: Event, id: string) => {
  */
 const handleMute = (e: Event) => {
   const player = e.target as SonicVibe;
-  player.media.muted = true;
+  sonicVibeProxy.media[player.id].muted = true;
 };
 
 /**
@@ -258,7 +271,7 @@ const handleMute = (e: Event) => {
  */
 const handleUnmute = (e: Event) => {
   const player = e.target as SonicVibe;
-  player.media.muted = false;
+  sonicVibeProxy.media[player.id].muted = false;
 };
 
 /**
@@ -267,9 +280,41 @@ const handleUnmute = (e: Event) => {
  * @param {string} id - The id of the player.
  * @description Triggers any click event listeners associated with the player.
  */
-const handleClick = (e: MouseEvent, id: string) => {
+const handleClick = (e: MouseEvent) => {
   const eventFor = (e.target as HTMLElement).id;
-  player[id].functions.click[eventFor](e);
+  sonicVibeProxy.click[eventFor]?.(e);
+};
+
+/**
+ * Handles a mouseenter event on a player element.
+ * @param {MouseEvent} e - The mouseenter event.
+ * @param {string} id - The id of the player.
+ * @description Triggers any mouseenter event listeners associated with the player.
+ */
+const handleMouseEnter = (e: MouseEvent) => {
+  const eventFor = (e.target as HTMLElement).id;
+  sonicVibeProxy.mouseenter[eventFor]?.(e);
+};
+
+/**
+ * Handles a mouseleave event on a player element.
+ * @param {MouseEvent} e - The mouseleave event.
+ * @param {string} id - The id of the player.
+ * @description Triggers any mouseleave event listeners associated with the player.
+ */
+const handleMouseLeave = (e: MouseEvent) => {
+  const eventFor = (e.target as HTMLElement).id;
+  sonicVibeProxy.mouseleave[eventFor]?.(e);
+};
+
+const handleMouseMove = (e: MouseEvent) => {
+  const eventFor = (e.target as HTMLElement).id;
+  sonicVibeProxy.mousemove[eventFor]?.(e);
+};
+
+const handleMouseUp = (e: MouseEvent) => {
+  const eventFor = (e.target as HTMLElement).id;
+  sonicVibeProxy.mouseup[eventFor]?.(e);
 };
 
 export default addPlayerEvents;

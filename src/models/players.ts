@@ -1,5 +1,6 @@
 import type SonicVibe from "../components/SonicVibe";
 import type { SonicVibeEventsOps } from "../events";
+import SonicVibeEvents from "../events";
 
 export interface SonicVibeOpMouse {
   [key: string]: <T extends MouseEvent>(e: T) => void;
@@ -12,17 +13,32 @@ export interface SonicVibeOpKeyboard {
 export interface SonicVibeOp {
   instance: SonicVibe;
   functions: {
-    click: {
+    [SonicVibeEventsOps.click]: {
       [key: string]: <T extends MouseEvent>(e: T) => void;
     };
-    play: {
+    [SonicVibeEventsOps.play]: {
       [key: string]: <T extends Event>(e: T) => void;
     };
-    pause: {
+    [SonicVibeEventsOps.pause]: {
       [key: string]: <T extends Event>(e: T) => void;
     };
-    keydown: {
+    [SonicVibeEventsOps.keydown]: {
       [key: string]: <T extends KeyboardEvent>(e: T) => void;
+    };
+    [SonicVibeEventsOps.mouseenter]: {
+      [key: string]: <T extends MouseEvent>(e: T) => void;
+    };
+    [SonicVibeEventsOps.mouseleave]: {
+      [key: string]: <T extends MouseEvent>(e: T) => void;
+    };
+    [SonicVibeEventsOps.mousemove]: {
+      [key: string]: <T extends MouseEvent>(e: T) => void;
+    };
+    [SonicVibeEventsOps.mousedown]: {
+      [key: string]: <T extends MouseEvent>(e: T) => void;
+    };
+    [SonicVibeEventsOps.mouseup]: {
+      [key: string]: <T extends MouseEvent>(e: T) => void;
     };
   };
 }

@@ -1,4 +1,5 @@
 import SonicVibeEvents from "../../events";
+import sonicVibeProxy from "../global";
 import {
   Play,
   Pause,
@@ -19,101 +20,100 @@ const createButtons = (id: string, plaberBarElement: HTMLDivElement) => {
 };
 
 const createPlayButton = (id: string) => {
+  const player = sonicVibeProxy.instance[id];
+  const media = sonicVibeProxy.media[id];
   const play = document.createElement("span");
   play.classList.add("play", "btn");
-  if (player[id].instance.media.paused) play.classList.add("toggle");
+  if (media.paused) play.classList.add("toggle");
   play.id = id + "-play";
   play.innerHTML = Play;
   const handlePlay = () => {
     play.classList.remove("toggle");
     play.nextElementSibling?.classList.add("toggle");
   };
-  player[id].functions.click[play.id] = () =>
-    player[id].instance.triggerEvent(SonicVibeEvents.play);
-  player[id].functions.play[id] = handlePlay;
+  sonicVibeProxy.click[play.id] = () =>
+    player.triggerEvent(SonicVibeEvents.play);
+  sonicVibeProxy.play[id] = handlePlay;
   return play;
 };
 
 const createPauseButton = (id: string) => {
+  const player = sonicVibeProxy.instance[id];
+  const media = sonicVibeProxy.media[id];
   const pause = document.createElement("span");
   pause.classList.add("pause", "btn");
-  if (!player[id].instance.media.paused) pause.classList.add("toggle");
+  if (!media.paused) pause.classList.add("toggle");
   pause.id = id + "-pause";
   pause.innerHTML = Pause;
   const handlePause = () => {
     pause.classList.remove("toggle");
     pause.previousElementSibling?.classList.add("toggle");
   };
-  player[id].functions.click[pause.id] = () =>
-    player[id].instance.triggerEvent(SonicVibeEvents.pause);
-  player[id].functions.pause[id] = handlePause;
+  sonicVibeProxy.click[pause.id] = () =>
+    player.triggerEvent(SonicVibeEvents.pause);
+  sonicVibeProxy.pause[id] = handlePause;
   return pause;
 };
 
 const createVolumeControl = (id: string) => {
-  const volume = document.createElement("span");
+  const media = sonicVibeProxy.media[id];
+  const volume = document.createElement("label");
   volume.classList.add("volume");
   volume.id = id + "-volume";
+  const volumeRange = document.createElement("input");
+  volumeRange.value = `${media.volume * 100}`;
+  volumeRange.type = "range";
+  volumeRange.addEventListener('input', () => {
+    media.volume = Number(volumeRange.value) / 100
+    if(media.muted && media.volume > 0) media.muted = false
+  })
+  const volumeControlId = id + "-volume-control";
+  const volumeId = id + "volume-icon";
+  volumeRange.id = volumeControlId;
+  // volumeRange.style.opacity = "0";
   const volumeIcon = document.createElement("span");
   volumeIcon.classList.add("volumeIcon", "btn");
-  volumeIcon.innerHTML = player[id].instance.media.muted ? VolumeOff : VolumeUp;
-  const volumeControl = document.createElement("span");
-  volumeControl.classList.add("volumeControl");
-  volumeControl.style.setProperty(
-    "--volume",
-    String(
-      player[id].instance.media.muted ? 0 : player[id].instance.media.volume
-    )
-  );
-  volumeControl.addEventListener("mouseup", () =>
-    volumeControl.classList.remove("toggle")
-  );
-  volumeControl.addEventListener("mouseleave", () =>
-    volumeControl.classList.remove("toggle")
-  );
-  volumeControl.addEventListener("mousedown", () =>
-    volumeControl.classList.add("toggle")
-  );
+  volumeIcon.innerHTML = media.muted ? VolumeOff : VolumeUp;
+  volumeIcon.id = volumeId;
+  sonicVibeProxy.mousemove[volumeId] = () =>
+    volume.classList.add("volumeControlActive");
+  sonicVibeProxy.mouseleave[id] = () =>
+    volume.classList.remove("volumeControlActive");
+
+  const volumeControl = document.createElement('div')
+
   volumeControl.addEventListener("mousemove", (e) => {
     if (volumeControl.classList.contains("toggle")) {
       const boundingBox = volumeControl.getBoundingClientRect();
       const calc = (e.clientX - boundingBox.left) / boundingBox.width;
       const properCalc = calc < 0 ? 0 : calc > 1 ? 1 : calc;
-      player[id].instance.media.muted = false;
-      player[id].instance.media.volume = properCalc;
+      media.muted = false;
+      media.volume = properCalc;
       volumeControl.style.setProperty("--volume", String(properCalc));
     }
   });
   volumeIcon.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    player[id].instance.media.muted = !player[id].instance.media.muted;
-    if (player[id].instance.media.muted) {
+    media.muted = !media.muted;
+    if (media.muted) {
       volumeIcon.innerHTML = VolumeOff;
     } else {
       volumeIcon.innerHTML = VolumeUp;
     }
   });
-  player[id].instance.media.addEventListener("volumechange", () => {
+  media.addEventListener("volumechange", () => {
     volumeControl.style.setProperty(
       "--volume",
-      String(
-        player[id].instance.media.muted ? 0 : player[id].instance.media.volume
-      )
+      String(media.muted ? 0 : media.volume)
     );
-    if (player[id].instance.media.muted) {
+    if (media.muted) {
       volumeIcon.innerHTML = VolumeOff;
-    } else if (player[id].instance.media.volume === 1) {
+    } else if (media.volume === 1) {
       volumeIcon.innerHTML = VolumeUp;
-    } else if (
-      player[id].instance.media.volume < 1 &&
-      player[id].instance.media.volume > 0.5
-    ) {
+    } else if (media.volume < 1 && media.volume > 0.5) {
       volumeIcon.innerHTML = VolumeDown;
-    } else if (
-      player[id].instance.media.volume > 0 &&
-      player[id].instance.media.volume < 0.5
-    ) {
+    } else if (media.volume > 0 && media.volume < 0.5) {
       volumeIcon.innerHTML = VolumeMute;
     }
   });
@@ -123,13 +123,13 @@ const createVolumeControl = (id: string) => {
     const boundingBox = volumeControl.getBoundingClientRect();
     const calc = (e.clientX - boundingBox.left) / boundingBox.width;
     const properCalc = calc < 0 ? 0 : calc > 1 ? 1 : calc;
-    if (properCalc > 0 && player[id].instance.media.muted) {
-      player[id].instance.media.muted = false;
+    if (properCalc > 0 && media.muted) {
+      media.muted = false;
     }
-    player[id].instance.media.volume = properCalc;
+    media.volume = properCalc;
     volumeControl.style.setProperty("--volume", String(properCalc));
   });
-  volume.append(volumeIcon, volumeControl);
+  volume.append(volumeIcon, volumeRange, volumeControl);
   return volume;
 };
 

@@ -16,12 +16,6 @@ export default class SonicVibe extends HTMLElement {
   mouseDragged = false;
 
   /**
-   * The video DOM HTML.
-   * @type {SonicVibeMedia | undefined}
-   */
-  media!: SonicVibeMedia;
-
-  /**
    * The aspect ratio of the video, e.g: "16/9", default is "16/9".
    * @type {string | null | undefined}
    */
