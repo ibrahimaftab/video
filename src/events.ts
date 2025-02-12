@@ -31,6 +31,7 @@ export enum SonicVibeEventsOps {
   play = SonicVibeEvents.play,
   pause = SonicVibeEvents.pause,
   keydown = SonicVibeEvents.keydown,
+  fullscreen = SonicVibeEvents.fullscreen,
 }
 
 export const SonicVibeEventsOpsWithEvent = {
@@ -43,6 +44,7 @@ export const SonicVibeEventsOpsWithEvent = {
   [SonicVibeEventsOps.play]: Event,
   [SonicVibeEventsOps.pause]: Event,
   [SonicVibeEventsOps.keydown]: KeyboardEvent,
+  [SonicVibeEventsOps.fullscreen]: KeyboardEvent,
 };
 
 export default SonicVibeEvents;

@@ -94,6 +94,12 @@ export default class SonicVibe extends HTMLElement {
   src!: string;
 
   /**
+   * Indicates whether the video should be displayed in fullscreen mode.
+   * @type {boolean}
+   */
+  fullscreen = true;
+
+  /**
    * Constructs a new SonicVibe element.
    */
   constructor() {

@@ -26,7 +26,9 @@ const addPlayerEvents = (player: SonicVibe) => {
   player.addEventListener(SonicVibeEvents.backward, handleBackward);
   player.addEventListener(SonicVibeEvents.amplify, handleAmplify);
   player.addEventListener(SonicVibeEvents.deminish, handleDeminish);
-  player.addEventListener(SonicVibeEvents.fullscreen, handleFullScreen);
+  player.addEventListener(SonicVibeEvents.fullscreen, (e) =>
+    handleFullScreen(e, id)
+  );
   player.addEventListener(SonicVibeEvents.play, (e) => handlePlay(e, id));
   player.addEventListener(SonicVibeEvents.pause, (e) => handlePause(e, id));
   player.addEventListener(SonicVibeEvents.mute, handleMute);
@@ -220,10 +222,18 @@ const handleDeminish = (e: Event) => {
  * @param {Event} e - The fullscreen event.
  * @description Toggles the player element's fullscreen mode on and off.
  */
-const handleFullScreen = (e: Event) => {
-  const player = e.target as SonicVibe;
-  if (document.fullscreenElement) document.exitFullscreen();
-  else player.requestFullscreen();
+const handleFullScreen = (e: Event, id: string) => {
+  const eventFor = (e.target as HTMLElement).id;
+  const player = sonicVibeProxy.instance[id];
+
+  if (document.fullscreenElement)
+    document
+      .exitFullscreen()
+      .then(() => sonicVibeProxy.fullscreen[eventFor]?.(e));
+  else
+    player
+      .requestFullscreen()
+      .then(() => sonicVibeProxy.fullscreen[eventFor]?.(e));
 };
 
 /**

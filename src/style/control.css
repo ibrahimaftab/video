@@ -88,7 +88,7 @@ sonic-vibe.preview .timeline {
 sonic-vibe .sonic-vibe-bar-btns {
   display: flex;
   flex-wrap: wrap;
-  gap: 1em;
+  justify-content: space-between;
   margin-block-end: 0.75em;
   padding: 0 0.8em;
   position: relative;
@@ -97,6 +97,12 @@ sonic-vibe .sonic-vibe-bar-btns {
   transition-duration: 150ms;
   transition-timing-function: linear;
   transition-property: transform, opacity;
+}
+
+sonic-vibe .sonic-vibe-bar-btns-left {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
 }
 
 .sonic-vibe-bar .sonic-vibe-bar-btns svg {
@@ -210,6 +216,26 @@ sonic-vibe.preview .sonic-vibe-bar-btns {
 
       svg {
         pointer-events: none;
+      }
+    }
+  }
+
+  .fullscreen {
+    display: block;
+
+    svg {
+      display: none;
+    }
+
+    &:not(.toggle) {
+      .enter-fullscreen {
+        display: block;
+      }
+    }
+
+    &.toggle {
+      .exit-fullscreen {
+        display: block;
       }
     }
   }

@@ -7,15 +7,32 @@ import {
   VolumeMute,
   VolumeOff,
   VolumeUp,
+  Fullscreen,
+  ExitFullscreen,
 } from "./player-bar-icons";
+
+type PlayerAttr = string | undefined;
 
 const createButtons = (id: string, plaberBarElement: HTMLDivElement) => {
   const play = createPlayButton(id);
   const pause = createPauseButton(id);
   const volume = createVolumeControl(id);
   const buttons = document.createElement("div");
+  const buttonsLeft = document.createElement("div");
+  const buttonsRight = document.createElement("div");
   buttons.classList.add("sonic-vibe-bar-btns");
-  buttons.append(play, pause, volume);
+  buttonsLeft.classList.add("sonic-vibe-bar-btns-left");
+  buttonsRight.classList.add("sonic-vibe-bar-btns-right");
+  buttonsLeft.append(play, pause, volume);
+  buttons.append(buttonsLeft, buttonsRight);
+  const player = sonicVibeProxy.instance[id];
+  const enableFullscreen = player.elementDefaultAttribute(
+    "fullscreen"
+  ) as PlayerAttr;
+  if (String(enableFullscreen) === "true") {
+    const fullscreen = createFullScreen(id);
+    buttonsRight.append(fullscreen);
+  }
   plaberBarElement.prepend(buttons);
 };
 
@@ -63,10 +80,10 @@ const createVolumeControl = (id: string) => {
   const volumeRange = document.createElement("input");
   volumeRange.value = `${media.volume * 100}`;
   volumeRange.type = "range";
-  volumeRange.addEventListener('input', () => {
-    media.volume = Number(volumeRange.value) / 100
-    if(media.muted && media.volume > 0) media.muted = false
-  })
+  volumeRange.addEventListener("input", () => {
+    media.volume = Number(volumeRange.value) / 100;
+    if (media.muted && media.volume > 0) media.muted = false;
+  });
   const volumeControlId = id + "-volume-control";
   const volumeId = id + "volume-icon";
   volumeRange.id = volumeControlId;
@@ -80,7 +97,7 @@ const createVolumeControl = (id: string) => {
   sonicVibeProxy.mouseleave[id] = () =>
     volume.classList.remove("volumeControlActive");
 
-  const volumeControl = document.createElement('div')
+  const volumeControl = document.createElement("div");
 
   volumeControl.addEventListener("mousemove", (e) => {
     if (volumeControl.classList.contains("toggle")) {
@@ -131,6 +148,21 @@ const createVolumeControl = (id: string) => {
   });
   volume.append(volumeIcon, volumeRange, volumeControl);
   return volume;
+};
+
+const createFullScreen = (id: string) => {
+  const player = sonicVibeProxy.instance[id];
+  const fullscreen = document.createElement("span");
+  fullscreen.classList.add("fullscreen", "btn");
+  fullscreen.id = id + "-fullscreen";
+  fullscreen.innerHTML = Fullscreen + ExitFullscreen;
+  sonicVibeProxy.click[fullscreen.id] = () => {
+    player.triggerEvent(SonicVibeEvents.fullscreen);
+  };
+  sonicVibeProxy.fullscreen[id] = () => {
+    fullscreen.classList.toggle("toggle");
+  };
+  return fullscreen;
 };
 
 export default createButtons;

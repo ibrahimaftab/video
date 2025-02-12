@@ -19,6 +19,7 @@ enum SonicVibeGlobalEvents {
   mousemove = SonicVibeEventsOps.mousemove,
   mousedown = SonicVibeEventsOps.mousedown,
   mouseup = SonicVibeEventsOps.mouseup,
+  fullscreen = SonicVibeEventsOps.fullscreen,
 }
 
 interface ISonicVibeGlobal {
@@ -33,6 +34,7 @@ interface ISonicVibeGlobal {
   [SonicVibeGlobalEvents.mousemove]: SonicVibeMouseEvent;
   [SonicVibeGlobalEvents.mousedown]: SonicVibeMouseEvent;
   [SonicVibeGlobalEvents.mouseup]: SonicVibeMouseEvent;
+  [SonicVibeGlobalEvents.fullscreen]: SonicVibeEvent;
 }
 
 const sonicVibeGlobal: ISonicVibeGlobal = {
@@ -47,6 +49,7 @@ const sonicVibeGlobal: ISonicVibeGlobal = {
   [SonicVibeEventsOps.mousemove]: {},
   [SonicVibeEventsOps.mousedown]: {},
   [SonicVibeEventsOps.mouseup]: {},
+  [SonicVibeEventsOps.fullscreen]: {},
 };
 
 /**
