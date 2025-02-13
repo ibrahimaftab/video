@@ -34,17 +34,4 @@ export enum SonicVibeEventsOps {
   fullscreen = SonicVibeEvents.fullscreen,
 }
 
-export const SonicVibeEventsOpsWithEvent = {
-  [SonicVibeEventsOps.mouseenter]: MouseEvent,
-  [SonicVibeEventsOps.mouseleave]: MouseEvent,
-  [SonicVibeEventsOps.mousemove]: MouseEvent,
-  [SonicVibeEventsOps.mouseup]: MouseEvent,
-  [SonicVibeEventsOps.mousedown]: MouseEvent,
-  [SonicVibeEventsOps.click]: MouseEvent,
-  [SonicVibeEventsOps.play]: Event,
-  [SonicVibeEventsOps.pause]: Event,
-  [SonicVibeEventsOps.keydown]: KeyboardEvent,
-  [SonicVibeEventsOps.fullscreen]: KeyboardEvent,
-};
-
 export default SonicVibeEvents;

@@ -1,6 +1,5 @@
 import type SonicVibe from "../components/SonicVibe";
 import type { SonicVibeEventsOps } from "../events";
-import SonicVibeEvents from "../events";
 
 export interface SonicVibeOpMouse {
   [key: string]: <T extends MouseEvent>(e: T) => void;

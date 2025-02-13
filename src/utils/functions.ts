@@ -1,8 +1,5 @@
 import type SonicVibe from "../components/SonicVibe";
-import SonicVibeEvents, {
-  SonicVibeEventsOps,
-  SonicVibeEventsOpsWithEvent,
-} from "../events";
+import SonicVibeEvents from "../events";
 import { MediaType } from "../models/default-options";
 
 /**
